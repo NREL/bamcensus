@@ -1,0 +1,26 @@
+[package]
+name = "censrust"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "A tool for downloading US Census datasets written in Rust"
+
+[dependencies]
+serde = { version = "1.0.160", features = ["derive"] }
+serde_json = { version = "1.0" }
+geo = { version = "0.28.0", features = ["use-serde"] }
+wkt = { version = "0.10.3", features = ["serde"] }
+env_logger = "0.11.3"
+log = "0.4.19"
+config = "0.14.0"
+kdam = "0.5.0"
+clap = { version = "4.3.19", features = ["derive"] }
+itertools = { version = "0.12.0" }
+csv = { version = "1.2.2" }
+flate2 = "1.0"
+geojson = { version = "0.24.1" }
+thiserror = "1.0.0"
+rayon = "1.10.0"
+reqwest = { version = "0.12", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+futures = "0.3.30"
