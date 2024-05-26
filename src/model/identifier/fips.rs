@@ -17,3 +17,54 @@ impl GeoidString for State {
         format!("{:02}", self.0)
     }
 }
+
+impl GeoidString for County {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for CountySubdivision {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for Place {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for CensusTract {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for BlockGroup {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for Block {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for CongressionalDistrict {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for StateLegislativeDistrictUpperChamber {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for StateLegislativeDistrictLowerChamber {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
+impl GeoidString for ZipCodeTabulationArea {
+    fn geoid_string(&self) -> String {
+        self.0.to_string()
+    }
+}
