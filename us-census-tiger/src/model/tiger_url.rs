@@ -1,5 +1,5 @@
 use super::tiger_year::TigerYear;
-use crate::model::identifier::{
+use us_census_core::model::identifier::{
     geoid::Geoid, geoid_hierarchy_type::GeoidHierarchyType, has_geoid_string::HasGeoidString,
 };
 
