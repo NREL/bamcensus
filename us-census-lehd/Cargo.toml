@@ -1,0 +1,14 @@
+[package]
+name = "us-census-lehd"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "Work with Longitudinal Employer-Household Dynamics (LEHD) datasets"
+
+[dependencies]
+tokio = { workspace = true }
+rayon = { workspace = true }
+clap = { workspace = true }
+env_logger = { workspace = true }
+itertools = { workspace = true }
+serde = { workspace = true }
