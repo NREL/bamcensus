@@ -1,6 +1,4 @@
 use std::rc::Rc;
-
-use itertools::Itertools;
 use us_census_core::model::identifier::{
     fips, geoid::Geoid, geoid_type::GeoidType, has_geoid_string::HasGeoidString,
     has_geoid_type::HasGeoidType,
@@ -78,10 +76,7 @@ impl AcsGeoidQuery {
     ///
     /// URL query string for calls to the US Census ACS API "for" section, which set the
     /// spatial scope and granularity of the query result.
-    pub fn new(
-        geoid: Option<&Geoid>,
-        wildcard: Option<&GeoidType>,
-    ) -> Result<AcsGeoidQuery, String> {
+    pub fn new(geoid: Option<Geoid>, wildcard: Option<GeoidType>) -> Result<AcsGeoidQuery, String> {
         use Geoid as G;
         use GeoidType as GT;
 
@@ -146,93 +141,93 @@ impl AcsGeoidQuery {
             // ~~ queries for wildcards inserted into specific geoids ~~
             // - STATE -
             (Some(Geoid::State(_)), Some(GT::State)) => Ok(AcsGeoidQuery::State(None)),
-            (Some(Geoid::State(s)), Some(GT::County)) => Ok(AcsGeoidQuery::County(Some(*s), None)),
+            (Some(Geoid::State(s)), Some(GT::County)) => Ok(AcsGeoidQuery::County(Some(s), None)),
             (Some(Geoid::State(s)), Some(GT::CountySubdivision)) => {
-                Ok(AcsGeoidQuery::CountySubdivision(Some(*s), None, None))
+                Ok(AcsGeoidQuery::CountySubdivision(Some(s), None, None))
             }
-            (Some(Geoid::State(s)), Some(GT::Place)) => Ok(AcsGeoidQuery::Place(Some(*s), None)),
+            (Some(Geoid::State(s)), Some(GT::Place)) => Ok(AcsGeoidQuery::Place(Some(s), None)),
             (Some(Geoid::State(s)), Some(GT::CensusTract)) => {
-                Ok(AcsGeoidQuery::CensusTract(Some(*s), None, None))
+                Ok(AcsGeoidQuery::CensusTract(Some(s), None, None))
             }
             (Some(Geoid::State(s)), Some(GT::BlockGroup)) => {
-                Ok(AcsGeoidQuery::BlockGroup(Some(*s), None, None, None))
+                Ok(AcsGeoidQuery::BlockGroup(Some(s), None, None, None))
             }
 
             // - COUNTY -
             (Some(Geoid::County(_, c)), Some(GT::State)) => {
-                Ok(AcsGeoidQuery::County(None, Some(*c)))
+                Ok(AcsGeoidQuery::County(None, Some(c)))
             }
             (Some(Geoid::County(s, _)), Some(GT::County)) => {
-                Ok(AcsGeoidQuery::County(Some(*s), None))
+                Ok(AcsGeoidQuery::County(Some(s), None))
             }
             (Some(Geoid::County(s, c)), Some(GT::CountySubdivision)) => {
-                Ok(AcsGeoidQuery::CountySubdivision(Some(*s), Some(*c), None))
+                Ok(AcsGeoidQuery::CountySubdivision(Some(s), Some(c), None))
             }
             (Some(Geoid::County(s, c)), Some(GT::CensusTract)) => {
-                Ok(AcsGeoidQuery::CensusTract(Some(*s), Some(*c), None))
+                Ok(AcsGeoidQuery::CensusTract(Some(s), Some(c), None))
             }
             (Some(Geoid::County(s, c)), Some(GT::BlockGroup)) => {
-                Ok(AcsGeoidQuery::BlockGroup(Some(*s), Some(*c), None, None))
+                Ok(AcsGeoidQuery::BlockGroup(Some(s), Some(c), None, None))
             }
 
             // - COUNTY SUBDIVISION -
             (Some(G::CountySubdivision(_, ct, cs)), Some(GT::State)) => {
-                Ok(AcsGeoidQuery::CountySubdivision(None, Some(*ct), Some(*cs)))
+                Ok(AcsGeoidQuery::CountySubdivision(None, Some(ct), Some(cs)))
             }
             (Some(G::CountySubdivision(s, _, cs)), Some(GT::County)) => {
-                Ok(AcsGeoidQuery::CountySubdivision(Some(*s), None, Some(*cs)))
+                Ok(AcsGeoidQuery::CountySubdivision(Some(s), None, Some(cs)))
             }
             (Some(G::CountySubdivision(s, ct, _)), Some(GT::CountySubdivision)) => {
-                Ok(AcsGeoidQuery::CountySubdivision(Some(*s), Some(*ct), None))
+                Ok(AcsGeoidQuery::CountySubdivision(Some(s), Some(ct), None))
             }
 
             // - PLACE -
-            (Some(Geoid::Place(_, p)), Some(GT::State)) => Ok(AcsGeoidQuery::Place(None, Some(*p))),
-            (Some(Geoid::Place(s, _)), Some(GT::Place)) => Ok(AcsGeoidQuery::Place(Some(*s), None)),
+            (Some(Geoid::Place(_, p)), Some(GT::State)) => Ok(AcsGeoidQuery::Place(None, Some(p))),
+            (Some(Geoid::Place(s, _)), Some(GT::Place)) => Ok(AcsGeoidQuery::Place(Some(s), None)),
 
             // - CENSUS TRACT -
             (Some(Geoid::CensusTract(_, c, t)), Some(GT::State)) => {
-                Ok(AcsGeoidQuery::CensusTract(None, Some(*c), Some(*t)))
+                Ok(AcsGeoidQuery::CensusTract(None, Some(c), Some(t)))
             }
             (Some(Geoid::CensusTract(s, _, t)), Some(GT::County)) => {
-                Ok(AcsGeoidQuery::CensusTract(Some(*s), None, Some(*t)))
+                Ok(AcsGeoidQuery::CensusTract(Some(s), None, Some(t)))
             }
             (Some(Geoid::CensusTract(s, c, _)), Some(GT::CensusTract)) => {
-                Ok(AcsGeoidQuery::CensusTract(Some(*s), Some(*c), None))
+                Ok(AcsGeoidQuery::CensusTract(Some(s), Some(c), None))
             }
-            (Some(Geoid::CensusTract(s, c, t)), Some(GT::BlockGroup)) => Ok(
-                AcsGeoidQuery::BlockGroup(Some(*s), Some(*c), Some(*t), None),
-            ),
+            (Some(Geoid::CensusTract(s, c, t)), Some(GT::BlockGroup)) => {
+                Ok(AcsGeoidQuery::BlockGroup(Some(s), Some(c), Some(t), None))
+            }
 
             // - BLOCK GROUP -
-            (Some(Geoid::BlockGroup(_, c, t, b)), Some(GT::State)) => Ok(
-                AcsGeoidQuery::BlockGroup(None, Some(*c), Some(*t), Some(*b)),
-            ),
-            (Some(Geoid::BlockGroup(s, _, t, b)), Some(GT::County)) => Ok(
-                AcsGeoidQuery::BlockGroup(Some(*s), None, Some(*t), Some(*b)),
-            ),
-            (Some(Geoid::BlockGroup(s, c, _, b)), Some(GT::CensusTract)) => Ok(
-                AcsGeoidQuery::BlockGroup(Some(*s), Some(*c), None, Some(*b)),
-            ),
-            (Some(Geoid::BlockGroup(s, c, t, _)), Some(GT::BlockGroup)) => Ok(
-                AcsGeoidQuery::BlockGroup(Some(*s), Some(*c), Some(*t), None),
-            ),
+            (Some(Geoid::BlockGroup(_, c, t, b)), Some(GT::State)) => {
+                Ok(AcsGeoidQuery::BlockGroup(None, Some(c), Some(t), Some(b)))
+            }
+            (Some(Geoid::BlockGroup(s, _, t, b)), Some(GT::County)) => {
+                Ok(AcsGeoidQuery::BlockGroup(Some(s), None, Some(t), Some(b)))
+            }
+            (Some(Geoid::BlockGroup(s, c, _, b)), Some(GT::CensusTract)) => {
+                Ok(AcsGeoidQuery::BlockGroup(Some(s), Some(c), None, Some(b)))
+            }
+            (Some(Geoid::BlockGroup(s, c, t, _)), Some(GT::BlockGroup)) => {
+                Ok(AcsGeoidQuery::BlockGroup(Some(s), Some(c), Some(t), None))
+            }
 
             // ~~ queries for specific geoids (no wildcards) ~~
-            (Some(Geoid::State(s)), None) => Ok(AcsGeoidQuery::State(Some(*s))),
-            (Some(Geoid::County(s, c)), None) => Ok(AcsGeoidQuery::County(Some(*s), Some(*c))),
+            (Some(Geoid::State(s)), None) => Ok(AcsGeoidQuery::State(Some(s))),
+            (Some(Geoid::County(s, c)), None) => Ok(AcsGeoidQuery::County(Some(s), Some(c))),
             (Some(Geoid::CountySubdivision(s, ct, cs)), None) => Ok(
-                AcsGeoidQuery::CountySubdivision(Some(*s), Some(*ct), Some(*cs)),
+                AcsGeoidQuery::CountySubdivision(Some(s), Some(ct), Some(cs)),
             ),
-            (Some(Geoid::Place(s, p)), None) => Ok(AcsGeoidQuery::Place(Some(*s), Some(*p))),
+            (Some(Geoid::Place(s, p)), None) => Ok(AcsGeoidQuery::Place(Some(s), Some(p))),
             (Some(Geoid::CensusTract(s, c, t)), None) => {
-                Ok(AcsGeoidQuery::CensusTract(Some(*s), Some(*c), Some(*t)))
+                Ok(AcsGeoidQuery::CensusTract(Some(s), Some(c), Some(t)))
             }
             (Some(Geoid::BlockGroup(s, c, t, b)), None) => Ok(AcsGeoidQuery::BlockGroup(
-                Some(*s),
-                Some(*c),
-                Some(*t),
-                Some(*b),
+                Some(s),
+                Some(c),
+                Some(t),
+                Some(b),
             )),
         }
     }
@@ -351,127 +346,39 @@ impl AcsGeoidQuery {
         }
     }
 
+    pub fn get_geoid_type(&self) -> GeoidType {
+        match self {
+            AcsGeoidQuery::State(_) => GeoidType::State,
+            AcsGeoidQuery::County(_, _) => GeoidType::County,
+            AcsGeoidQuery::CountySubdivision(_, _, _) => GeoidType::CountySubdivision,
+            AcsGeoidQuery::Place(_, _) => GeoidType::Place,
+            AcsGeoidQuery::CensusTract(_, _, _) => GeoidType::CensusTract,
+            AcsGeoidQuery::BlockGroup(_, _, _, _) => GeoidType::BlockGroup,
+        }
+    }
+
     /// builds a function that unpacks the ACS query values representing a geoid.
     /// these return as values in an array of different lengths, depending on the scope of
     /// the original query.
     pub fn build_deserialize_geoid_fn(&self) -> DeserializeGeoidFn {
-        match self {
-            AcsGeoidQuery::State(_) => {
-                let f = |vals| {
-                    let arr = as_usizes(vals)?;
-                    if arr.len() != 1 {
-                        Err(format!(
-                            "for state-level query, expected 1 geoid column, found: {}",
-                            arr.into_iter().join(",")
-                        ))
-                    } else {
-                        Ok(Geoid::State(fips::State(arr[0])))
-                    }
-                };
-                Rc::new(f)
-            }
-            AcsGeoidQuery::County(_, _) => {
-                let f = |vals| {
-                    let arr = as_usizes(vals)?;
-                    if arr.len() != 2 {
-                        Err(format!(
-                            "for county-level query, expected 2 geoid columns, found: {}",
-                            arr.into_iter().join(",")
-                        ))
-                    } else {
-                        Ok(Geoid::County(fips::State(arr[0]), fips::County(arr[1])))
-                    }
-                };
-                Rc::new(f)
-            }
-            AcsGeoidQuery::CountySubdivision(_, _, _) => {
-                let f = |vals| {
-                    let arr = as_usizes(vals)?;
-                    if arr.len() != 3 {
-                        Err(format!(
-                            "for county subdivision-level query, expected 3 geoid columns, found: {}",
-                            arr.into_iter().join(",")
-                        ))
-                    } else {
-                        Ok(Geoid::CountySubdivision(
-                            fips::State(arr[0]),
-                            fips::County(arr[1]),
-                            fips::CountySubdivision(arr[2]),
-                        ))
-                    }
-                };
-                Rc::new(f)
-            }
-            AcsGeoidQuery::Place(_, _) => {
-                let f = |vals| {
-                    let arr = as_usizes(vals)?;
-                    if arr.len() != 2 {
-                        Err(format!(
-                            "for place-level query, expected 2 geoid columns, found: {}",
-                            arr.into_iter().join(",")
-                        ))
-                    } else {
-                        Ok(Geoid::Place(fips::State(arr[0]), fips::Place(arr[1])))
-                    }
-                };
-                Rc::new(f)
-            }
-            AcsGeoidQuery::CensusTract(_, _, _) => {
-                let f = |vals| {
-                    let arr = as_usizes(vals)?;
-                    if arr.len() != 3 {
-                        Err(format!(
-                            "for census tract-level query, expected 3 geoid column, found: {}",
-                            arr.into_iter().join(",")
-                        ))
-                    } else {
-                        Ok(Geoid::CensusTract(
-                            fips::State(arr[0]),
-                            fips::County(arr[1]),
-                            fips::CensusTract(arr[2]),
-                        ))
-                    }
-                };
-                Rc::new(f)
-            }
-            AcsGeoidQuery::BlockGroup(_, _, _, _) => {
-                let f = |vals| {
-                    let arr = as_usizes(vals)?;
-                    if arr.len() != 4 {
-                        Err(format!(
-                            "for block group-level query, expected 4 geoid columns, found: {}",
-                            arr.into_iter().join(",")
-                        ))
-                    } else {
-                        Ok(Geoid::BlockGroup(
-                            fips::State(arr[0]),
-                            fips::County(arr[1]),
-                            fips::CensusTract(arr[2]),
-                            fips::BlockGroup(arr[3]),
-                        ))
-                    }
-                };
-                Rc::new(f)
-            }
-        }
+        let geoid_type = self.get_geoid_type();
+        let f = move |vals| {
+            let strings = as_strings(&vals)?;
+            geoid_type.geoid_from_slice_of_strings(&strings)
+        };
+        Rc::new(f)
     }
 }
 
-fn as_usizes(arr: Vec<serde_json::Value>) -> Result<Vec<u64>, String> {
+/// helper function to convert a vec of JSON values to their expected String values.
+fn as_strings(arr: &Vec<serde_json::Value>) -> Result<Vec<String>, String> {
     arr.iter()
         .map(|v| {
-            let v_str = v
-                .as_str()
-                .ok_or_else(|| format!("raw geoid value should be string, found {}", v))?;
-            let v_u64 = v_str.parse::<u64>().map_err(|e| {
-                format!(
-                    "raw geoid value should be a string wrapping an integer, found {}. error: {}",
-                    v_str, e
-                )
-            })?;
-            Ok(v_u64)
+            v.as_str()
+                .ok_or_else(|| format!("raw geoid value should be string, found {}", v))
+                .map(String::from)
         })
-        .collect::<Result<Vec<u64>, String>>()
+        .collect::<Result<Vec<_>, String>>()
 }
 
 fn unpack_optional<T: HasGeoidString + HasGeoidType>(value: Option<T>, prefix: &str) -> String {

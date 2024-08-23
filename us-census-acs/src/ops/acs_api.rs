@@ -2,40 +2,38 @@ use crate::model::{
     acs_api_query_params::AcsApiQueryParams, acs_geoid_query::DeserializeGeoidFn,
     acs_value::AcsValue,
 };
-use futures::{stream, StreamExt};
+use futures::future;
 use itertools::Itertools;
 use reqwest::{Client, StatusCode};
 use us_census_core::model::identifier::geoid::Geoid;
 
 /// sets up a run of ACS queries.
 ///
-/// todo: this is faster than not parallel but we could probably do better if we
-/// remove the awaits and let the coroutines do the work.
+/// todo:
+///   * this is faster than not parallel but we could probably do better if we
+///     remove the awaits and let the coroutines do the work.
+///   * oh, but, we actually want a blocking wait here, because we want to know
+///     all Geoids before executing a single request to GET the TIGER/Lines data,
+///     as we want first to know the set of unique files we actually need to download
+///     to download them exactly once
+///
 pub async fn batch_run<'a>(
     client: &Client,
-    queries: &[&'a AcsApiQueryParams<'a>],
-    parallelism: usize,
-) -> Vec<(
-    &'a AcsApiQueryParams<'a>,
-    Result<Vec<(Geoid, Vec<AcsValue>)>, String>,
-)> {
-    stream::iter(queries)
-        .map(|params| async move {
-            let response = run(client, *params).await;
-            (*params, response)
-        })
-        .buffer_unordered(parallelism)
-        .collect::<Vec<_>>()
-        .await
+    queries: Vec<AcsApiQueryParams>,
+) -> Vec<Result<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>), String>> {
+    let response = queries
+        .into_iter()
+        .map(|params| async move { run(client, &params).await.map(|res| (params, res)) });
+    future::join_all(response).await
 }
 
 /// sets up a run of an ACS query.
 ///
 /// todo: this is faster than not parallel but we could probably do better if we
 /// remove the awaits and let the coroutines do the work.
-pub async fn run<'a>(
+pub async fn run(
     client: &Client,
-    query: &'a AcsApiQueryParams<'a>,
+    query: &AcsApiQueryParams,
 ) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     let url = query.build_url()?;
 
@@ -69,16 +67,13 @@ pub async fn run<'a>(
         .as_array()
         .ok_or_else(|| String::from("JSON response root must be array"))?
         .iter()
-        .map(move |row| deserialize(row, query.get_query, n_for_cols, deserialize_fn.clone()))
+        .map(move |row| deserialize(row, &query.get_query, n_for_cols, deserialize_fn.clone()))
         .collect::<Result<Vec<_>, String>>()?;
 
     Ok(result)
 }
 
-fn validate_header<'a>(
-    query: &'a AcsApiQueryParams<'a>,
-    response: &serde_json::Value,
-) -> Result<(), String> {
+fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> Result<(), String> {
     let expected = query.column_names();
 
     let header_json_opt = response
@@ -160,7 +155,7 @@ fn validate_header<'a>(
 ///
 /// ```
 ///
-pub fn deserialize<'a>(
+pub fn deserialize(
     row: &serde_json::Value,
     get_cols: &[String],
     n_for_cols: usize,

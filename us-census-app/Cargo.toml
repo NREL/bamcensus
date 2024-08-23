@@ -1,0 +1,19 @@
+[package]
+name = "us-census-app"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "application integrating all us-census capabilities with a CLI and Rust API"
+
+[dependencies]
+us-census-core = { path = "../us-census-core" }
+us-census-acs = { path = "../us-census-acs" }
+us-census-tiger = { path = "../us-census-tiger" }
+itertools = { workspace = true }
+serde = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+geo = { workspace = true }
+wkt = { workspace = true }
+tokio-test = "0.4.2"
+tokio = { workspace = true }

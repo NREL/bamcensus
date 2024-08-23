@@ -7,4 +7,11 @@ description = "Work with geospatial data in the TIGER/Lines datasets"
 
 [dependencies]
 us-census-core = { path = "../us-census-core" }
+itertools = { workspace = true }
 serde = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+shapefile = { version = "0.6.0", features = ["geo-types"] }
+geo-types = "0.7.13"
+tempfile = "3.12.0"
+zip = "2.2.0"

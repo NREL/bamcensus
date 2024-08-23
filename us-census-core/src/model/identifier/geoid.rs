@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use super::{fips, has_geoid_string::HasGeoidString};
+use super::{fips, geoid_type::GeoidType, has_geoid_string::HasGeoidString};
 use std::fmt::Display;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, Hash)]
 pub enum Geoid {
     State(fips::State),
     County(fips::State, fips::County),
@@ -23,6 +23,18 @@ pub enum Geoid {
 // - Geoid methods to unpack/pack between types (Geoid::County.to_state())
 
 impl Geoid {
+    pub fn geoid_type(&self) -> GeoidType {
+        match self {
+            Geoid::State(_) => GeoidType::State,
+            Geoid::County(_, _) => GeoidType::County,
+            Geoid::CountySubdivision(_, _, _) => GeoidType::CountySubdivision,
+            Geoid::Place(_, _) => GeoidType::Place,
+            Geoid::CensusTract(_, _, _) => GeoidType::CensusTract,
+            Geoid::BlockGroup(_, _, _, _) => GeoidType::BlockGroup,
+            Geoid::Block(_, _, _, _) => GeoidType::Block,
+        }
+    }
+
     pub fn variant_name(&self) -> String {
         match self {
             Geoid::State(_) => String::from("State"),

@@ -1,6 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["us-census-core", "us-census-acs", "us-census-tiger"]
+members = [
+  "us-census-core",
+  "us-census-acs",
+  "us-census-tiger",
+  "us-census-app",
+]
 
 [workspace.dependencies]
 serde = { version = "1.0.160", features = ["derive"] }
