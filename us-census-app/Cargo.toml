@@ -11,9 +11,11 @@ us-census-acs = { path = "../us-census-acs" }
 us-census-tiger = { path = "../us-census-tiger" }
 itertools = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true }
 reqwest = { workspace = true }
 futures = { workspace = true }
 geo = { workspace = true }
 wkt = { workspace = true }
 tokio-test = "0.4.2"
 tokio = { workspace = true }
+csv = { workspace = true }

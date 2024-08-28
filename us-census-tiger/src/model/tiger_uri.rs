@@ -17,14 +17,22 @@ pub struct TigerUri {
     /// if file_scope is None, then the scope is "national", as in, there is one
     /// file for all values for this year.
     pub file_scope: Option<GeoidType>,
+    /// the name of GEOID columns may vary based on the TIGER year.
+    pub geoid_column_name: String,
 }
 
 impl TigerUri {
-    pub fn new(uri: String, geoid_type: GeoidType, file_scope: Option<GeoidType>) -> TigerUri {
+    pub fn new(
+        uri: String,
+        geoid_type: GeoidType,
+        file_scope: Option<GeoidType>,
+        geoid_column_name: String,
+    ) -> TigerUri {
         TigerUri {
             uri,
             geoid_type,
             file_scope,
+            geoid_column_name,
         }
     }
 }
@@ -34,6 +42,6 @@ impl PartialEq for TigerUri {
         self.uri == other.uri
             && self.geoid_type == other.geoid_type
             && self.file_scope == other.file_scope
+            && self.geoid_column_name == other.geoid_column_name
     }
-    //
 }

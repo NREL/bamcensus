@@ -97,6 +97,7 @@ pub async fn run(
         .into_iter()
         .flatten()
         .collect::<HashMap<Geoid, Geometry>>();
+
     // join responses by GEOID
     let (acs_tiger_rows_nested, join_errors): (Vec<Vec<AcsTigerRow>>, Vec<String>) = acs_rows
         .into_iter()

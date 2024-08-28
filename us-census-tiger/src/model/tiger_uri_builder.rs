@@ -228,7 +228,8 @@ impl TigerUriBuilder {
         let prefix = self.base_url();
         let uri = format!("{}/{}", prefix, suffix);
         let geoid_type = geoid.geoid_type();
-        let tiger_uri = TigerUri::new(uri, geoid_type, file_scope);
+        let geoid_column_name = self.geoid_shapefile_colname();
+        let tiger_uri = TigerUri::new(uri, geoid_type, file_scope, geoid_column_name);
         Ok(tiger_uri)
     }
 

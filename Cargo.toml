@@ -23,6 +23,6 @@ flate2 = "1.0"
 geojson = { version = "0.24.1" }
 thiserror = "1.0.0"
 rayon = "1.10.0"
-reqwest = { version = "0.12", features = ["json"] }
+reqwest = { version = "0.12.7", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 futures = { version = "0.3.30" }

@@ -67,6 +67,7 @@ pub async fn run(
         .as_array()
         .ok_or_else(|| String::from("JSON response root must be array"))?
         .iter()
+        .skip(1) // skip the header!
         .map(move |row| deserialize(row, &query.get_query, n_for_cols, deserialize_fn.clone()))
         .collect::<Result<Vec<_>, String>>()?;
 

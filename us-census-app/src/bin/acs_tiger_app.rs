@@ -1,5 +1,6 @@
 use us_census_acs::model::acs_type::AcsType;
 use us_census_app::acs_tiger;
+use us_census_app::model::acs_tiger_output_row::AcsTigerOutputRow;
 use us_census_core::model::identifier::fips;
 use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
@@ -29,10 +30,10 @@ async fn main() {
         res.tiger_errors.len(),
         res.join_errors.len(),
     );
-    println!("RESULTS");
-    for row in res.join_dataset.into_iter() {
-        println!("{}", row)
-    }
+    // println!("RESULTS");
+    // for row in res.join_dataset.into_iter() {
+    //     println!("{}", row)
+    // }
     println!("ACS ERRORS");
     for row in res.acs_errors.into_iter() {
         println!("{}", row)
@@ -44,6 +45,11 @@ async fn main() {
     println!("JOIN ERRORS");
     for row in res.join_errors.into_iter() {
         println!("{}", row)
+    }
+    let mut writer = csv::WriterBuilder::new().from_path("output.csv").unwrap();
+    for row in res.join_dataset {
+        let out_row = AcsTigerOutputRow::from(row);
+        writer.serialize(out_row).unwrap();
     }
     ()
 }
