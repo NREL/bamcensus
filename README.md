@@ -1,5 +1,7 @@
 # US Census
-A tool for downloading US Census datasets written in Rust. This project is in **alpha** phase of development and not intended for use.
+A tool for downloading US Census datasets written in Rust. 
+
+As of August 29th, 2024, this project is moving into **beta** phase of development.
 
 ### Features and Design Considerations
 
