@@ -111,11 +111,10 @@ fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> R
 /// row is a header list, and each subsequent row is a set of values which
 /// appear in the header ordering.
 ///
-/// ```ignore
+/// ```json
 /// [
-///     ["get_column_name_1".."get_column_name_n","for_column_name_1".."for_column_name_n"],
-///     [get_value_1..get_value_n,for_value_1..for_value_n],
-///     ...
+///     ["get_column_name_1","get_column_name_n","for_column_name_1","for_column_name_n"],
+///     ["get_value_1","get_value_n","for_value_1","for_value_n"],
 /// ]
 /// ```
 ///
@@ -144,7 +143,7 @@ fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> R
 /// let v: serde_json::Value = serde_json::from_str(data).unwrap();
 /// let row = v.as_array().unwrap().get(1).unwrap();
 /// let query = AcsGeoidQuery::CountySubdivision(
-///     Some(fips::State(48)),
+///     fips::State(48),
 ///     None,
 ///     None,
 /// );

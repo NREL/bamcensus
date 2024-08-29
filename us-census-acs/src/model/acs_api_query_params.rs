@@ -42,12 +42,11 @@ impl AcsApiQueryParams {
     /// use us_census_acs::model::{
     ///     acs_geoid_query::AcsGeoidQuery,
     ///     acs_type::AcsType,
-    ///     acs_year::AcsYear,
     ///     acs_api_query_params::AcsApiQueryParams
     /// };
     ///
     /// let base_url = String::from("https://api.census.gov/data");
-    /// let acs_year: AcsYear = AcsYear::Acs2022;
+    /// let acs_year: u64 = 2022;
     /// let acs_type: AcsType = AcsType::FiveYear;
     /// let queries = vec![String::from("NAME"), String::from("B01001_001E")];
     /// let acs_geoid_query: AcsGeoidQuery = AcsGeoidQuery::new(None, Some(GeoidType::State)).unwrap();
@@ -63,12 +62,11 @@ impl AcsApiQueryParams {
     /// use us_census_acs::model::{
     ///     acs_geoid_query::AcsGeoidQuery,
     ///     acs_type::AcsType,
-    ///     acs_year::AcsYear,
     ///     acs_api_query_params::AcsApiQueryParams
     /// };
     ///
     /// let base_url = String::from("https://api.census.gov/data");
-    /// let acs_year: AcsYear = AcsYear::Acs2022;
+    /// let acs_year: u64 = 2022;
     /// let acs_type: AcsType = AcsType::FiveYear;
     /// let queries = vec![String::from("NAME"), String::from("B01001_001E")];
     /// let acs_geoid_query: AcsGeoidQuery = AcsGeoidQuery::new(Some(Geoid::State(fips::State(08))), Some(GeoidType::County)).unwrap();

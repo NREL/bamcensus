@@ -1,4 +1,4 @@
-use super::tiger_uri::TigerResource;
+use super::tiger_resource::TigerResource;
 use std::{collections::HashSet, fmt::Display};
 use us_census_core::model::identifier::{
     geoid::Geoid, geoid_type::GeoidType, has_geoid_string::HasGeoidString,
@@ -79,7 +79,7 @@ impl TigerUriBuilder {
     /// ```rust
     /// use us_census_tiger::model::{
     ///     tiger_uri_builder::TigerUriBuilder,
-    ///     tiger_uri::TigerUri,
+    ///     tiger_resource::TigerResource,
     /// };
     /// use us_census_core::model::identifier::{fips, geoid::Geoid, geoid_type::GeoidType};
     ///
@@ -95,10 +95,15 @@ impl TigerUriBuilder {
     ///     TigerUriBuilder::TIGER_BASE_URL
     /// );
     /// let expected_file_scope = GeoidType::State;
-    /// let expected = TigerUri::new(expected_uri, Some(expected_file_scope));
+    /// let expected = TigerResource::new(
+    ///     expected_uri,
+    ///     GeoidType::CountySubdivision,
+    ///     Some(expected_file_scope),
+    ///     String::from("GEOID"),
+    /// );
     /// assert_eq!(uri, expected);
     /// ```
-    fn create_uri(&self, geoid: &Geoid) -> Result<TigerResource, String> {
+    pub fn create_uri(&self, geoid: &Geoid) -> Result<TigerResource, String> {
         let suffix: String = match (self, geoid) {
             //// ~~~~ 2010 ~~~~ ////
             // 2010 has two versions, one in 2000 format, one in 2010 format

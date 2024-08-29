@@ -1,4 +1,4 @@
-use crate::model::tiger_uri::TigerResource;
+use crate::model::tiger_resource::TigerResource;
 use crate::model::tiger_uri_builder::TigerUriBuilder;
 use futures::StreamExt;
 use geo_types::Geometry;

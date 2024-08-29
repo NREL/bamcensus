@@ -40,9 +40,9 @@ impl AcsGeoidQuery {
     /// use us_census_acs::model::acs_geoid_query::AcsGeoidQuery;;
     ///
     /// let geoid = Geoid::County(fips::State(8), fips::County(1));
-    /// let query = AcsGeoidQuery::new(Some(&geoid), None).unwrap();
+    /// let query = AcsGeoidQuery::new(Some(geoid), None).unwrap();
     /// let key = query.to_query_key();
-    /// assert_eq!(key, String::from("state=08&county=001"));
+    /// assert_eq!(key, String::from("&for=county:001&in=state:08"));
     /// ```
     ///
     /// some combinations simply append a wildcard one level below the geoid, for example,
@@ -53,24 +53,23 @@ impl AcsGeoidQuery {
     ///
     /// let geoid = Geoid::State(fips::State(8));
     /// let wildcard = GeoidType::County;
-    /// let query = AcsGeoidQuery::new(Some(&geoid), Some(&wildcard)).unwrap();
+    /// let query = AcsGeoidQuery::new(Some(geoid), Some(wildcard)).unwrap();
     /// let key = query.to_query_key();
-    /// assert_eq!(key, String::from("state=08&county=*"));
+    /// assert_eq!(key, String::from("&for=county:*&in=state:08"));
     /// ```
     ///
-    /// some interpolate the wildcard into a geoid, which is probably never useful, such as
-    /// replacing the county in state=08&county=001&tract=000001 with county=*. this effectively
-    /// means "i'm interested in any tracts numbered 000001 in CO in any county"... why?
-
+    /// some interpolate the wildcard into a geoid in ways that do not require being
+    /// reported in the query, such as adding a wildcard to a tract query. in this case,
+    /// the query simply drops the county wildcard, as it is implied.
     /// ```rust
     /// use us_census_core::model::identifier::{fips, geoid::Geoid, geoid_type::GeoidType};
     /// use us_census_acs::model::acs_geoid_query::AcsGeoidQuery;;
     ///
     /// let geoid = Geoid::CensusTract(fips::State(8), fips::County(1), fips::CensusTract(1));
     /// let wildcard = GeoidType::County;
-    /// let query = AcsGeoidQuery::new(Some(&geoid), Some(&wildcard)).unwrap();
+    /// let query = AcsGeoidQuery::new(Some(geoid), Some(wildcard)).unwrap();
     /// let key = query.to_query_key();
-    /// assert_eq!(key, String::from("state=08&county=*&tract=000001"));
+    /// assert_eq!(key, String::from("&for=tract:000001&in=state:08"));
     /// ```
     ///
     /// # Returns
@@ -246,7 +245,7 @@ impl AcsGeoidQuery {
             G::County(state, county) => match (state, county) {
                 (None, None) => String::from("&for=county:*"),
                 (None, Some(c)) => format!("&for=county:{}", c.geoid_string()),
-                (Some(s), None) => format!("&for=county:*&in={}", s.geoid_string()),
+                (Some(s), None) => format!("&for=county:*&in=state:{}", s.geoid_string()),
                 (Some(s), Some(c)) => format!(
                     "&for=county:{}&in=state:{}",
                     c.geoid_string(),
@@ -436,24 +435,4 @@ fn as_strings(arr: &Vec<serde_json::Value>) -> Result<Vec<String>, String> {
                 .map(String::from)
         })
         .collect::<Result<Vec<_>, String>>()
-}
-
-fn unpack_optional<T: HasGeoidString + HasGeoidType>(value: Option<T>, prefix: &str) -> String {
-    match value {
-        Some(v) => {
-            format!(
-                "{}{}:{}",
-                prefix,
-                v.geoid_type().to_string(),
-                v.geoid_string()
-            )
-        }
-        None => String::from(""),
-    }
-}
-
-/// helper to transform a "None" GeoidString'd FIPS identifier into a wildcard ("*")
-/// see [`fips`] for possible (expected) values of type GeoidString
-fn value_or_wildcard<T: HasGeoidString>(value: Option<T>) -> String {
-    value.map_or_else(|| String::from("*"), |v| v.geoid_string())
 }
