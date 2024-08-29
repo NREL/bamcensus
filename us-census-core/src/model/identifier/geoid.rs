@@ -70,24 +70,24 @@ impl Geoid {
     pub fn to_state(&self) -> Geoid {
         match self {
             Geoid::State(_) => self.clone(),
-            Geoid::County(st, _) => Geoid::State(st.clone()),
-            Geoid::CountySubdivision(st, _, _) => Geoid::State(st.clone()),
-            Geoid::Place(st, _) => Geoid::State(st.clone()),
-            Geoid::CensusTract(st, _, _) => Geoid::State(st.clone()),
-            Geoid::BlockGroup(st, _, _, _) => Geoid::State(st.clone()),
-            Geoid::Block(st, _, _, _) => Geoid::State(st.clone()),
+            Geoid::County(st, _) => Geoid::State(*st),
+            Geoid::CountySubdivision(st, _, _) => Geoid::State(*st),
+            Geoid::Place(st, _) => Geoid::State(*st),
+            Geoid::CensusTract(st, _, _) => Geoid::State(*st),
+            Geoid::BlockGroup(st, _, _, _) => Geoid::State(*st),
+            Geoid::Block(st, _, _, _) => Geoid::State(*st),
         }
     }
 
     pub fn to_county(&self) -> Result<Geoid, String> {
         match self {
             Geoid::State(_) => Err(String::from("state geoid does not contain a county geoid")),
-            Geoid::County(st, ct) => Ok(Geoid::County(st.clone(), ct.clone())),
-            Geoid::CountySubdivision(st, ct, _) => Ok(Geoid::County(st.clone(), ct.clone())),
+            Geoid::County(st, ct) => Ok(Geoid::County(*st, *ct)),
+            Geoid::CountySubdivision(st, ct, _) => Ok(Geoid::County(*st, *ct)),
             Geoid::Place(_, _) => Err(String::from("place geoid does not contain a county geoid")),
-            Geoid::CensusTract(st, ct, _) => Ok(Geoid::County(st.clone(), ct.clone())),
-            Geoid::BlockGroup(st, ct, _, _) => Ok(Geoid::County(st.clone(), ct.clone())),
-            Geoid::Block(st, ct, _, _) => Ok(Geoid::County(st.clone(), ct.clone())),
+            Geoid::CensusTract(st, ct, _) => Ok(Geoid::County(*st, *ct)),
+            Geoid::BlockGroup(st, ct, _, _) => Ok(Geoid::County(*st, *ct)),
+            Geoid::Block(st, ct, _, _) => Ok(Geoid::County(*st, *ct)),
         }
     }
 
@@ -106,13 +106,13 @@ impl Geoid {
                 "place geoid does not contain a census tract geoid",
             )),
             Geoid::CensusTract(st, ct, tr) => {
-                Ok(Geoid::CensusTract(st.clone(), ct.clone(), tr.clone()))
+                Ok(Geoid::CensusTract(*st, *ct, *tr))
             }
             Geoid::BlockGroup(st, ct, tr, _) => {
-                Ok(Geoid::CensusTract(st.clone(), ct.clone(), tr.clone()))
+                Ok(Geoid::CensusTract(*st, *ct, *tr))
             }
             Geoid::Block(st, ct, tr, _) => {
-                Ok(Geoid::CensusTract(st.clone(), ct.clone(), tr.clone()))
+                Ok(Geoid::CensusTract(*st, *ct, *tr))
             }
         }
     }

@@ -63,7 +63,7 @@ pub async fn run<'a>(
                         let (shape, record) = row.map_err(|e| {
                             format!("failure reading shapefile shape/record: {}", e)
                         })?;
-                        into_geoid_and_geometry(shape, record, &lookup, &tiger)
+                        into_geoid_and_geometry(shape, record, lookup, &tiger)
                     })
                     .collect::<Result<Vec<_>, String>>()?;
                 let result = read_result.into_iter().flatten().collect_vec();

@@ -57,9 +57,9 @@ pub enum StateCode {
     Wyoming,
 }
 
-impl Into<State> for StateCode {
-    fn into(self) -> State {
-        match self {
+impl From<StateCode> for State {
+    fn from(val: StateCode) -> Self {
+        match val {
             StateCode::Alabama => State(01),
             StateCode::Alaska => State(02),
             StateCode::Arizona => State(04),

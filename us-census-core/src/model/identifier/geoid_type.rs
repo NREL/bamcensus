@@ -38,7 +38,7 @@ impl GeoidType {
                         value
                     ))
                 } else {
-                    self.geoid_from_slice_of_strings(&vec![value.to_string()])
+                    self.geoid_from_slice_of_strings(&[value.to_string()])
                 }
             }
             GeoidType::County => {

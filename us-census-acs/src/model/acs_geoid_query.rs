@@ -1,7 +1,6 @@
 use std::rc::Rc;
 use us_census_core::model::identifier::{
     fips, geoid::Geoid, geoid_type::GeoidType, has_geoid_string::HasGeoidString,
-    has_geoid_type::HasGeoidType,
 };
 
 pub type DeserializeGeoidFn = Rc<dyn Fn(Vec<serde_json::Value>) -> Result<Geoid, String>>;

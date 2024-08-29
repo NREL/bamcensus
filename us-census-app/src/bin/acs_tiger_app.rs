@@ -51,5 +51,5 @@ async fn main() {
         let out_row = AcsTigerOutputRow::from(row);
         writer.serialize(out_row).unwrap();
     }
-    ()
+    
 }

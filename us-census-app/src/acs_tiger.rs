@@ -83,7 +83,7 @@ pub async fn run(
         .iter()
         .flat_map(|(_, rows)| rows.iter().map(|(geoid, _)| geoid))
         .collect_vec();
-    let tiger_response = tiger_api::run(&client, &tiger_uri_builder, &geoids).await?;
+    let tiger_response = tiger_api::run(&client, &tiger_uri_builder, geoids).await?;
     let (tiger_rows_nested, tiger_errors): (Vec<Vec<(Geoid, Geometry<f64>)>>, Vec<String>) =
         tiger_response.into_iter().partition_result();
     let tiger_lookup = tiger_rows_nested
