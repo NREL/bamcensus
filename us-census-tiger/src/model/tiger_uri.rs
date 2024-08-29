@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use us_census_core::model::identifier::geoid_type::GeoidType;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash)]
-pub struct TigerUri {
+pub struct TigerResource {
     /// complete URI to a file location in the TIGER/LINES HTTP website
     pub uri: String,
     /// the geoid type of the file contents. each row should have a column
@@ -21,14 +21,14 @@ pub struct TigerUri {
     pub geoid_column_name: String,
 }
 
-impl TigerUri {
+impl TigerResource {
     pub fn new(
         uri: String,
         geoid_type: GeoidType,
         file_scope: Option<GeoidType>,
         geoid_column_name: String,
-    ) -> TigerUri {
-        TigerUri {
+    ) -> TigerResource {
+        TigerResource {
             uri,
             geoid_type,
             file_scope,
@@ -37,7 +37,7 @@ impl TigerUri {
     }
 }
 
-impl PartialEq for TigerUri {
+impl PartialEq for TigerResource {
     fn eq(&self, other: &Self) -> bool {
         self.uri == other.uri
             && self.geoid_type == other.geoid_type

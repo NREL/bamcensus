@@ -7,11 +7,11 @@ use us_census_core::model::identifier::geoid_type::GeoidType;
 
 #[tokio::main]
 async fn main() {
-    let year = 2020;
+    let year = 2010;
     let acs_type = AcsType::FiveYear;
-    let acs_get_query = vec![String::from("NAME"), String::from("B01001_001E")];
+    let acs_get_query = vec![String::from("B01001_001E")];
     let geoid = Geoid::State(fips::State(08));
-    let wildcard = GeoidType::County;
+    let wildcard = GeoidType::CensusTract;
 
     let res = acs_tiger::run(
         year,

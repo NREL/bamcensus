@@ -1,9 +1,14 @@
-use super::tiger_uri::TigerUri;
+use super::tiger_uri::TigerResource;
 use std::{collections::HashSet, fmt::Display};
 use us_census_core::model::identifier::{
     geoid::Geoid, geoid_type::GeoidType, has_geoid_string::HasGeoidString,
 };
 
+/// builds URIs for TIGER/Lines Shapefile resources.
+///
+/// support for a given year is based on understanding what the file naming
+/// convention is for that year, how the data is organized, what the file
+/// schema is.
 pub enum TigerUriBuilder {
     // /// https://www2.census.gov/geo/tiger/TIGER2002/01_al/tgr01001.zip
     // Tiger2002,
@@ -34,7 +39,7 @@ impl TigerUriBuilder {
 
     pub fn new(year: u64) -> Result<TigerUriBuilder, String> {
         match year {
-            y if 2010 == y => Ok(TigerUriBuilder::Tiger2020Format { year }),
+            y if 2010 == y => Ok(TigerUriBuilder::Tiger2010),
             y if 2010 < y && y < 2020 => Ok(TigerUriBuilder::Tiger2010Format { year }),
             y if 2020 <= y => Ok(TigerUriBuilder::Tiger2020Format { year }),
             _ => Err(format!("unsupported TIGER year {}", year)),
@@ -44,8 +49,8 @@ impl TigerUriBuilder {
     /// batch operation that only returns the unique set of TigerUris required to cover
     /// the provided set of Geoids. this is the public API since we should only be
     /// downloading each file once. for details on implementation, see `[create_uri]`.
-    pub fn create_uris(&self, geoids: &[&Geoid]) -> Result<Vec<TigerUri>, String> {
-        let mut unique_uris: HashSet<TigerUri> = HashSet::new();
+    pub fn create_uris(&self, geoids: &[&Geoid]) -> Result<Vec<TigerResource>, String> {
+        let mut unique_uris: HashSet<TigerResource> = HashSet::new();
         for geoid in geoids {
             let uri = self.create_uri(geoid)?;
             unique_uris.insert(uri);
@@ -57,8 +62,7 @@ impl TigerUriBuilder {
     pub fn geoid_shapefile_colname(&self) -> String {
         match self {
             TigerUriBuilder::Tiger2010 => String::from("GEOID10"),
-            TigerUriBuilder::Tiger2010Format { year: _ } => String::from("GEOID10"),
-            TigerUriBuilder::Tiger2020Format { year: _ } => String::from("GEOID"),
+            _ => String::from("GEOID"),
         }
     }
 
@@ -94,7 +98,7 @@ impl TigerUriBuilder {
     /// let expected = TigerUri::new(expected_uri, Some(expected_file_scope));
     /// assert_eq!(uri, expected);
     /// ```
-    fn create_uri(&self, geoid: &Geoid) -> Result<TigerUri, String> {
+    fn create_uri(&self, geoid: &Geoid) -> Result<TigerResource, String> {
         let suffix: String = match (self, geoid) {
             //// ~~~~ 2010 ~~~~ ////
             // 2010 has two versions, one in 2000 format, one in 2010 format
@@ -229,7 +233,7 @@ impl TigerUriBuilder {
         let uri = format!("{}/{}", prefix, suffix);
         let geoid_type = geoid.geoid_type();
         let geoid_column_name = self.geoid_shapefile_colname();
-        let tiger_uri = TigerUri::new(uri, geoid_type, file_scope, geoid_column_name);
+        let tiger_uri = TigerResource::new(uri, geoid_type, file_scope, geoid_column_name);
         Ok(tiger_uri)
     }
 

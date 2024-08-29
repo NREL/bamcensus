@@ -1,4 +1,4 @@
-use crate::model::{acs_geoid_query::AcsGeoidQuery, acs_type::AcsType, acs_year::AcsYear};
+use crate::model::{acs_geoid_query::AcsGeoidQuery, acs_type::AcsType};
 use itertools::Itertools;
 
 pub struct AcsApiQueryParams {
@@ -13,16 +13,15 @@ impl AcsApiQueryParams {
 
     pub fn new(
         base_url: Option<String>,
-        acs_year: AcsYear,
+        year: u64,
         acs_type: AcsType,
         get_query: Vec<String>,
         for_query: AcsGeoidQuery,
         api_token: Option<String>,
     ) -> AcsApiQueryParams {
         let base = base_url.unwrap_or(String::from(AcsApiQueryParams::BASE_URL));
-        let year_s = acs_year.to_directory_name();
         let type_s = acs_type.to_directory_name();
-        let url = format!("{}/{}/acs/{}", base, year_s, type_s);
+        let url = format!("{}/{}/acs/{}", base, year, type_s);
         AcsApiQueryParams {
             url,
             get_query,

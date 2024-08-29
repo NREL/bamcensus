@@ -8,7 +8,6 @@ use us_census_acs::model::acs_api_query_params::AcsApiQueryParams;
 use us_census_acs::model::acs_geoid_query::AcsGeoidQuery;
 use us_census_acs::model::acs_type::AcsType;
 use us_census_acs::model::acs_value::AcsValue;
-use us_census_acs::model::acs_year::AcsYear;
 use us_census_acs::ops::acs_api;
 use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
@@ -68,16 +67,10 @@ pub async fn run(
     let client: Client = Client::new();
 
     // execute ACS API queries
-    let query = AcsGeoidQuery::new(geoid, wildcard)?;
-    let acs_year = AcsYear::try_from(year)?;
-    let query_params = AcsApiQueryParams::new(
-        None,
-        acs_year,
-        acs_type,
-        acs_get_query,
-        query,
-        acs_api_token,
-    );
+    let query: AcsGeoidQuery = AcsGeoidQuery::new(geoid, wildcard)?;
+    // let acs_year = AcsYear::try_from(year)?;
+    let query_params =
+        AcsApiQueryParams::new(None, year, acs_type, acs_get_query, query, acs_api_token);
     let acs_response = acs_api::batch_run(&client, vec![query_params]).await;
     let (acs_rows, acs_errors): (
         Vec<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>)>,

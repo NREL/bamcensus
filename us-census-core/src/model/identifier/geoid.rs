@@ -19,6 +19,26 @@ pub enum Geoid {
     Block(fips::State, fips::County, fips::CensusTract, fips::Block),
 }
 
+impl TryFrom<String> for Geoid {
+    type Error = String;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.len() {
+            2 => GeoidType::State.geoid_from_string(&value),
+            5 => GeoidType::County.geoid_from_string(&value),
+            7 => GeoidType::Place.geoid_from_string(&value),
+            10 => GeoidType::CountySubdivision.geoid_from_string(&value),
+            11 => GeoidType::CensusTract.geoid_from_string(&value),
+            12 => GeoidType::BlockGroup.geoid_from_string(&value),
+            x if x == 15 || x == 16 => GeoidType::Block.geoid_from_string(&value),
+            x => Err(format!(
+                "unsupported GEOID type with lenght {}: {}",
+                x, value
+            )),
+        }
+    }
+}
+
 // todo:
 // - Geoid methods to unpack/pack between types (Geoid::County.to_state())
 
