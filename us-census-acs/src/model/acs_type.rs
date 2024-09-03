@@ -1,6 +1,7 @@
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, ValueEnum, Clone, Copy, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum AcsType {
     OneYear,

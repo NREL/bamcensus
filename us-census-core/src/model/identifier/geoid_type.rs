@@ -1,8 +1,9 @@
 use super::{fips, geoid::Geoid};
+use clap::ValueEnum;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, ValueEnum, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum GeoidType {
     State,
@@ -30,9 +31,10 @@ impl ToString for GeoidType {
 
 impl GeoidType {
     pub fn geoid_from_string(&self, value: &String) -> Result<Geoid, String> {
+        let value_len = value.len();
         match self {
             GeoidType::State => {
-                if value.len() != 2 {
+                if value_len != 2 {
                     Err(format!(
                         "for state geoid, expected 2-digit value, found: {}",
                         value
@@ -42,7 +44,7 @@ impl GeoidType {
                 }
             }
             GeoidType::County => {
-                if value.len() != 5 {
+                if value_len != 5 {
                     Err(format!(
                         "for county geoid, expected 5-digit value, found: {}",
                         value
@@ -55,7 +57,7 @@ impl GeoidType {
                 }
             }
             GeoidType::CountySubdivision => {
-                if value.len() != 10 {
+                if value_len != 10 {
                     Err(format!(
                         "for county subdivision geoid, expected 10-digit value, found: {}",
                         value
@@ -69,7 +71,7 @@ impl GeoidType {
                 }
             }
             GeoidType::Place => {
-                if value.len() != 7 {
+                if value_len != 7 {
                     Err(format!(
                         "for place geoid, expected 7-digit value, found: {}",
                         value
@@ -82,7 +84,7 @@ impl GeoidType {
                 }
             }
             GeoidType::CensusTract => {
-                if value.len() != 11 {
+                if value_len != 11 {
                     Err(format!(
                         "for census tract geoid, expected 11-digit value, found: {}",
                         value
@@ -96,7 +98,7 @@ impl GeoidType {
                 }
             }
             GeoidType::BlockGroup => {
-                if value.len() != 12 {
+                if value_len != 12 {
                     Err(format!(
                         "for block group geoid, expected 12-digit value, found: {}",
                         value
@@ -111,10 +113,10 @@ impl GeoidType {
                 }
             }
             GeoidType::Block => {
-                if value.len() == 15 || value.len() != 16 {
+                if value_len != 15 && value_len != 16 {
                     Err(format!(
-                        "for block geoid, expected 15 or 16-digit value, found: {}",
-                        value
+                        "for block geoid, expected 15 or 16-digit value, found: {} with length {}",
+                        value, value_len
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[
@@ -194,10 +196,12 @@ impl GeoidType {
             }
             GeoidType::BlockGroup => {
                 let arr = as_usizes(vals)?;
-                if arr.len() != 4 {
+                let arr_len = arr.len();
+                if arr_len != 4 {
                     Err(format!(
-                        "for block group-level query, expected 4 geoid columns, found: {}",
-                        arr.into_iter().join(",")
+                        "for block group-level query, expected 4 geoid columns, found: {} with length {}",
+                        arr.into_iter().join(","),
+                        arr_len
                     ))
                 } else {
                     Ok(Geoid::BlockGroup(
@@ -210,9 +214,9 @@ impl GeoidType {
             }
             GeoidType::Block => {
                 let arr = as_usizes(vals)?;
-                if arr.len() != 5 {
+                if arr.len() != 4 {
                     Err(format!(
-                        "for block group-level query, expected 4 geoid columns, found: {}",
+                        "for block-level query, expected 4 geoid columns, found: {}",
                         arr.into_iter().join(",")
                     ))
                 } else {

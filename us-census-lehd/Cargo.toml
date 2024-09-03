@@ -6,9 +6,14 @@ readme = "README.md"
 description = "Work with Longitudinal Employer-Household Dynamics (LEHD) datasets"
 
 [dependencies]
+us-census-core = { path = "../us-census-core" }
 tokio = { workspace = true }
 rayon = { workspace = true }
 clap = { workspace = true }
 env_logger = { workspace = true }
 itertools = { workspace = true }
 serde = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+csv = { workplace = true }
+flate2 = { workspace = true }

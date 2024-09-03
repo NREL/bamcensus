@@ -1,0 +1,14 @@
+[package]
+name = "us-census-api-py"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+us-census-core = { path = "../us-census-core" }
+us-census-app = { path = "../us-census-app" }
+pyo3 = { version = "0.22.2", features = ["extension-module", "serde"] }
+serde_json = { workspace = true }
+
+[lib]
+name = "routee_compass_py"
+crate-type = ["cdylib"]

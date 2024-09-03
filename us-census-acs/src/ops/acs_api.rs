@@ -42,36 +42,42 @@ pub async fn run(
         .send()
         .await
         .map_err(|e| format!("failure calling {}: {}", url, e))?;
-    if response.status().is_client_error() {
-        // todo: handle bad request
+    let status_code = response.status();
+    match response.error_for_status() {
+        Err(e) => {
+            return Err(format!(
+                "API request failed with error code {}. error: {}",
+                status_code, e
+            ))
+        }
+        Ok(r) if r.status() == StatusCode::NO_CONTENT => {
+            return Err(format!("requested URL {} has no content", url));
+        }
+        Ok(res) => {
+            let json = res
+                .json::<serde_json::Value>()
+                .await
+                .map_err(|e| format!("failure parsing JSON for response from {}: {}", url, e))?;
+
+            // confirm the correct column names in the response arrays before deserializing
+            validate_header(query, &json)?;
+
+            let deserialize_fn = query.for_query.build_deserialize_geoid_fn();
+            let n_for_cols = query.for_query.response_column_count();
+
+            let result = json
+                .as_array()
+                .ok_or_else(|| String::from("JSON response root must be array"))?
+                .iter()
+                .skip(1) // skip the header!
+                .map(move |row| {
+                    deserialize(row, &query.get_query, n_for_cols, deserialize_fn.clone())
+                })
+                .collect::<Result<Vec<_>, String>>()?;
+
+            Ok(result)
+        }
     }
-    if response.status().is_server_error() {
-        // todo: handle service failure
-    }
-    if response.status() == StatusCode::NO_CONTENT {
-        // todo: handle request for non-existant data
-    }
-
-    let json = response
-        .json::<serde_json::Value>()
-        .await
-        .map_err(|e| format!("failure parsing JSON for response from {}: {}", url, e))?;
-
-    // confirm the correct column names in the response arrays before deserializing
-    validate_header(query, &json)?;
-
-    let deserialize_fn = query.for_query.build_deserialize_geoid_fn();
-    let n_for_cols = query.for_query.response_column_count();
-
-    let result = json
-        .as_array()
-        .ok_or_else(|| String::from("JSON response root must be array"))?
-        .iter()
-        .skip(1) // skip the header!
-        .map(move |row| deserialize(row, &query.get_query, n_for_cols, deserialize_fn.clone()))
-        .collect::<Result<Vec<_>, String>>()?;
-
-    Ok(result)
 }
 
 fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> Result<(), String> {
