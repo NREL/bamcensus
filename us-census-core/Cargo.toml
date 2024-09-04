@@ -10,4 +10,4 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 itertools = { workspace = true }
 clap = { workspace = true }
-derive_more = { workplace = true, features = ["sum"] }
+derive_more = { workspace = true }
