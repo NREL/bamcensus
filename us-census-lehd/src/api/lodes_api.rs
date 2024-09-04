@@ -4,7 +4,7 @@ use crate::{
         wac_row::WacRow, wac_value::WacValue, LodesDataset, LodesEdition, LodesJobType, OdPart,
         WacSegment, WorkplaceSegment,
     },
-    ops::lodes_ops,
+    ops::lodes_agg,
 };
 use csv::ReaderBuilder;
 use flate2::read::GzDecoder;
@@ -36,7 +36,7 @@ pub fn create_queries(
                 }
                 LodesDataset::WAC => lodes_api::create_wac_filename(sc, &segment, &job_type, year),
             };
-            
+
             lodes_edition.create_url(sc, lodes_dataset, &filename)
         })
         .collect_vec();
@@ -89,7 +89,7 @@ pub async fn run(
         .into_iter()
         .flatten()
         .collect_vec();
-    let aggregated_rows = lodes_ops::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?;
+    let aggregated_rows = lodes_agg::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?;
     Ok(aggregated_rows)
 }
 

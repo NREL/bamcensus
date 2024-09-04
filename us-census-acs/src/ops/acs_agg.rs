@@ -1,5 +1,6 @@
-use crate::model::lodes::wac_value::WacValue;
+use crate::model::AcsValue;
 use itertools::Itertools;
+use serde_json::json;
 use us_census_core::{
     model::identifier::{Geoid, GeoidType},
     ops::agg::aggregation_function::NumericAggregation,
@@ -13,50 +14,46 @@ use us_census_core::{
 /// ```rust
 /// use us_census_core::model::identifier::{Geoid, GeoidType, fips};
 /// use us_census_core::ops::agg::NumericAggregation;
-/// use us_census_lehd::model::lodes::{WacSegment, WacValue};
-/// use us_census_lehd::ops::lodes_ops;
+/// use us_census_acs::model::AcsValue;
+/// use us_census_acs::ops::acs_agg;
+/// use serde_json::json;
 ///
 /// // 2020 populations by county (WAC Segment C000) for two counties in Colorado.
 /// let rows = vec![
 ///   (
 ///     Geoid::County(fips::State(08), fips::County(213)),
-///     vec![WacValue::new(WacSegment::C000, 106497.0)]
+///     vec![AcsValue::new(String::from("B01001_001E"), json![100000.0])]
 ///   ),
 ///   (
 ///     Geoid::County(fips::State(08), fips::County(215)),
-///     vec![WacValue::new(WacSegment::C000, 3858.0)]
+///     vec![AcsValue::new(String::from("B01001_001E"), json![50000.0])]
 ///   )
 /// ];
 /// let target = GeoidType::State;
 /// let agg = NumericAggregation::Sum;
-/// let result = lodes_ops::aggregate_lodes_wac(&rows, target, agg).unwrap();
-/// let expected_cnt = 106497.0 + 3858.0;
+/// let result = acs_agg::aggregate_acs(&rows, target, agg).unwrap();
+/// let expected_cnt = json![150000.0];
 /// let expected = vec![
 ///   (
 ///     Geoid::State(fips::State(08)),
-///     vec![WacValue::new(WacSegment::C000, expected_cnt)]
+///     vec![AcsValue::new(String::from("B01001_001E"), expected_cnt)]
 ///   )
 /// ];
 /// for ((g_a, vs_a), (g_b, vs_b)) in result.into_iter().zip(expected) {
 ///   assert_eq!(g_a, g_b);
 ///   for (v_a, v_b) in vs_a.into_iter().zip(vs_b) {
-///     assert_eq!(v_a.segment, v_b.segment);
+///     assert_eq!(v_a.name, v_b.name);
 ///     assert_eq!(v_a.value, v_b.value);
 ///   }
 /// }
 /// ```
-pub fn aggregate_lodes_wac(
-    rows: &Vec<(Geoid, Vec<WacValue>)>,
+pub fn aggregate_acs(
+    rows: &Vec<(Geoid, Vec<AcsValue>)>,
     target: GeoidType,
     agg: NumericAggregation,
-) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
-    if target == GeoidType::Block {
-        // LODES data is stored at the block level, this is a no-op
-        return Ok(rows.clone());
-    }
-
+) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     // aggregate Geoids
-    let (geoid_oks, geoid_errs): (Vec<(Geoid, &Vec<WacValue>)>, Vec<String>) = rows
+    let (geoid_oks, geoid_errs): (Vec<(Geoid, &Vec<AcsValue>)>, Vec<String>) = rows
         .iter()
         .map(|(geoid, values)| {
             let trunc_geoid = geoid.truncate_geoid_to_type(&target)?;
@@ -83,14 +80,18 @@ pub fn aggregate_lodes_wac(
     let reduced = geoids_grouped
         .into_iter()
         .map(|(geoid, values)| {
-            let xs = values.into_iter().chunk_by(|v| v.segment);
+            let xs = values.into_iter().chunk_by(|v| v.name.clone());
             let mut agg_values = vec![];
-            for (wac_segment, values) in &xs {
-                let aggregated = agg.aggregate(&mut values.map(|v| v.value));
-                agg_values.push(WacValue::new(wac_segment, aggregated));
+            for (name, values) in &xs {
+                let values = values.map(|v| {
+                  v.value.as_f64().ok_or_else(|| format!("ACS value for {} is not numeric (found {}) but user requested aggregation", name, v.value))
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+                let aggregated = agg.aggregate(&mut values.into_iter());
+                agg_values.push(AcsValue::new(name, json![aggregated]));
             }
-            (geoid, agg_values)
+            Ok((geoid, agg_values))
         })
-        .collect_vec();
+        .collect::<Result<Vec<_>, String>>()?;
     Ok(reduced)
 }

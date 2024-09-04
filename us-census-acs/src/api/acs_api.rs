@@ -8,15 +8,6 @@ use reqwest::{Client, StatusCode};
 use us_census_core::model::identifier::geoid::Geoid;
 
 /// sets up a run of ACS queries.
-///
-/// todo:
-///   * this is faster than not parallel but we could probably do better if we
-///     remove the awaits and let the coroutines do the work.
-///   * oh, but, we actually want a blocking wait here, because we want to know
-///     all Geoids before executing a single request to GET the TIGER/Lines data,
-///     as we want first to know the set of unique files we actually need to download
-///     to download them exactly once
-///
 pub async fn batch_run<'a>(
     client: &Client,
     queries: Vec<AcsApiQueryParams>,
@@ -44,12 +35,10 @@ pub async fn run(
         .map_err(|e| format!("failure calling {}: {}", url, e))?;
     let status_code = response.status();
     match response.error_for_status() {
-        Err(e) => {
-            Err(format!(
-                "API request failed with error code {}. error: {}",
-                status_code, e
-            ))
-        }
+        Err(e) => Err(format!(
+            "API request failed with error code {}. error: {}",
+            status_code, e
+        )),
         Ok(r) if r.status() == StatusCode::NO_CONTENT => {
             Err(format!("requested URL {} has no content", url))
         }
