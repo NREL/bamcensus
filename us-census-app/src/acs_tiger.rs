@@ -72,10 +72,10 @@ pub async fn run(
     let query_params =
         AcsApiQueryParams::new(None, year, acs_type, acs_get_query, query, acs_api_token);
     let acs_response = acs_api::batch_run(&client, vec![query_params]).await;
-    let (acs_rows, acs_errors): (
-        Vec<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>)>,
-        Vec<String>,
-    ) = acs_response.into_iter().partition_result();
+
+    type AcsRows = Vec<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>)>;
+    let (acs_rows, acs_errors): (AcsRows, Vec<String>) =
+        acs_response.into_iter().partition_result();
 
     // execute TIGER/Lines downloads
     let tiger_uri_builder = TigerUriBuilder::new(year)?;
@@ -84,7 +84,9 @@ pub async fn run(
         .flat_map(|(_, rows)| rows.iter().map(|(geoid, _)| geoid))
         .collect_vec();
     let tiger_response = tiger_api::run(&client, &tiger_uri_builder, geoids).await?;
-    let (tiger_rows_nested, tiger_errors): (Vec<Vec<(Geoid, Geometry<f64>)>>, Vec<String>) =
+
+    type NestedResult = (Vec<Vec<(Geoid, Geometry<f64>)>>, Vec<String>);
+    let (tiger_rows_nested, tiger_errors): NestedResult =
         tiger_response.into_iter().partition_result();
     let tiger_lookup = tiger_rows_nested
         .into_iter()

@@ -52,11 +52,11 @@ pub async fn run<'a>(
                     .map_err(|e| format!("failure reading temporary zip archive: {}", e))?;
                 let shp_filename = get_zip_filename(&z, ".shp")?;
                 let dbf_filename = get_zip_filename(&z, ".dbf")?;
-                let mut shp_contents = zip_file_into_string(&mut z, &shp_filename)?;
-                let mut dbf_contents = zip_file_into_string(&mut z, &dbf_filename)?;
+                let shp_contents = zip_file_into_string(&mut z, &shp_filename)?;
+                let dbf_contents = zip_file_into_string(&mut z, &dbf_filename)?;
 
                 // read shapes and records
-                let mut reader = create_shapefile_reader(&mut shp_contents, &mut dbf_contents)?;
+                let mut reader = create_shapefile_reader(&shp_contents, &dbf_contents)?;
                 let read_result = reader
                     .iter_shapes_and_records()
                     .map(|row| {
@@ -160,10 +160,12 @@ fn zip_file_into_string(archive: &mut ZipArchive<File>, filename: &str) -> Resul
     Ok(contents)
 }
 
+type TigerShapefileReader<'a> =
+    Result<shapefile::Reader<Cursor<&'a Vec<u8>>, Cursor<&'a Vec<u8>>>, String>;
 fn create_shapefile_reader<'a>(
     shp_contents: &'a Vec<u8>,
     dbf_contents: &'a Vec<u8>,
-) -> Result<shapefile::Reader<Cursor<&'a Vec<u8>>, Cursor<&'a Vec<u8>>>, String> {
+) -> TigerShapefileReader<'a> {
     let shp_cursor = Cursor::new(shp_contents);
     let dbf_cursor = Cursor::new(dbf_contents);
     let shape_reader = ShapeReader::new(shp_cursor)
