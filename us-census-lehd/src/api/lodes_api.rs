@@ -1,58 +1,88 @@
 use crate::{
     api::lodes_api,
-    model::lodes::{LodesDataset, LodesEdition, LodesJobType, OdPart, WorkplaceSegment},
+    model::lodes::{
+        wac_row::WacRow, wac_value::WacValue, LodesDataset, LodesEdition, LodesJobType, OdPart,
+        WacSegment, WorkplaceSegment,
+    },
+    ops::lodes_ops,
 };
-use futures::{stream, StreamExt};
+use csv::ReaderBuilder;
+use flate2::read::GzDecoder;
+use futures::future;
 use itertools::Itertools;
+use reqwest::Client;
+use us_census_core::{
+    model::identifier::{Geoid, GeoidType},
+    ops::agg::aggregation_function::{self, NumericAggregation},
+};
 
-pub async fn run(
+pub fn create_queries(
     lodes_edition: &LodesEdition,
     lodes_dataset: &LodesDataset,
-    state_codes: &[&str],
+    state_codes: &[String],
     segment: &WorkplaceSegment,
     job_type: &LodesJobType,
     year: u64,
-    parallelism: usize,
-) {
+) -> Vec<String> {
     let lodes_queries = state_codes
         .iter()
         .map(|sc| {
             let filename = lodes_api::create_wac_filename(sc, &segment, &job_type, year);
-            let url = lodes_edition.create_url(sc, &LodesDataset::WAC, &filename);
+            let url = lodes_edition.create_url(sc, &lodes_dataset, &filename);
             url
         })
         .collect_vec();
+    lodes_queries
+}
 
-    let client = reqwest::Client::new();
-    let responses = stream::iter(&lodes_queries)
-        .map(|url| {
-            let client = &client;
-            async move {
-                let res = client.get(url).send().await?;
-                res.text().await
-            }
-        })
-        .buffer_unordered(parallelism);
-
-    let mut n_res: usize = 0;
-    responses
-        .for_each(|b| {
-            n_res += 1;
-            async {
-                match b {
-                    Ok(string) => println!("{}", string),
-                    Err(e) => println!("DOWNLOAD FAILURE: {}", e.to_string()),
+/// runs a set of LODES queries. each required LODES file is collected in
+/// memory and deserialized into rows of Geoids with WacValues for each
+/// requested WacSegment. the entire dataset is aggregated to the requested
+/// output GeoidType, which should be
+pub async fn run(
+    client: &Client,
+    queries: &[String],
+    wac_segments: &[WacSegment],
+    output_geoid_type: &GeoidType,
+    agg: NumericAggregation,
+) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
+    let responses = queries.into_iter().map(|url| {
+        let client = &client;
+        let wac_segments = &wac_segments;
+        async move {
+            let res = client
+                .get(url)
+                .send()
+                .await
+                .map_err(|e| format!("failure sending LODES HTTP request: {}", e))?;
+            let gzip_bytes = res
+                .bytes()
+                .await
+                .map_err(|e| format!("failure reading response body: {}", e))?;
+            let mut reader = ReaderBuilder::new().from_reader(GzDecoder::new(&gzip_bytes[..]));
+            let mut result = vec![];
+            for r in reader.deserialize() {
+                let row: WacRow =
+                    r.map_err(|e| format!("failure reading LODES response row: {}", e))?;
+                let geoid = row.geoid()?;
+                let mut row_result = vec![];
+                for segment in wac_segments.iter() {
+                    row_result.push(WacValue::new(segment.clone(), row.get(segment)));
                 }
+                result.push((geoid, row_result))
             }
-        })
-        .await;
-    println!("{} responses", n_res);
-    println!("queries:");
-    for url in lodes_queries.iter() {
-        println!("{}", url);
-    }
-
-    todo!("unzip the GZIP, parse into records");
+            Ok(result)
+        }
+    });
+    let response_rows = future::join_all(responses)
+        .await
+        .into_iter()
+        .collect::<Result<Vec<_>, String>>()?
+        .into_iter()
+        .flatten()
+        .collect_vec();
+    let aggregated_rows = lodes_ops::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?;
+    Ok(aggregated_rows)
 }
 
 // pub fn get_year() -> Result<i64, String> {

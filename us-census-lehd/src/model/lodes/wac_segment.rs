@@ -2,7 +2,7 @@ use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-#[derive(Default, ValueEnum, Serialize, Deserialize, Clone, Copy, Debug)]
+#[derive(Default, ValueEnum, Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum WacSegment {
     #[default]
     C000,

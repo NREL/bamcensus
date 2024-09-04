@@ -56,14 +56,100 @@ impl Geoid {
     }
 
     pub fn variant_name(&self) -> String {
+        self.geoid_type().to_string()
+    }
+
+    /// manipulates this GEOID via truncation to transform it's GEOID type.
+    ///
+    /// GEOID is a hierarchical numeric identifier. we can truncate the values
+    /// in order to reach a higher/larger geographic representation. this method
+    /// supports that operation, where this Geoid instance will be truncated to
+    /// transform it into some other GeoidType.
+    ///
+    /// # Examples
+    ///
+    /// converts GEOID 08059009838 (TRACT) to 08059 (COUNTY).
+    ///
+    /// ```rust
+    /// use us_census_core::model::identifier::{Geoid, GeoidType, fips};
+    /// let geoid = Geoid::CensusTract(
+    ///     fips::State(8),         // 08     Colorado
+    ///     fips::County(59),       // 059    Jefferson
+    ///     fips::CensusTract(9838) // 009838
+    /// );
+    /// let result = geoid.truncate_geoid_to_type(&GeoidType::County).unwrap();
+    /// assert_eq!(result, Geoid::County(fips::State(8), fips::County(59)))
+    /// ```
+    pub fn truncate_geoid_to_type(&self, target: &GeoidType) -> Result<Geoid, String> {
+        fn _err(src: &GeoidType, dst: &GeoidType) -> String {
+            format!(
+                "{} not a parent type of {}, cannot truncate geoid.",
+                dst, src
+            )
+        }
+        match (self, target) {
+            (Geoid::State(_), GeoidType::State) => Ok(self.clone()),
+            (Geoid::State(_), _) => Err(_err(&self.geoid_type(), target)),
+            (Geoid::County(s, _), GeoidType::State) => Ok(Geoid::State(*s)),
+            (Geoid::County(_, _), GeoidType::County) => Ok(self.clone()),
+            (Geoid::County(_, _), _) => Err(_err(&self.geoid_type(), target)),
+            (Geoid::CountySubdivision(s, _, _), GeoidType::State) => Ok(Geoid::State(*s)),
+            (Geoid::CountySubdivision(s, c, _), GeoidType::County) => Ok(Geoid::County(*s, *c)),
+            (Geoid::CountySubdivision(_, _, _), GeoidType::CountySubdivision) => Ok(self.clone()),
+            (Geoid::CountySubdivision(_, _, _), _) => Err(_err(&self.geoid_type(), target)),
+            (Geoid::Place(s, _), GeoidType::State) => Ok(Geoid::State(*s)),
+            (Geoid::Place(_, _), _) => Err(_err(&self.geoid_type(), target)),
+            (Geoid::CensusTract(s, _, _), GeoidType::State) => Ok(Geoid::State(*s)),
+            (Geoid::CensusTract(s, c, _), GeoidType::County) => Ok(Geoid::County(*s, *c)),
+            (Geoid::CensusTract(_, _, _), GeoidType::CensusTract) => Ok(self.clone()),
+            (Geoid::CensusTract(_, _, _), _) => Err(_err(&self.geoid_type(), target)),
+            (Geoid::BlockGroup(s, _, _, _), GeoidType::State) => Ok(Geoid::State(*s)),
+            (Geoid::BlockGroup(s, c, _, _), GeoidType::County) => Ok(Geoid::County(*s, *c)),
+            (Geoid::BlockGroup(s, c, t, _), GeoidType::CensusTract) => {
+                Ok(Geoid::CensusTract(*s, *c, *t))
+            }
+            (Geoid::BlockGroup(_, _, _, _), GeoidType::BlockGroup) => Ok(self.clone()),
+            (Geoid::BlockGroup(_, _, _, _), _) => Err(_err(&self.geoid_type(), target)),
+            (Geoid::Block(s, _, _, _), GeoidType::State) => Ok(Geoid::State(*s)),
+            (Geoid::Block(s, c, _, _), GeoidType::County) => Ok(Geoid::County(*s, *c)),
+            (Geoid::Block(s, c, t, _), GeoidType::CensusTract) => {
+                Ok(Geoid::CensusTract(*s, *c, *t))
+            }
+            (Geoid::Block(s, c, t, b), GeoidType::BlockGroup) => {
+                // special edge case of truncation, since we have no other operations for
+                // converting between Block and Block Group.
+                let block_str = &b.0[0..1];
+                let bg = block_str
+                    .parse::<u64>()
+                    .map_err(|e| format!("cannot read first digit of block as integer: {}", e))?;
+                let geoid = Geoid::BlockGroup(*s, *c, *t, fips::BlockGroup(bg));
+                Ok(geoid)
+            }
+            (Geoid::Block(_, _, _, _), GeoidType::Block) => Ok(self.clone()),
+            (Geoid::Block(_, _, _, _), _) => Err(_err(&self.geoid_type(), target)),
+        }
+    }
+
+    /// manipulates this GEOID via truncation to transform it's GEOID type to that
+    /// of it's parent.
+    ///
+    /// the base case is `None`, which is the parent of `State`, and signifies "no restriction"
+    /// in census queries. for all other GeoidTypes, we simply remove the lowest area type.
+    ///
+    /// # Note
+    ///
+    /// Geoid::Block.to_parent() produces a CensusTract, not a BlockGroup, based on
+    /// https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html,
+    /// which does not imply that all block groups are the first digit of all blocks.
+    pub fn to_parent(&self) -> Option<Geoid> {
         match self {
-            Geoid::State(_) => String::from("State"),
-            Geoid::County(_, _) => String::from("County"),
-            Geoid::CountySubdivision(_, _, _) => String::from("CountySubdivision"),
-            Geoid::Place(_, _) => String::from("Place"),
-            Geoid::CensusTract(_, _, _) => String::from("CensusTract"),
-            Geoid::BlockGroup(_, _, _, _) => String::from("BlockGroup"),
-            Geoid::Block(_, _, _, _) => String::from("Block"),
+            Geoid::State(_) => None,
+            Geoid::County(s, _) => Some(Geoid::State(*s)),
+            Geoid::CountySubdivision(s, c, _) => Some(Geoid::County(*s, *c)),
+            Geoid::Place(s, _) => Some(Geoid::State(*s)),
+            Geoid::CensusTract(s, c, _) => Some(Geoid::County(*s, *c)),
+            Geoid::BlockGroup(s, c, t, _) => Some(Geoid::CensusTract(*s, *c, *t)),
+            Geoid::Block(s, c, t, _) => Some(Geoid::CensusTract(*s, *c, *t)),
         }
     }
 
@@ -105,15 +191,9 @@ impl Geoid {
             Geoid::Place(_, _) => Err(String::from(
                 "place geoid does not contain a census tract geoid",
             )),
-            Geoid::CensusTract(st, ct, tr) => {
-                Ok(Geoid::CensusTract(*st, *ct, *tr))
-            }
-            Geoid::BlockGroup(st, ct, tr, _) => {
-                Ok(Geoid::CensusTract(*st, *ct, *tr))
-            }
-            Geoid::Block(st, ct, tr, _) => {
-                Ok(Geoid::CensusTract(*st, *ct, *tr))
-            }
+            Geoid::CensusTract(st, ct, tr) => Ok(Geoid::CensusTract(*st, *ct, *tr)),
+            Geoid::BlockGroup(st, ct, tr, _) => Ok(Geoid::CensusTract(*st, *ct, *tr)),
+            Geoid::Block(st, ct, tr, _) => Ok(Geoid::CensusTract(*st, *ct, *tr)),
         }
     }
 }

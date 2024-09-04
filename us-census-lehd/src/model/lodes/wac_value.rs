@@ -1,8 +1,7 @@
+use super::WacSegment;
 use std::fmt::Display;
 
-use super::WacSegment;
-
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct WacValue {
     pub segment: WacSegment,
     pub value: f64,

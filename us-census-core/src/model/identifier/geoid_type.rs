@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::{fips, geoid::Geoid};
 use clap::ValueEnum;
 use itertools::Itertools;
@@ -15,9 +17,9 @@ pub enum GeoidType {
     Block,
 }
 
-impl ToString for GeoidType {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for GeoidType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
             GeoidType::State => String::from("state"),
             GeoidType::County => String::from("county"),
             GeoidType::CountySubdivision => String::from("county subdivision"),
@@ -25,7 +27,8 @@ impl ToString for GeoidType {
             GeoidType::CensusTract => String::from("census tract"),
             GeoidType::BlockGroup => String::from("block group"),
             GeoidType::Block => String::from("block"),
-        }
+        };
+        write!(f, "{}", s)
     }
 }
 
