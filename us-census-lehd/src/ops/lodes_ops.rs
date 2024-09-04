@@ -11,7 +11,39 @@ use us_census_core::{
 /// # Example
 ///
 /// ```rust
-/// use us_census_lehd::model::lodes
+/// use us_census_core::model::identifier::{Geoid, GeoidType, fips};
+/// use us_census_core::ops::agg::NumericAggregation;
+/// use us_census_lehd::model::lodes::{WacSegment, WacValue};
+/// use us_census_lehd::ops::lodes_ops;
+///
+/// // 2020 populations by county (WAC Segment C000) for two counties in Colorado.
+/// let rows = vec![
+///   (
+///     Geoid::County(fips::State(08), fips::County(213)),
+///     vec![WacValue::new(WacSegment::C000, 106497.0)]
+///   ),
+///   (
+///     Geoid::County(fips::State(08), fips::County(215)),
+///     vec![WacValue::new(WacSegment::C000, 3858.0)]
+///   )
+/// ];
+/// let target = GeoidType::State;
+/// let agg = NumericAggregation::Sum;
+/// let result = lodes_ops::aggregate_lodes_wac(&rows, &target, agg).unwrap();
+/// let expected_cnt = 106497.0 + 3858.0;
+/// let expected = vec![
+///   (
+///     Geoid::State(fips::State(08)),
+///     vec![WacValue::new(WacSegment::C000, expected_cnt)]
+///   )
+/// ];
+/// for ((g_a, vs_a), (g_b, vs_b)) in result.into_iter().zip(expected) {
+///   assert_eq!(g_a, g_b);
+///   for (v_a, v_b) in vs_a.into_iter().zip(vs_b) {
+///     assert_eq!(v_a.segment, v_b.segment);
+///     assert_eq!(v_a.value, v_b.value);
+///   }
+/// }
 /// ```
 pub fn aggregate_lodes_wac(
     rows: &Vec<(Geoid, Vec<WacValue>)>,

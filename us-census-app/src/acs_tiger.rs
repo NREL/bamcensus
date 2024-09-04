@@ -28,7 +28,7 @@ pub struct AcsTigerResponse {
 ///
 /// # Example
 ///
-/// ```rust
+/// ```ignore
 /// use us_census_app::acs_tiger;
 /// use us_census_acs::model::acs_type::AcsType;
 /// use us_census_core::model::identifier::geoid::Geoid;

@@ -55,7 +55,7 @@ async fn main() {
     let wac_segments = vec![WacSegment::C000];
     let state_codes = &args.get_state_codes();
     let agg_fn = NumericAggregation::Sum;
-    let output_geoid_type = GeoidType::CensusTract;
+    let output_geoid_type = GeoidType::County;
 
     println!("executing LODES download");
 

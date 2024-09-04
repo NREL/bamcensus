@@ -13,7 +13,7 @@ use itertools::Itertools;
 use reqwest::Client;
 use us_census_core::{
     model::identifier::{Geoid, GeoidType},
-    ops::agg::aggregation_function::{self, NumericAggregation},
+    ops::agg::aggregation_function::NumericAggregation,
 };
 
 pub fn create_queries(
@@ -27,7 +27,15 @@ pub fn create_queries(
     let lodes_queries = state_codes
         .iter()
         .map(|sc| {
-            let filename = lodes_api::create_wac_filename(sc, &segment, &job_type, year);
+            let filename = match lodes_dataset {
+                LodesDataset::OD => {
+                    todo!("not yet implemented: `create filename` fn for OD dataset")
+                }
+                LodesDataset::RAC => {
+                    todo!("not yet implemented: `create filename` fn for RAC dataset")
+                }
+                LodesDataset::WAC => lodes_api::create_wac_filename(sc, &segment, &job_type, year),
+            };
             let url = lodes_edition.create_url(sc, &lodes_dataset, &filename);
             url
         })
@@ -84,24 +92,6 @@ pub async fn run(
     let aggregated_rows = lodes_ops::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?;
     Ok(aggregated_rows)
 }
-
-// pub fn get_year() -> Result<i64, String> {
-//     if 2002 <= self.year && self.year <= 2016 {
-//         Ok(self.year)
-//     } else {
-//         Err(format!("year must be in range [2002, 2016]: {}", self.year))
-//     }
-// }
-
-// pub fn get_state_codes() -> Vec<String> {
-//     match &self.states {
-//         Some(s) => s.split(",").map(|sc| sc.to_lowercase()).collect_vec(),
-//         None => lodes_model::ALL_STATES
-//             .iter()
-//             .map(|s| s.to_string())
-//             .collect_vec(),
-//     }
-// }
 
 /// from https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.1.pdf:
 /// [ST]_od_[PART]_[TYPE]_[YEAR].csv.gz where

@@ -14,6 +14,7 @@ pub use lodes_job_type::LodesJobType;
 pub use od_job_segment::OdJobSegment;
 pub use od_part::OdPart;
 pub use wac_segment::WacSegment;
+pub use wac_value::WacValue;
 pub use workplace_segment::WorkplaceSegment;
 
 pub const BASE_URL: &'static str = "https://lehd.ces.census.gov/data/lodes";
