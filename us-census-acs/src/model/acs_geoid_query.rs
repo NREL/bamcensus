@@ -426,7 +426,7 @@ impl AcsGeoidQuery {
 }
 
 /// helper function to convert a vec of JSON values to their expected String values.
-fn as_strings(arr: &Vec<serde_json::Value>) -> Result<Vec<String>, String> {
+fn as_strings(arr: &[serde_json::Value]) -> Result<Vec<String>, String> {
     arr.iter()
         .map(|v| {
             v.as_str()
