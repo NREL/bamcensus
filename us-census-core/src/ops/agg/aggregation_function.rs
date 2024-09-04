@@ -1,8 +1,10 @@
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, ValueEnum, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum NumericAggregation {
+    #[default]
     Sum,
     Mean,
 }

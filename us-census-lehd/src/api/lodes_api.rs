@@ -20,8 +20,8 @@ pub fn create_queries(
     lodes_edition: &LodesEdition,
     lodes_dataset: &LodesDataset,
     state_codes: &[String],
-    segment: &WorkplaceSegment,
-    job_type: &LodesJobType,
+    segment: WorkplaceSegment,
+    job_type: LodesJobType,
     year: u64,
 ) -> Vec<String> {
     let lodes_queries = state_codes
@@ -51,7 +51,7 @@ pub async fn run(
     client: &Client,
     queries: &[String],
     wac_segments: &[WacSegment],
-    output_geoid_type: &GeoidType,
+    output_geoid_type: GeoidType,
     agg: NumericAggregation,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
     let responses = queries.into_iter().map(|url| {

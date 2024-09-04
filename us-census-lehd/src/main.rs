@@ -27,6 +27,12 @@ pub struct CliArgs {
     /// WAC job type defined in LODES schema documentation
     #[arg(long)]
     jobtype: Option<lodes_model::LodesJobType>,
+    /// level to aggregate result value
+    #[arg(long)]
+    agg_geoid_type: Option<GeoidType>,
+    /// function to aggregate result value
+    #[arg(long)]
+    agg_fn: Option<NumericAggregation>,
     // todo: use clap.Parser's subcommand structures to flip between WAC, OD, and RAC data since they
     // are structurally different
 }
@@ -46,7 +52,7 @@ impl CliArgs {
 #[tokio::main]
 async fn main() {
     env_logger::init();
-    let args = CliArgs::parse_from(["", "--year", "2020", "--states", "co"]);
+    let args = CliArgs::parse();
     let edition = args.edition.unwrap_or_default();
     let dataset = args.dataset.unwrap_or_default();
     let segment = args.segment.unwrap_or_default();
@@ -54,15 +60,15 @@ async fn main() {
     let year = args.year;
     let wac_segments = vec![WacSegment::C000];
     let state_codes = &args.get_state_codes();
-    let agg_fn = NumericAggregation::Sum;
-    let output_geoid_type = GeoidType::County;
+    let agg_fn = args.agg_fn.unwrap_or_default();
+    let output_geoid_type = args.agg_geoid_type.unwrap_or_else(|| GeoidType::Block);
 
     println!("executing LODES download");
 
     let client = reqwest::Client::new();
     let queries =
-        lodes_api::create_queries(&edition, &dataset, state_codes, &segment, &job_type, year);
-    let agg_rows = lodes_api::run(&client, &queries, &wac_segments, &output_geoid_type, agg_fn)
+        lodes_api::create_queries(&edition, &dataset, state_codes, segment, job_type, year);
+    let agg_rows = lodes_api::run(&client, &queries, &wac_segments, output_geoid_type, agg_fn)
         .await
         .unwrap();
 

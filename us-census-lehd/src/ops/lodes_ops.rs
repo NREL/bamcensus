@@ -29,7 +29,7 @@ use us_census_core::{
 /// ];
 /// let target = GeoidType::State;
 /// let agg = NumericAggregation::Sum;
-/// let result = lodes_ops::aggregate_lodes_wac(&rows, &target, agg).unwrap();
+/// let result = lodes_ops::aggregate_lodes_wac(&rows, target, agg).unwrap();
 /// let expected_cnt = 106497.0 + 3858.0;
 /// let expected = vec![
 ///   (
@@ -47,9 +47,14 @@ use us_census_core::{
 /// ```
 pub fn aggregate_lodes_wac(
     rows: &Vec<(Geoid, Vec<WacValue>)>,
-    target: &GeoidType,
+    target: GeoidType,
     agg: NumericAggregation,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
+    if target == GeoidType::Block {
+        // LODES data is stored at the block level, this is a no-op
+        return Ok(rows.clone());
+    }
+
     // aggregate Geoids
     let (geoid_oks, geoid_errs): (Vec<(Geoid, &Vec<WacValue>)>, Vec<String>) = rows
         .into_iter()
