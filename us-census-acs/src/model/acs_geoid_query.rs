@@ -417,11 +417,11 @@ impl AcsGeoidQuery {
     /// the original query.
     pub fn build_deserialize_geoid_fn(&self) -> DeserializeGeoidFn {
         let geoid_type = self.get_geoid_type();
-        let f = move |vals| {
+        let f: DeserializeGeoidFn = Rc::new(move |vals| {
             let strings = as_strings(&vals)?;
             geoid_type.geoid_from_slice_of_strings(&strings)
-        };
-        Rc::new(f)
+        });
+        f
     }
 }
 
