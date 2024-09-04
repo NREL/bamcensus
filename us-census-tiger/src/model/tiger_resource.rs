@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use us_census_core::model::identifier::geoid_type::GeoidType;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct TigerResource {
     /// complete URI to a file location in the TIGER/LINES HTTP website
     pub uri: String,
@@ -34,14 +34,5 @@ impl TigerResource {
             file_scope,
             geoid_column_name,
         }
-    }
-}
-
-impl PartialEq for TigerResource {
-    fn eq(&self, other: &Self) -> bool {
-        self.uri == other.uri
-            && self.geoid_type == other.geoid_type
-            && self.file_scope == other.file_scope
-            && self.geoid_column_name == other.geoid_column_name
     }
 }

@@ -43,7 +43,7 @@ impl TigerUriBuilder {
 
     pub fn new(year: u64) -> Result<TigerUriBuilder, String> {
         match year {
-            y if y == 2010 => Ok(TigerUriBuilder::Tiger2010),
+            2010 => Ok(TigerUriBuilder::Tiger2010),
             y if 2010 < y && y < 2020 => Ok(TigerUriBuilder::Tiger2010Format { year }),
             y if 2020 <= y => Ok(TigerUriBuilder::Tiger2020Format { year }),
             _ => Err(format!("unsupported TIGER year {}", year)),

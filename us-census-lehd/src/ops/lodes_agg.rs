@@ -46,13 +46,13 @@ use us_census_core::{
 /// }
 /// ```
 pub fn aggregate_lodes_wac(
-    rows: &Vec<(Geoid, Vec<WacValue>)>,
+    rows: &[(Geoid, Vec<WacValue>)],
     target: GeoidType,
     agg: NumericAggregation,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
     if target == GeoidType::Block {
         // LODES data is stored at the block level, this is a no-op
-        return Ok(rows.clone());
+        return Ok(rows.to_vec());
     }
 
     // aggregate Geoids

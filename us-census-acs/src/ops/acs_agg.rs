@@ -48,7 +48,7 @@ use us_census_core::{
 /// }
 /// ```
 pub fn aggregate_acs(
-    rows: &Vec<(Geoid, Vec<AcsValue>)>,
+    rows: &[(Geoid, Vec<AcsValue>)],
     target: GeoidType,
     agg: NumericAggregation,
 ) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
