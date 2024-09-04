@@ -15,5 +15,5 @@ itertools = { workspace = true }
 serde = { workspace = true }
 reqwest = { workspace = true }
 futures = { workspace = true }
-csv = { workplace = true }
+csv = { workspace = true }
 flate2 = { workspace = true }
