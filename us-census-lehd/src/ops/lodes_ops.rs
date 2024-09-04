@@ -57,14 +57,14 @@ pub fn aggregate_lodes_wac(
 
     // aggregate Geoids
     let (geoid_oks, geoid_errs): (Vec<(Geoid, &Vec<WacValue>)>, Vec<String>) = rows
-        .into_iter()
+        .iter()
         .map(|(geoid, values)| {
             let trunc_geoid = geoid.truncate_geoid_to_type(&target)?;
             Ok((trunc_geoid, values))
         })
         .partition_result();
 
-    if geoid_errs.len() > 0 {
+    if !geoid_errs.is_empty() {
         let msg = geoid_errs.into_iter().unique().take(5).join("\n");
         return Err(format!(
             "errors during aggregation. first 5 unique errors: \n{}",

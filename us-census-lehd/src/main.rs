@@ -1,5 +1,4 @@
 use clap::Parser;
-use env_logger;
 use itertools::Itertools;
 use us_census_core::model::identifier::GeoidType;
 use us_census_core::ops::agg::aggregation_function::NumericAggregation;
@@ -41,7 +40,7 @@ pub struct LodesCliArgs {
 impl LodesCliArgs {
     pub fn get_state_codes(&self) -> Vec<String> {
         match &self.states {
-            Some(s) => s.split(",").map(|sc| sc.to_lowercase()).collect_vec(),
+            Some(s) => s.split(',').map(|sc| sc.to_lowercase()).collect_vec(),
             None => lodes_model::ALL_STATES
                 .iter()
                 .map(|s| s.to_string())
@@ -62,7 +61,7 @@ async fn main() {
     let wac_segments = vec![WacSegment::C000];
     let state_codes = &args.get_state_codes();
     let agg_fn = args.agg_fn.unwrap_or_default();
-    let output_geoid_type = args.agg_geoid_type.unwrap_or_else(|| GeoidType::Block);
+    let output_geoid_type = args.agg_geoid_type.unwrap_or(GeoidType::Block);
 
     println!("executing LODES download");
 

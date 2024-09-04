@@ -36,8 +36,8 @@ pub fn create_queries(
                 }
                 LodesDataset::WAC => lodes_api::create_wac_filename(sc, &segment, &job_type, year),
             };
-            let url = lodes_edition.create_url(sc, &lodes_dataset, &filename);
-            url
+            
+            lodes_edition.create_url(sc, lodes_dataset, &filename)
         })
         .collect_vec();
     lodes_queries
@@ -54,7 +54,7 @@ pub async fn run(
     output_geoid_type: GeoidType,
     agg: NumericAggregation,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
-    let responses = queries.into_iter().map(|url| {
+    let responses = queries.iter().map(|url| {
         let client = &client;
         let wac_segments = &wac_segments;
         async move {
@@ -75,7 +75,7 @@ pub async fn run(
                 let geoid = row.geoid()?;
                 let mut row_result = vec![];
                 for segment in wac_segments.iter() {
-                    row_result.push(WacValue::new(segment.clone(), row.get(segment)));
+                    row_result.push(WacValue::new(*segment, row.get(segment)));
                 }
                 result.push((geoid, row_result))
             }

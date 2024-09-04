@@ -45,13 +45,13 @@ pub async fn run(
     let status_code = response.status();
     match response.error_for_status() {
         Err(e) => {
-            return Err(format!(
+            Err(format!(
                 "API request failed with error code {}. error: {}",
                 status_code, e
             ))
         }
         Ok(r) if r.status() == StatusCode::NO_CONTENT => {
-            return Err(format!("requested URL {} has no content", url));
+            Err(format!("requested URL {} has no content", url))
         }
         Ok(res) => {
             let json = res

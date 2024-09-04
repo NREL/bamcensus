@@ -1,6 +1,5 @@
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 
 #[derive(Default, ValueEnum, Serialize, Deserialize, Clone, Copy, Debug)]
 pub enum OdJobSegment {
