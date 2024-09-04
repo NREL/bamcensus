@@ -6,9 +6,10 @@ use us_census_core::ops::agg::aggregation_function::NumericAggregation;
 use us_census_lehd::api::lodes_api;
 use us_census_lehd::model::lodes::{self as lodes_model, WacSegment};
 
+// todo: top level here should be a LEHD command
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
-pub struct CliArgs {
+pub struct LodesCliArgs {
     /// LODES year in [2002, 2016]
     #[arg(short, long)]
     year: u64,
@@ -37,7 +38,7 @@ pub struct CliArgs {
     // are structurally different
 }
 
-impl CliArgs {
+impl LodesCliArgs {
     pub fn get_state_codes(&self) -> Vec<String> {
         match &self.states {
             Some(s) => s.split(",").map(|sc| sc.to_lowercase()).collect_vec(),
@@ -52,7 +53,7 @@ impl CliArgs {
 #[tokio::main]
 async fn main() {
     env_logger::init();
-    let args = CliArgs::parse();
+    let args = LodesCliArgs::parse();
     let edition = args.edition.unwrap_or_default();
     let dataset = args.dataset.unwrap_or_default();
     let segment = args.segment.unwrap_or_default();
