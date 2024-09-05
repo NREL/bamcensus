@@ -1,7 +1,6 @@
 use crate::{
-    api::lodes_api,
     model::lodes::{
-        wac_row::WacRow, wac_value::WacValue, LodesDataset, LodesEdition, LodesJobType, OdPart,
+        wac_row::WacRow, wac_value::WacValue, LodesJobType, OdPart,
         WacSegment, WorkplaceSegment,
     },
     ops::lodes_agg,

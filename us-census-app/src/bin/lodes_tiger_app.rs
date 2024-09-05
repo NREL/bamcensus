@@ -32,7 +32,7 @@ async fn main() {
     let args = LodesTigerAppCli::parse();
     let geoids = args
         .geoids
-        .split(",")
+        .split(',')
         .map(|g| Geoid::try_from(g).unwrap())
         .collect_vec();
     let dataset = LodesDataset::WAC {
@@ -43,7 +43,7 @@ async fn main() {
     };
     let wac_segments = args
         .wac_segments
-        .split(",")
+        .split(',')
         .map(|s| serde_json::from_str::<WacSegment>(s).map_err(|e| format!("{}", e)))
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
