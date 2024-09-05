@@ -89,7 +89,7 @@ fn into_geoid_and_geometry(
     })?;
     let geoid = match field_value {
         dbase::FieldValue::Character(s) => match s {
-            Some(geoid_string) => tiger_uri.geoid_type.geoid_from_string(geoid_string),
+            Some(geoid_string) => tiger_uri.geoid_type.geoid_from_str(geoid_string),
             None => Err(format!(
                 "value at field '{}' is empty, should be a GEOID string",
                 &tiger_uri.geoid_column_name

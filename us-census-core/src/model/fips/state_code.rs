@@ -1,4 +1,4 @@
-use crate::model::identifier::fips::State;
+use crate::model::identifier::{fips::State, has_geoid_string::HasGeoidString};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -55,6 +55,67 @@ pub enum StateCode {
     WestVirginia,
     Wisconsin,
     Wyoming,
+}
+
+impl TryFrom<State> for StateCode {
+    type Error = String;
+
+    fn try_from(value: State) -> Result<Self, Self::Error> {
+        match value {
+            State(01) => Ok(StateCode::Alabama),
+            State(02) => Ok(StateCode::Alaska),
+            State(04) => Ok(StateCode::Arizona),
+            State(05) => Ok(StateCode::Arkansas),
+            State(06) => Ok(StateCode::California),
+            State(08) => Ok(StateCode::Colorado),
+            State(09) => Ok(StateCode::Connecticut),
+            State(10) => Ok(StateCode::Delaware),
+            State(11) => Ok(StateCode::DistrictOfColumbia),
+            State(12) => Ok(StateCode::Florida),
+            State(13) => Ok(StateCode::Georgia),
+            State(15) => Ok(StateCode::Hawaii),
+            State(16) => Ok(StateCode::Idaho),
+            State(17) => Ok(StateCode::Illinois),
+            State(18) => Ok(StateCode::Indiana),
+            State(19) => Ok(StateCode::Iowa),
+            State(20) => Ok(StateCode::Kansas),
+            State(21) => Ok(StateCode::Kentucky),
+            State(22) => Ok(StateCode::Louisiana),
+            State(23) => Ok(StateCode::Maine),
+            State(24) => Ok(StateCode::Maryland),
+            State(25) => Ok(StateCode::Massachusetts),
+            State(26) => Ok(StateCode::Michigan),
+            State(27) => Ok(StateCode::Minnesota),
+            State(28) => Ok(StateCode::Mississippi),
+            State(29) => Ok(StateCode::Missouri),
+            State(30) => Ok(StateCode::Montana),
+            State(31) => Ok(StateCode::Nebraska),
+            State(32) => Ok(StateCode::Nevada),
+            State(33) => Ok(StateCode::NewHampshire),
+            State(34) => Ok(StateCode::NewJersey),
+            State(35) => Ok(StateCode::NewMexico),
+            State(36) => Ok(StateCode::NewYork),
+            State(37) => Ok(StateCode::NorthCarolina),
+            State(38) => Ok(StateCode::NorthDakota),
+            State(39) => Ok(StateCode::Ohio),
+            State(40) => Ok(StateCode::Oklahoma),
+            State(41) => Ok(StateCode::Oregon),
+            State(42) => Ok(StateCode::Pennsylvania),
+            State(44) => Ok(StateCode::RhodeIsland),
+            State(45) => Ok(StateCode::SouthCarolina),
+            State(46) => Ok(StateCode::SouthDakota),
+            State(47) => Ok(StateCode::Tennessee),
+            State(48) => Ok(StateCode::Texas),
+            State(49) => Ok(StateCode::Utah),
+            State(50) => Ok(StateCode::Vermont),
+            State(51) => Ok(StateCode::Virginia),
+            State(53) => Ok(StateCode::Washington),
+            State(54) => Ok(StateCode::WestVirginia),
+            State(55) => Ok(StateCode::Wisconsin),
+            State(56) => Ok(StateCode::Wyoming),
+            _ => Err(format!("unknown FIPS state code {}", value.geoid_string())),
+        }
+    }
 }
 
 impl From<StateCode> for State {

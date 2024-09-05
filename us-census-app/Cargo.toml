@@ -9,6 +9,7 @@ description = "application integrating all us-census capabilities with a CLI and
 clap = { workspace = true }
 us-census-core = { path = "../us-census-core" }
 us-census-acs = { path = "../us-census-acs" }
+us-census-lehd = { path = "../us-census-lehd" }
 us-census-tiger = { path = "../us-census-tiger" }
 itertools = { workspace = true }
 serde = { workspace = true }

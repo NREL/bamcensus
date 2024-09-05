@@ -101,6 +101,6 @@ impl WacRow {
 
 impl WacRow {
     pub fn geoid(&self) -> Result<Geoid, String> {
-        GeoidType::Block.geoid_from_string(&self.w_geocode)
+        GeoidType::Block.geoid_from_str(&self.w_geocode)
     }
 }

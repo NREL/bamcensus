@@ -27,7 +27,7 @@ pub struct AcsTigerAppCli {
 async fn main() {
     let args = AcsTigerAppCli::parse();
     let acs_get_query = args.acs_query.split(',').map(String::from).collect_vec();
-    let geoid = Geoid::try_from(args.geoid).unwrap();
+    let geoid = Geoid::try_from(args.geoid.as_str()).unwrap();
 
     let res = acs_tiger::run(
         args.year,

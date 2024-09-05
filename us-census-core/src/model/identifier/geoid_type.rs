@@ -33,7 +33,7 @@ impl Display for GeoidType {
 }
 
 impl GeoidType {
-    pub fn geoid_from_string(&self, value: &String) -> Result<Geoid, String> {
+    pub fn geoid_from_str(&self, value: &str) -> Result<Geoid, String> {
         let value_len = value.len();
         match self {
             GeoidType::State => {

@@ -16,32 +16,22 @@ use us_census_core::{
     ops::agg::aggregation_function::NumericAggregation,
 };
 
-pub fn create_queries(
-    lodes_edition: &LodesEdition,
-    lodes_dataset: &LodesDataset,
-    state_codes: &[String],
-    segment: WorkplaceSegment,
-    job_type: LodesJobType,
-    year: u64,
-) -> Vec<String> {
-    let lodes_queries = state_codes
-        .iter()
-        .map(|sc| {
-            let filename = match lodes_dataset {
-                LodesDataset::OD => {
-                    todo!("not yet implemented: `create filename` fn for OD dataset")
-                }
-                LodesDataset::RAC => {
-                    todo!("not yet implemented: `create filename` fn for RAC dataset")
-                }
-                LodesDataset::WAC => lodes_api::create_wac_filename(sc, &segment, &job_type, year),
-            };
-
-            lodes_edition.create_url(sc, lodes_dataset, &filename)
-        })
-        .collect_vec();
-    lodes_queries
-}
+// pub fn create_wac_urls(
+//     lodes_edition: &LodesEdition,
+//     state_codes: &[String],
+//     segment: WorkplaceSegment,
+//     job_type: LodesJobType,
+//     year: u64,
+// ) -> Vec<String> {
+//     let lodes_queries = state_codes
+//         .iter()
+//         .map(|sc| {
+//             let filename = lodes_api::create_wac_filename(sc, &segment, &job_type, year);
+//             lodes_edition.create_url(sc, LodesDataset::WAC, &filename)
+//         })
+//         .collect_vec();
+//     lodes_queries
+// }
 
 /// runs a set of LODES queries. each required LODES file is collected in
 /// memory and deserialized into rows of Geoids with WacValues for each
@@ -104,7 +94,7 @@ pub async fn run(
 ///     Private Jobs, “JT03” for Private Primary Jobs, “JT04” for All Federal Jobs, or “JT05” for
 ///     Federal Primary Jobs.
 ///   [YEAR] = Year of job data. Can have the value of 2002-2021 for most states.
-pub fn create_od_filename(
+fn create_od_filename(
     state_code: &String,
     od_part: &OdPart,
     job_type: &LodesJobType,
@@ -123,7 +113,7 @@ pub fn create_od_filename(
 ///     Private Jobs, “JT03” for Private Primary Jobs, “JT04” for All Federal Jobs, or “JT05” for
 ///     Federal Primary Jobs.
 ///   [YEAR] = Year of job data. Can have the value of 2002-2021 for most states.
-pub fn create_wac_filename(
+fn create_wac_filename(
     state_code: &str,
     segment: &WorkplaceSegment,
     job_type: &LodesJobType,

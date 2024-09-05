@@ -3,7 +3,7 @@ use itertools::Itertools;
 use us_census_core::model::identifier::GeoidType;
 use us_census_core::ops::agg::aggregation_function::NumericAggregation;
 use us_census_lehd::api::lodes_api;
-use us_census_lehd::model::lodes::{self as lodes_model, WacSegment};
+use us_census_lehd::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 
 // todo: top level here should be a LEHD command
 #[derive(Parser)]
@@ -15,9 +15,6 @@ pub struct LodesCliArgs {
     /// states to download. omit to download all states.
     #[arg(short, long)]
     states: Option<String>,
-    /// LODES has 3 datasets: OD, RAC, and WAC
-    #[arg(long)]
-    dataset: Option<lodes_model::LodesDataset>,
     /// LODES are created in editions, see website for details. LODES8 by default if not provided.
     #[arg(long)]
     edition: Option<lodes_model::LodesEdition>,
@@ -53,21 +50,28 @@ impl LodesCliArgs {
 async fn main() {
     env_logger::init();
     let args = LodesCliArgs::parse();
+
     let edition = args.edition.unwrap_or_default();
-    let dataset = args.dataset.unwrap_or_default();
     let segment = args.segment.unwrap_or_default();
     let job_type = args.jobtype.unwrap_or_default();
     let year = args.year;
+    let dataset = LodesDataset::WAC {
+        edition,
+        job_type,
+        segment,
+        year,
+    };
     let wac_segments = vec![WacSegment::C000];
     let state_codes = &args.get_state_codes();
     let agg_fn = args.agg_fn.unwrap_or_default();
     let output_geoid_type = args.agg_geoid_type.unwrap_or(GeoidType::Block);
+    let queries = state_codes
+        .into_iter()
+        .map(|s| dataset.create_uri(s))
+        .collect_vec();
 
     println!("executing LODES download");
-
     let client = reqwest::Client::new();
-    let queries =
-        lodes_api::create_queries(&edition, &dataset, state_codes, segment, job_type, year);
     let agg_rows = lodes_api::run(&client, &queries, &wac_segments, output_geoid_type, agg_fn)
         .await
         .unwrap();

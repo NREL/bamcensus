@@ -1,7 +1,8 @@
 use super::WacSegment;
+use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-#[derive(Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WacValue {
     pub segment: WacSegment,
     pub value: f64,
