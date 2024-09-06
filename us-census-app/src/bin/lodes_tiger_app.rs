@@ -69,33 +69,30 @@ async fn run_wac(args: &LodesWacTigerAppCli) {
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
 
-    println!("Dataset: {}", &dataset);
-    println!("geoids: {:?}", &geoids);
-    println!("wildcard: {:?}", &wildcard);
-    println!("wac_segments: {:?}", &wac_segments);
-
-    let res = lodes_tiger::run(args.year, geoids, wildcard, &wac_segments, dataset)
+    let res = lodes_tiger::run(args.year, geoids, &wildcard, &wac_segments, dataset)
         .await
         .unwrap();
     println!(
-        "found {} responses, {}/{} errors",
+        "found {} responses, {} errors",
         res.join_dataset.len(),
-        res.tiger_errors.len(),
-        res.join_errors.len(),
+        res.tiger_errors.len() + res.join_errors.len(),
     );
-    // println!("RESULTS");
-    // for row in res.join_dataset.into_iter() {
-    //     println!("{}", row)
-    // }
-    println!("TIGER ERRORS");
-    for row in res.tiger_errors.into_iter() {
-        println!("{}", row)
+
+    if res.tiger_errors.len() > 0 {
+        println!("TIGER ERRORS");
+        for row in res.tiger_errors.into_iter() {
+            println!("{}", row)
+        }
     }
-    println!("JOIN ERRORS");
-    for row in res.join_errors.into_iter() {
-        println!("{}", row)
+    if res.join_errors.len() > 0 {
+        println!("DATASET JOIN ERRORS");
+        for row in res.join_errors.into_iter() {
+            println!("{}", row)
+        }
     }
-    let mut writer = csv::WriterBuilder::new().from_path("output.csv").unwrap();
+    let mut writer = csv::WriterBuilder::new()
+        .from_path(dataset.output_filename(&wildcard))
+        .unwrap();
     for row in res.join_dataset {
         let out_row = LodesTigerOutputRow::from(row);
         writer.serialize(out_row).unwrap();
