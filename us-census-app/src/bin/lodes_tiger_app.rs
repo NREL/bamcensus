@@ -2,8 +2,8 @@ use clap::{Args, Parser, Subcommand};
 use itertools::Itertools;
 use us_census_app::lodes_tiger;
 use us_census_app::model::lodes_tiger_output_row::LodesTigerOutputRow;
-use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
+use us_census_core::model::{fips::state_code::StateCode, identifier::geoid::Geoid};
 use us_census_lehd::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 
 #[derive(Parser)]
@@ -24,7 +24,7 @@ pub enum LodesDatasetCli {
 #[derive(Args)]
 pub struct LodesWacTigerAppCli {
     #[arg(short, long)]
-    pub geoids: String,
+    pub geoids: Option<String>,
     #[arg(short, long)]
     pub wildcard: Option<GeoidType>,
     #[arg(long)]
@@ -50,11 +50,19 @@ async fn main() {
 }
 
 async fn run_wac(args: &LodesWacTigerAppCli) {
-    let geoids = args
-        .geoids
-        .split(',')
-        .map(|g| Geoid::try_from(g).unwrap())
-        .collect_vec();
+    let geoids = match &args.geoids {
+        Some(s) => s
+            .split(',')
+            .map(|g| Geoid::try_from(g).unwrap())
+            .collect_vec(),
+        None => StateCode::ALL
+            .iter()
+            .map(|sc| {
+                let fips = sc.to_fips_string();
+                Geoid::try_from(fips.as_str()).unwrap()
+            })
+            .collect_vec(),
+    };
     let dataset = LodesDataset::WAC {
         edition: args.edition.unwrap_or_default(),
         job_type: args.jobtype.unwrap_or_default(),
