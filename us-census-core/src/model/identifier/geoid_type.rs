@@ -5,7 +5,7 @@ use clap::ValueEnum;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, ValueEnum, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, ValueEnum, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum GeoidType {
     State,
@@ -22,10 +22,10 @@ impl Display for GeoidType {
         let s = match self {
             GeoidType::State => String::from("state"),
             GeoidType::County => String::from("county"),
-            GeoidType::CountySubdivision => String::from("county subdivision"),
+            GeoidType::CountySubdivision => String::from("county_subdivision"),
             GeoidType::Place => String::from("place"),
-            GeoidType::CensusTract => String::from("census tract"),
-            GeoidType::BlockGroup => String::from("block group"),
+            GeoidType::CensusTract => String::from("census_tract"),
+            GeoidType::BlockGroup => String::from("block_group"),
             GeoidType::Block => String::from("block"),
         };
         write!(f, "{}", s)

@@ -63,13 +63,6 @@ impl TigerUriBuilder {
         Ok(uris)
     }
 
-    pub fn geoid_shapefile_colname(&self) -> String {
-        match self {
-            TigerUriBuilder::Tiger2010 => String::from("GEOID10"),
-            _ => String::from("GEOID"),
-        }
-    }
-
     /// creates a URI to a file in the TIGER/Lines datasets stored at census.gov
     /// in order to find the file matching this Geoid, we need to know what year
     /// and how that file is labeled. this matches against all years/geoid types
@@ -241,9 +234,22 @@ impl TigerUriBuilder {
         let prefix = self.base_url();
         let uri = format!("{}/{}", prefix, suffix);
         let geoid_type = geoid.geoid_type();
-        let geoid_column_name = self.geoid_shapefile_colname();
+        let geoid_column_name = self.geoid_shapefile_colname(&suffix);
         let tiger_uri = TigerResource::new(uri, geoid_type, file_scope, geoid_column_name);
         Ok(tiger_uri)
+    }
+
+    pub fn geoid_shapefile_colname(&self, filename: &str) -> String {
+        // handle the GEOID column naming conventions that differ under
+        // edge cases, such as TABBLOCK10 in 2010 + TABBLOCK20 in 2020
+        // matching off of "n.zip" as a quick and easy pattern match
+        if self.get_year() == 2010 && filename.ends_with("10.zip") {
+            String::from("GEOID10")
+        } else if self.get_year() == 2020 && filename.ends_with("20.zip") {
+            String::from("GEOID20")
+        } else {
+            String::from("GEOID")
+        }
     }
 
     /// gets the year for this builder

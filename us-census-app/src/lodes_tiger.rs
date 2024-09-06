@@ -54,7 +54,7 @@ pub struct LodesTigerResponse {
 pub async fn run(
     year: u64,
     geoids: Vec<Geoid>,
-    wildcard: Option<GeoidType>,
+    wildcard: &Option<GeoidType>,
     wac_segments: &[WacSegment],
     dataset: LodesDataset,
 ) -> Result<LodesTigerResponse, String> {
@@ -81,14 +81,13 @@ pub async fn run(
         .into_iter()
         .map(|s| dataset.create_uri(&s))
         .collect_vec();
-
     let client: Client = Client::new();
 
-    // execute LODES API queries
-    let output_geoid_type = wildcard.unwrap_or(GeoidType::Block);
+    // execute LODES downloads
+    let output_geoid_type = wildcard.as_ref().unwrap_or(&GeoidType::Block);
     let agg = us_census_core::ops::agg::NumericAggregation::Sum;
     let lodes_rows =
-        lodes_api::run(&client, &queries, wac_segments, output_geoid_type, agg).await?;
+        lodes_api::run(&client, &queries, wac_segments, *output_geoid_type, agg).await?;
 
     // execute TIGER/Lines downloads
     let tiger_uri_builder = TigerUriBuilder::new(year)?;
@@ -108,16 +107,16 @@ pub async fn run(
         .into_iter()
         .map(|(geoid, lodes_values)| match tiger_lookup.get(&geoid) {
             Some(geometry) => {
-                let acs_tiger_rows = lodes_values
+                let lodes_tiger_rows = lodes_values
                     .into_iter()
                     .map(|acs_value| {
                         LodesWacTigerRow::new(geoid.clone(), acs_value, geometry.clone())
                     })
                     .collect_vec();
-                Ok(acs_tiger_rows)
+                Ok(lodes_tiger_rows)
             }
             None => Err(format!(
-                "geometry not found for geoid {}, has {} ACS values from API response",
+                "geometry not found for geoid {}, has {} LODES values from API response",
                 geoid,
                 lodes_values.len()
             )),

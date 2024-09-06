@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
+use us_census_core::model::identifier::GeoidType;
 
 use super::{LodesEdition, LodesJobType, OdPart, WorkplaceSegment, BASE_URL};
 
@@ -82,13 +83,18 @@ impl LodesDataset {
                 od_part,
                 year,
             } => {
-                let filename =
-                    format!("{}_od_{}_{}_{}.csv.gz", state_code, od_part, job_type, year);
+                let filename = format!(
+                    "{}_od_{}_{}_{}.csv.gz",
+                    state_code.to_lowercase(),
+                    od_part,
+                    job_type,
+                    year
+                );
                 format!(
                     "{}/{}/{}/{}/{}",
                     BASE_URL,
                     edition,
-                    state_code,
+                    state_code.to_lowercase(),
                     self.dataset_directory(),
                     filename
                 )
@@ -102,15 +108,48 @@ impl LodesDataset {
             } => {
                 let filename = format!(
                     "{}_wac_{}_{}_{}.csv.gz",
-                    state_code, segment, job_type, year
+                    state_code.to_lowercase(),
+                    segment,
+                    job_type,
+                    year
                 );
                 format!(
                     "{}/{}/{}/{}/{}",
                     BASE_URL,
                     edition,
-                    state_code,
+                    state_code.to_lowercase(),
                     self.dataset_directory(),
                     filename
+                )
+            }
+        }
+    }
+
+    pub fn output_filename(&self, wildcard: &Option<GeoidType>) -> String {
+        match self {
+            LodesDataset::OD {
+                edition,
+                job_type,
+                od_part,
+                year,
+            } => {
+                let out_res = wildcard.unwrap_or(GeoidType::Block);
+                format!(
+                    "{}_od_{}_{}_{}_{}.csv",
+                    edition, year, job_type, od_part, out_res
+                )
+            }
+            LodesDataset::RAC => todo!(),
+            LodesDataset::WAC {
+                edition,
+                job_type,
+                segment,
+                year,
+            } => {
+                let out_res = wildcard.unwrap_or(GeoidType::Block);
+                format!(
+                    "{}_wac_{}_{}_{}_{}.csv",
+                    edition, year, job_type, segment, out_res
                 )
             }
         }
