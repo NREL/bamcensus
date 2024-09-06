@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
 #[derive(Default, ValueEnum, Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[serde(rename_all = "UPPERCASE")]
 pub enum WacSegment {
     #[default]
     C000,
@@ -46,6 +47,57 @@ pub enum WacSegment {
     CD04,
     CS01,
     CS02,
+}
+
+impl TryFrom<&str> for WacSegment {
+    type Error = String;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "C000" => Ok(Self::C000),
+            "CA01" => Ok(Self::CA01),
+            "CA02" => Ok(Self::CA02),
+            "CA03" => Ok(Self::CA03),
+            "CE01" => Ok(Self::CE01),
+            "CE02" => Ok(Self::CE02),
+            "CE03" => Ok(Self::CE03),
+            "CNS01" => Ok(Self::CNS01),
+            "CNS02" => Ok(Self::CNS02),
+            "CNS03" => Ok(Self::CNS03),
+            "CNS04" => Ok(Self::CNS04),
+            "CNS05" => Ok(Self::CNS05),
+            "CNS06" => Ok(Self::CNS06),
+            "CNS07" => Ok(Self::CNS07),
+            "CNS08" => Ok(Self::CNS08),
+            "CNS09" => Ok(Self::CNS09),
+            "CNS10" => Ok(Self::CNS10),
+            "CNS11" => Ok(Self::CNS11),
+            "CNS12" => Ok(Self::CNS12),
+            "CNS13" => Ok(Self::CNS13),
+            "CNS14" => Ok(Self::CNS14),
+            "CNS15" => Ok(Self::CNS15),
+            "CNS16" => Ok(Self::CNS16),
+            "CNS17" => Ok(Self::CNS17),
+            "CNS18" => Ok(Self::CNS18),
+            "CNS19" => Ok(Self::CNS19),
+            "CNS20" => Ok(Self::CNS20),
+            "CR01" => Ok(Self::CR01),
+            "CR02" => Ok(Self::CR02),
+            "CR03" => Ok(Self::CR03),
+            "CR04" => Ok(Self::CR04),
+            "CR05" => Ok(Self::CR05),
+            "CR07" => Ok(Self::CR07),
+            "CT01" => Ok(Self::CT01),
+            "CT02" => Ok(Self::CT02),
+            "CD01" => Ok(Self::CD01),
+            "CD02" => Ok(Self::CD02),
+            "CD03" => Ok(Self::CD03),
+            "CD04" => Ok(Self::CD04),
+            "CS01" => Ok(Self::CS01),
+            "CS02" => Ok(Self::CS02),
+            _ => Err(format!("unknown WAC Segment {}", value)),
+        }
+    }
 }
 
 impl Display for WacSegment {

@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Args, Parser, Subcommand};
 use itertools::Itertools;
 use us_census_app::lodes_tiger;
 use us_census_app::model::lodes_tiger_output_row::LodesTigerOutputRow;
@@ -6,9 +6,23 @@ use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
 use us_census_lehd::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-pub struct LodesTigerAppCli {
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+#[command(propagate_version = true)]
+pub struct LodesTigerApp {
+    #[command(subcommand)]
+    dataset: LodesDatasetCli,
+}
+
+#[derive(Subcommand)]
+pub enum LodesDatasetCli {
+    Wac(LodesWacTigerAppCli),
+}
+
+// #[derive(Parser, Debug)]
+// #[command(author, version, about, long_about = None)]
+#[derive(Args)]
+pub struct LodesWacTigerAppCli {
     #[arg(short, long)]
     pub geoids: String,
     #[arg(short, long)]
@@ -29,7 +43,13 @@ pub struct LodesTigerAppCli {
 
 #[tokio::main]
 async fn main() {
-    let args = LodesTigerAppCli::parse();
+    let cli = LodesTigerApp::parse();
+    match &cli.dataset {
+        LodesDatasetCli::Wac(wac) => run_wac(wac).await,
+    }
+}
+
+async fn run_wac(args: &LodesWacTigerAppCli) {
     let geoids = args
         .geoids
         .split(',')
@@ -41,14 +61,20 @@ async fn main() {
         segment: args.segment.unwrap_or_default(),
         year: args.year,
     };
+    let wildcard = args.wildcard.clone();
     let wac_segments = args
         .wac_segments
         .split(',')
-        .map(|s| serde_json::from_str::<WacSegment>(s).map_err(|e| format!("{}", e)))
+        .map(WacSegment::try_from)
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
 
-    let res = lodes_tiger::run(args.year, geoids, args.wildcard, &wac_segments, dataset)
+    println!("Dataset: {}", &dataset);
+    println!("geoids: {:?}", &geoids);
+    println!("wildcard: {:?}", &wildcard);
+    println!("wac_segments: {:?}", &wac_segments);
+
+    let res = lodes_tiger::run(args.year, geoids, wildcard, &wac_segments, dataset)
         .await
         .unwrap();
     println!(

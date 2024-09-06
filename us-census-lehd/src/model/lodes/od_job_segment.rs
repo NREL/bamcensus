@@ -2,6 +2,7 @@ use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, ValueEnum, Serialize, Deserialize, Clone, Copy, Debug)]
+#[serde(rename_all = "UPPERCASE")]
 pub enum OdJobSegment {
     #[default]
     S000,

@@ -8,6 +8,7 @@ use std::fmt::Display;
 /// the columns in a downloaded LODES OD dataset, or, one of the
 /// parameters of a WAC dataset filename.
 #[derive(Default, ValueEnum, Serialize, Deserialize, Clone, Copy, Debug)]
+#[serde(rename_all = "UPPERCASE")]
 pub enum WorkplaceSegment {
     #[default]
     S000,
