@@ -61,7 +61,7 @@ async fn run_wac(args: &LodesWacTigerAppCli) {
         segment: args.segment.unwrap_or_default(),
         year: args.year,
     };
-    let wildcard = args.wildcard.clone();
+    let wildcard = args.wildcard;
     let wac_segments = args
         .wac_segments
         .split(',')
@@ -78,13 +78,13 @@ async fn run_wac(args: &LodesWacTigerAppCli) {
         res.tiger_errors.len() + res.join_errors.len(),
     );
 
-    if res.tiger_errors.len() > 0 {
+    if !res.tiger_errors.is_empty() {
         println!("TIGER ERRORS");
         for row in res.tiger_errors.into_iter() {
             println!("{}", row)
         }
     }
-    if res.join_errors.len() > 0 {
+    if !res.join_errors.is_empty() {
         println!("DATASET JOIN ERRORS");
         for row in res.join_errors.into_iter() {
             println!("{}", row)
