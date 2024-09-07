@@ -1,5 +1,8 @@
-use crate::model::lodes::wac_value::WacValue;
+use std::collections::HashMap;
+
+use crate::model::lodes::{wac_value::WacValue, WacSegment};
 use itertools::Itertools;
+use kdam::BarExt;
 use us_census_core::{
     model::identifier::{Geoid, GeoidType},
     ops::agg::aggregation_function::NumericAggregation,
@@ -72,25 +75,64 @@ pub fn aggregate_lodes_wac(
         ));
     }
 
-    let mut geoids_grouped = vec![];
-    let grouping_iter = geoid_oks.into_iter().chunk_by(|(g, _)| g.clone());
-    for (geoid, grouped) in &grouping_iter {
-        let vs = grouped.into_iter().flat_map(|(_, v)| v).collect_vec();
-        geoids_grouped.push((geoid, vs));
-    }
+    // nested groupby operation collected into a hashmap
+    let mut grouped: HashMap<Geoid, HashMap<WacSegment, Vec<f64>>> = HashMap::new();
+    let n_geoid_oks = geoid_oks.len();
+    let group_iter_desc = format!("LODES - geoids to {}", target.to_string());
+    let pb1_builder = kdam::BarBuilder::default()
+        .total(n_geoid_oks)
+        .desc(group_iter_desc);
+    let mut pb1 = pb1_builder
+        .build()
+        .map_err(|e| format!("error building progress bar: {}", e))?;
 
-    // reduce by key
-    let reduced = geoids_grouped
-        .into_iter()
-        .map(|(geoid, values)| {
-            let xs = values.into_iter().chunk_by(|v| v.segment);
-            let mut agg_values = vec![];
-            for (wac_segment, values) in &xs {
-                let aggregated = agg.aggregate(&mut values.map(|v| v.value));
-                agg_values.push(WacValue::new(wac_segment, aggregated));
+    for (geoid, values) in geoid_oks.into_iter() {
+        for wac in values.into_iter() {
+            match grouped.get_mut(&geoid) {
+                Some(inner) => match inner.get_mut(&wac.segment) {
+                    Some(inner_vec) => {
+                        let _ = inner_vec.push(wac.value);
+                    }
+                    None => {
+                        let _ = inner.insert(wac.segment, vec![wac.value]);
+                    }
+                },
+                None => {
+                    let mut map = HashMap::new();
+                    map.insert(wac.segment, vec![wac.value]);
+                    grouped.insert(geoid.clone(), map);
+                }
             }
-            (geoid, agg_values)
+        }
+        let _ = pb1.update(1);
+    }
+    println!();
+
+    // flattended into vector collection
+    let n_grouped = grouped.len();
+    let reduce_desc = format!("LODES - aggregate by {}", agg);
+    let pb2_builder = kdam::BarBuilder::default()
+        .total(n_grouped)
+        .desc(reduce_desc);
+    let mut pb2 = pb2_builder
+        .build()
+        .map_err(|e| format!("error building progress bar: {}", e))?;
+    let output = grouped
+        .into_iter()
+        .map(|(geoid, map)| {
+            let values = map
+                .into_iter()
+                .map(|(seg, values)| {
+                    // let mut mut_values = values;
+                    let value = agg.aggregate(&mut values.into_iter());
+                    WacValue::new(seg, value)
+                })
+                .collect_vec();
+            let _ = pb2.update(1);
+            (geoid, values)
         })
         .collect_vec();
-    Ok(reduced)
+    println!(); // end progress bar
+
+    Ok(output)
 }

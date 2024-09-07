@@ -71,7 +71,7 @@ pub async fn run(
     // let acs_year = AcsYear::try_from(year)?;
     let query_params =
         AcsApiQueryParams::new(None, year, acs_type, acs_get_query, query, acs_api_token);
-    let acs_response = acs_api::batch_run(&client, vec![query_params]).await;
+    let acs_response = acs_api::batch_run(&client, vec![query_params]).await?;
 
     type AcsRows = Vec<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>)>;
     let (acs_rows, acs_errors): (AcsRows, Vec<String>) =

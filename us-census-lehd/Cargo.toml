@@ -17,3 +17,4 @@ reqwest = { workspace = true }
 futures = { workspace = true }
 csv = { workspace = true }
 flate2 = { workspace = true }
+kdam = { workspace = true }

@@ -3,12 +3,14 @@ use crate::model::tiger_uri_builder::TigerUriBuilder;
 use futures::StreamExt;
 use geo_types::Geometry;
 use itertools::Itertools;
+use kdam::BarExt;
 use reqwest::Client;
 use shapefile::dbase::Record;
 use shapefile::{dbase, Shape, ShapeReader};
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::{Cursor, Read};
+use std::sync::{Arc, Mutex};
 use tokio::io::AsyncWriteExt;
 use us_census_core::model::identifier::geoid::Geoid;
 use zip::ZipArchive;
@@ -27,11 +29,20 @@ pub async fn run<'a>(
 ) -> Result<Vec<Result<Vec<(Geoid, Geometry)>, String>>, String> {
     let uris = builder.create_uris(geoids)?;
     let lookup = geoids.iter().collect::<HashSet<_>>();
+
+    let pb_builder = kdam::BarBuilder::default().total(uris.len());
+    let pb: Arc<Mutex<kdam::Bar>> = Arc::new(Mutex::new(
+        pb_builder
+            .build()
+            .map_err(|e| format!("error building progress bar: {}", e))?,
+    ));
+
     let run_results = uris
         .into_iter()
         .map(|tiger| {
             let client = &client;
             let lookup = &lookup;
+            let pb = &pb;
             async move {
                 // create temporary file for writing .zip download
                 let named_tmp = tempfile::NamedTempFile::new().map_err(|e| {
@@ -67,11 +78,22 @@ pub async fn run<'a>(
                     })
                     .collect::<Result<Vec<_>, String>>()?;
                 let result = read_result.into_iter().flatten().collect_vec();
+
+                // update progress bar
+                let mut pb_update = pb
+                    .lock()
+                    .map_err(|e| format!("failure aquiring progress bar mutex lock: {}", e))?;
+                pb_update
+                    .update(1)
+                    .map_err(|e| format!("failure on pb update: {}", e))?;
+                pb_update.set_description(tiger.uri.split("/").last().unwrap_or_default());
+
                 Ok(result)
             }
         })
         .collect::<Vec<_>>();
     let result = futures::future::join_all(run_results).await;
+    println!(); // terminate progress bar
     Ok(result)
 }
 

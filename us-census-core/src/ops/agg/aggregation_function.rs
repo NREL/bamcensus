@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
@@ -22,6 +24,15 @@ impl NumericAggregation {
                     acc / n
                 }
             }
+        }
+    }
+}
+
+impl Display for NumericAggregation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NumericAggregation::Sum => write!(f, "sum"),
+            NumericAggregation::Mean => write!(f, "mean"),
         }
     }
 }

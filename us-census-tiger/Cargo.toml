@@ -18,3 +18,4 @@ shapefile = { workspace = true }
 geo-types = { workspace = true }
 tempfile = { workspace = true }
 zip = { workspace = true }
+kdam = { workspace = true }

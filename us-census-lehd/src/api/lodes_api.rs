@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+
 use crate::{
     model::lodes::{wac_row::WacRow, wac_value::WacValue, WacSegment},
     ops::lodes_agg,
@@ -6,6 +8,7 @@ use csv::ReaderBuilder;
 use flate2::read::GzDecoder;
 use futures::future;
 use itertools::Itertools;
+use kdam::BarExt;
 use reqwest::Client;
 use us_census_core::{
     model::identifier::{Geoid, GeoidType},
@@ -23,9 +26,17 @@ pub async fn run(
     output_geoid_type: GeoidType,
     agg: NumericAggregation,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
+    let pb_builder = kdam::BarBuilder::default().total(queries.len());
+    let pb = Arc::new(Mutex::new(
+        pb_builder
+            .build()
+            .map_err(|e| format!("error building progress bar: {}", e))?,
+    ));
+
     let responses = queries.iter().map(|url| {
         let client = &client;
         let wac_segments = &wac_segments;
+        let pb = pb.clone();
         async move {
             let res = client
                 .get(url)
@@ -46,8 +57,18 @@ pub async fn run(
                 for segment in wac_segments.iter() {
                     row_result.push(WacValue::new(*segment, row.get(segment)));
                 }
-                result.push((geoid, row_result))
+                result.push((geoid, row_result));
             }
+
+            // update progress bar
+            let mut pb_update = pb
+                .lock()
+                .map_err(|e| format!("failure aquiring progress bar mutex lock: {}", e))?;
+            pb_update
+                .update(1)
+                .map_err(|e| format!("failure on pb update: {}", e))?;
+            pb_update.set_description(url.split("/").last().unwrap_or_default());
+
             Ok(result)
         }
     });
@@ -58,6 +79,7 @@ pub async fn run(
         .into_iter()
         .flatten()
         .collect_vec();
+    println!(); // progress bar terminated
     let aggregated_rows = lodes_agg::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?;
     Ok(aggregated_rows)
 }

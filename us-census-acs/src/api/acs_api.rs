@@ -4,18 +4,48 @@ use crate::model::{
 };
 use futures::future;
 use itertools::Itertools;
+use kdam::BarExt;
 use reqwest::{Client, StatusCode};
+use std::sync::{Arc, Mutex};
 use us_census_core::model::identifier::geoid::Geoid;
+
+type AcsResponse = Result<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>), String>;
 
 /// sets up a run of ACS queries.
 pub async fn batch_run<'a>(
     client: &Client,
     queries: Vec<AcsApiQueryParams>,
-) -> Vec<Result<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>), String>> {
-    let response = queries
-        .into_iter()
-        .map(|params| async move { run(client, &params).await.map(|res| (params, res)) });
-    future::join_all(response).await
+) -> Result<Vec<AcsResponse>, String> {
+    let pb_builder = kdam::BarBuilder::default().total(queries.len());
+    let pb = Arc::new(Mutex::new(
+        pb_builder
+            .build()
+            .map_err(|e| format!("error building progress bar: {}", e))?,
+    ));
+
+    let response = queries.into_iter().map(|params| {
+        let pb = pb.clone();
+        async move {
+            let desc = params.build_url()?;
+            let res = run(client, &params).await.map(|res| (params, res));
+
+            // update progress bar
+            let mut pb_update = pb
+                .lock()
+                .map_err(|e| format!("failure aquiring progress bar mutex lock: {}", e))?;
+            pb_update
+                .update(1)
+                .map_err(|e| format!("failure on pb update: {}", e))?;
+
+            pb_update.set_description(&desc);
+
+            res
+        }
+    });
+    let result = future::join_all(response).await;
+
+    println!(); // terminate progress bar
+    Ok(result)
 }
 
 /// sets up a run of an ACS query.
