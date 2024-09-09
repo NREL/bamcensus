@@ -64,7 +64,7 @@ pub async fn run(
             pb_update
                 .update(1)
                 .map_err(|e| format!("failure on pb update: {}", e))?;
-            pb_update.set_description(url.split("/").last().unwrap_or_default());
+            pb_update.set_description(url.split('/').last().unwrap_or_default());
 
             Ok(result)
         }

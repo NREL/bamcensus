@@ -86,7 +86,7 @@ pub async fn run<'a>(
                 pb_update
                     .update(1)
                     .map_err(|e| format!("failure on pb update: {}", e))?;
-                pb_update.set_description(tiger.uri.split("/").last().unwrap_or_default());
+                pb_update.set_description(tiger.uri.split('/').last().unwrap_or_default());
 
                 Ok(result)
             }

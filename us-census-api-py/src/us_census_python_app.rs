@@ -21,9 +21,9 @@ pub fn wac_tiger<'a>(
     let dataset_result: Result<LodesDataset, PyErr> = kwds
         .map(|m| {
             if m.contains("edition")? && m.contains("job_type")? && m.contains("segment")? {
-                let edition: LodesEdition = get_string_deserializable(&"edition", m)?;
-                let job_type: LodesJobType = get_string_deserializable(&"job_type", m)?;
-                let segment: WorkplaceSegment = get_string_deserializable(&"segment", m)?;
+                let edition: LodesEdition = get_string_deserializable("edition", m)?;
+                let job_type: LodesJobType = get_string_deserializable("job_type", m)?;
+                let segment: WorkplaceSegment = get_string_deserializable("segment", m)?;
                 let dataset = LodesDataset::WAC {
                     edition,
                     job_type,
@@ -38,22 +38,22 @@ pub fn wac_tiger<'a>(
         .unwrap_or_else(|| Ok(LodesDataset::default()));
     let dataset = dataset_result?;
 
-    let geoids_string: String = kwds.map_or(Ok(String::from("")), |m| get_string(&"geoids", m))?;
+    let geoids_string: String = kwds.map_or(Ok(String::from("")), |m| get_string("geoids", m))?;
     let geoids = geoids_string
-        .split(",")
-        .map(|s| Geoid::try_from(s))
+        .split(',')
+        .map(Geoid::try_from)
         .collect::<Result<Vec<_>, String>>()
         .map_err(|e| PyException::new_err(format!("failure decoding geoids argument: {}", e)))?;
     let wac_segments = kwds.map_or(Ok(vec![WacSegment::C000]), |m| {
         if m.contains("wac_segments")? {
-            get_comma_separated(&"wac_segments", m)
+            get_comma_separated("wac_segments", m)
         } else {
             Ok(vec![WacSegment::default()])
         }
     })?;
     let wildcard = kwds.map_or(Ok(None), |m| {
         if m.contains("wildcard")? {
-            get_string_deserializable(&"wildcard", m).map(|g| Some(g))
+            get_string_deserializable("wildcard", m).map(Some)
         } else {
             Ok(None)
         }
@@ -70,11 +70,11 @@ pub fn wac_tiger<'a>(
         PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
     })?;
 
-    if result.tiger_errors.len() > 0 {
+    if !result.tiger_errors.is_empty() {
         let msg = result.tiger_errors.iter().join(",");
         return Err(PyException::new_err(format!("tiger errors: {}", msg)));
     }
-    if result.join_errors.len() > 0 {
+    if !result.join_errors.is_empty() {
         let msg = result.join_errors.iter().join(",");
         return Err(PyException::new_err(format!("join errors: {}", msg)));
     }
@@ -94,13 +94,13 @@ pub fn wac_tiger<'a>(
     Ok(out_dict)
 }
 
-fn get_comma_separated<'a, T>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<Vec<T>>
+fn get_comma_separated<T>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<Vec<T>>
 where
     T: de::DeserializeOwned,
 {
     let ss: String = get_string(key, map)?;
     let result = ss
-        .split(",")
+        .split(',')
         .map(|s| {
             serde_json::from_str(s).map_err(|e| {
                 format!(
@@ -118,9 +118,9 @@ where
     })
 }
 
-fn get_string<'a>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<String> {
+fn get_string(key: &str, map: &Bound<'_, PyDict>) -> PyResult<String> {
     let item_opt = map
-        .get_item(&key)
+        .get_item(key)
         .map_err(|e| PyException::new_err(format!("failure retreiving key {}: {}", key, e)))?;
     let item = match item_opt {
         None => Err(PyException::new_err(format!("key {} not present", key))),
@@ -132,12 +132,12 @@ fn get_string<'a>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<String> {
     Ok(string)
 }
 
-fn get_string_deserializable<'a, T>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<T>
+fn get_string_deserializable<T>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<T>
 where
     T: de::DeserializeOwned,
 {
     let item_opt = map
-        .get_item(&key)
+        .get_item(key)
         .map_err(|e| PyException::new_err(format!("failure retreiving key {}: {}", key, e)))?;
     let item = match item_opt {
         None => Err(PyException::new_err(format!("key {} not present", key))),

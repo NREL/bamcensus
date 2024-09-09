@@ -77,7 +77,7 @@ pub fn aggregate_lodes_wac(
     // nested groupby operation collected into a hashmap
     let mut grouped: HashMap<Geoid, HashMap<WacSegment, Vec<f64>>> = HashMap::new();
     let n_geoid_oks = geoid_oks.len();
-    let group_iter_desc = format!("LODES - geoids to {}", target.to_string());
+    let group_iter_desc = format!("LODES - geoids to {}", target);
     let pb1_builder = kdam::BarBuilder::default()
         .total(n_geoid_oks)
         .desc(group_iter_desc);
@@ -86,11 +86,11 @@ pub fn aggregate_lodes_wac(
         .map_err(|e| format!("error building progress bar: {}", e))?;
 
     for (geoid, values) in geoid_oks.into_iter() {
-        for wac in values.into_iter() {
+        for wac in values.iter() {
             match grouped.get_mut(&geoid) {
                 Some(inner) => match inner.get_mut(&wac.segment) {
                     Some(inner_vec) => {
-                        let _ = inner_vec.push(wac.value);
+                        inner_vec.push(wac.value);
                     }
                     None => {
                         let _ = inner.insert(wac.segment, vec![wac.value]);
