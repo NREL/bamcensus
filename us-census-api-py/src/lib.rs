@@ -1,6 +1,5 @@
 // #![doc = include_str!("doc.md")]
 
-pub mod response;
 mod us_census_python_app;
 use pyo3::prelude::*;
 use us_census_python_app::UsCensusPythonApi;
