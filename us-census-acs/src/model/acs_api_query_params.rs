@@ -40,9 +40,9 @@ impl AcsApiQueryParams {
     ///
     /// ```rust
     /// use us_census_core::model::identifier::{fips, geoid_type::GeoidType};
+    /// use us_census_core::model::acs::AcsType;
     /// use us_census_acs::model::{
     ///     acs_geoid_query::AcsGeoidQuery,
-    ///     acs_type::AcsType,
     ///     acs_api_query_params::AcsApiQueryParams
     /// };
     ///
@@ -60,9 +60,9 @@ impl AcsApiQueryParams {
     ///
     /// ```rust
     /// use us_census_core::model::identifier::{fips, geoid_type::GeoidType, geoid::Geoid};
+    /// use us_census_core::model::acs::AcsType;
     /// use us_census_acs::model::{
     ///     acs_geoid_query::AcsGeoidQuery,
-    ///     acs_type::AcsType,
     ///     acs_api_query_params::AcsApiQueryParams
     /// };
     ///

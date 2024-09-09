@@ -15,7 +15,7 @@ use us_census_core::{
 /// ```rust
 /// use us_census_core::model::identifier::{Geoid, GeoidType, fips};
 /// use us_census_core::ops::agg::NumericAggregation;
-/// use us_census_lehd::model::lodes::{WacSegment, WacValue};
+/// use us_census_core::model::lodes::{WacSegment, WacValue};
 /// use us_census_lehd::ops::lodes_agg;
 ///
 /// // 2020 populations by county (WAC Segment C000) for two counties in Colorado.

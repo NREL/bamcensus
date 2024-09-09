@@ -14,7 +14,7 @@ use us_census_core::{
 /// ```rust
 /// use us_census_core::model::identifier::{Geoid, GeoidType, fips};
 /// use us_census_core::ops::agg::NumericAggregation;
-/// use us_census_acs::model::AcsValue;
+/// use us_census_core::model::acs::AcsValue;
 /// use us_census_acs::ops::acs_agg;
 /// use serde_json::json;
 ///

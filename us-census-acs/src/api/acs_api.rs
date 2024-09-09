@@ -153,7 +153,7 @@ fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> R
 /// for 2020.
 ///
 /// ```rust
-/// use us_census_acs::ops::acs_api::deserialize;
+/// use us_census_acs::api::acs_api::deserialize;
 /// use us_census_acs::model::acs_geoid_query::AcsGeoidQuery;
 /// use us_census_core::model::identifier::fips;
 /// use us_census_core::model::identifier::geoid::Geoid;
