@@ -1,5 +1,6 @@
-use crate::model::{acs_geoid_query::AcsGeoidQuery, acs_type::AcsType};
+use crate::model::acs_geoid_query::AcsGeoidQuery;
 use itertools::Itertools;
+use us_census_core::model::acs::acs_type::AcsType;
 
 pub struct AcsApiQueryParams {
     pub url: String,

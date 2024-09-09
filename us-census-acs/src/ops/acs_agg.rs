@@ -1,6 +1,6 @@
-use crate::model::AcsValue;
 use itertools::Itertools;
 use serde_json::json;
+use us_census_core::model::acs::AcsValue;
 use us_census_core::{
     model::identifier::{Geoid, GeoidType},
     ops::agg::aggregation_function::NumericAggregation,

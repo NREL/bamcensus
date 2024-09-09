@@ -5,10 +5,19 @@ edition = "2021"
 
 [dependencies]
 us-census-core = { path = "../us-census-core" }
+us-census-lehd = { path = "../us-census-lehd" }
+us-census-acs = { path = "../us-census-acs" }
 us-census-app = { path = "../us-census-app" }
-pyo3 = { version = "0.22.2", features = ["extension-module", "serde"] }
+pyo3 = { version = "0.22.2", features = [
+  "extension-module",
+  "serde",
+  "experimental-async",
+] }
+serde = { workspace = true }
 serde_json = { workspace = true }
+tokio = { workspace = true }
+wkt = { workspace = true }
 
 [lib]
-name = "routee_compass_py"
+name = "us_census_api_py"
 crate-type = ["cdylib"]

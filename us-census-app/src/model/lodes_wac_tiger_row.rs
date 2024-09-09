@@ -3,7 +3,7 @@ use std::fmt::Display;
 use geo::Geometry;
 use serde::{Deserialize, Serialize};
 use us_census_core::model::identifier::{geoid::Geoid, has_geoid_string::HasGeoidString};
-use us_census_lehd::model::lodes::WacValue;
+use us_census_core::model::lodes::WacValue;
 use wkt::ToWkt;
 
 #[derive(Deserialize, Serialize)]

@@ -1,8 +1,7 @@
+use super::{LodesEdition, LodesJobType, OdPart, WorkplaceSegment, BASE_URL, LATEST_YEAR};
+use crate::model::identifier::GeoidType;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
-use us_census_core::model::identifier::GeoidType;
-
-use super::{LodesEdition, LodesJobType, OdPart, WorkplaceSegment, BASE_URL};
 
 #[derive(Deserialize, Serialize, Clone, Copy, Debug)]
 #[serde(rename_all = "snake_case", tag = "type")]
@@ -20,6 +19,18 @@ pub enum LodesDataset {
         segment: WorkplaceSegment,
         year: u64,
     },
+}
+
+impl Default for LodesDataset {
+    fn default() -> Self {
+        let year = LATEST_YEAR;
+        Self::WAC {
+            edition: LodesEdition::default(),
+            job_type: LodesJobType::default(),
+            segment: WorkplaceSegment::default(),
+            year,
+        }
+    }
 }
 
 impl Display for LodesDataset {

@@ -1,5 +1,5 @@
+use crate::model::identifier::{geoid::Geoid, geoid_type::GeoidType};
 use serde::{Deserialize, Serialize};
-use us_census_core::model::identifier::{geoid::Geoid, geoid_type::GeoidType};
 
 use super::WacSegment;
 

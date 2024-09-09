@@ -1,0 +1,47 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "uscensus"
+version = "0.1.0"
+# description = ""
+readme = "README.md"
+# documentation = "nrel.github.io/routee-compass"
+requires-python = ">=3.11"
+authors = [{ name = "Rob Fitzgerald", email = "robfitzgerald@gmail.com" }]
+license = { text = "BSD 3-Clause License Copyright (c) 2023, Alliance for Sustainable Energy, LLC" }
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: Other/Proprietary License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Topic :: Scientific/Engineering",
+]
+keywords = [""]
+# dependencies = ["toml"]
+
+[project.optional-dependencies]
+dev = ["pytest", "maturin", "jupyter-book"] #, "ruff", "sphinx-book-theme"]
+all = ["uscensus[dev]"]
+
+[project.urls]
+Homepage = "https://github.com/robfitzgerald/us-census"
+
+[tool.maturin]
+python-source = "python"
+features = ["pyo3/extension-module"]
+module-name = "uscensus"
+manifest-path = "us-census-app-py/Cargo.toml"
+# include = [
+#   "python/nrel/routee/compass/resources/models/*.bin",
+#   "python/nrel/routee/compass/resources/*.toml",
+# ]
+# exclude = ["rust/routee-compass-powertrain/onnxruntime/**"]
+
+[tool.mypy]
+ignore_missing_imports = true
+namespace_packages = true
+explicit_package_bases = true
+exclude = ["docs/", "build/", "dist/"]

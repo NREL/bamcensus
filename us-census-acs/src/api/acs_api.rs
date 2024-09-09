@@ -1,12 +1,10 @@
-use crate::model::{
-    acs_api_query_params::AcsApiQueryParams, acs_geoid_query::DeserializeGeoidFn,
-    acs_value::AcsValue,
-};
+use crate::model::{acs_api_query_params::AcsApiQueryParams, acs_geoid_query::DeserializeGeoidFn};
 use futures::future;
 use itertools::Itertools;
 use kdam::BarExt;
 use reqwest::{Client, StatusCode};
 use std::sync::{Arc, Mutex};
+use us_census_core::model::acs::acs_value::AcsValue;
 use us_census_core::model::identifier::geoid::Geoid;
 
 type AcsResponse = Result<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>), String>;

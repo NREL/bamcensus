@@ -1,8 +1,8 @@
 use clap::Parser;
 use itertools::Itertools;
-use us_census_acs::model::acs_type::AcsType;
 use us_census_app::acs_tiger;
 use us_census_app::model::acs_tiger_output_row::AcsTigerOutputRow;
+use us_census_core::model::acs::AcsType;
 use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
 

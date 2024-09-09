@@ -2,15 +2,17 @@ use crate::model::lodes_wac_tiger_row::LodesWacTigerRow;
 use geo::Geometry;
 use itertools::Itertools;
 use reqwest::Client;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use us_census_core::model::fips::state_code::StateCode;
 use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
+use us_census_core::model::lodes::{LodesDataset, WacSegment, ALL_STATES};
 use us_census_lehd::api::lodes_api;
-use us_census_lehd::model::lodes::{LodesDataset, WacSegment, ALL_STATES};
 use us_census_tiger::model::tiger_uri_builder::TigerUriBuilder;
 use us_census_tiger::ops::tiger_api;
 
+#[derive(Serialize, Deserialize)]
 pub struct LodesTigerResponse {
     pub join_dataset: Vec<LodesWacTigerRow>,
     pub tiger_errors: Vec<String>,

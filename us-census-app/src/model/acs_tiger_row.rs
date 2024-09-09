@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use geo::Geometry;
 use serde::{Deserialize, Serialize};
-use us_census_acs::model::acs_value::AcsValue;
+use us_census_core::model::acs::AcsValue;
 use us_census_core::model::identifier::{geoid::Geoid, has_geoid_string::HasGeoidString};
 use wkt::ToWkt;
 

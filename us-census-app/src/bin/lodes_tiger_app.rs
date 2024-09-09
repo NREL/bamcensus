@@ -3,8 +3,8 @@ use itertools::Itertools;
 use us_census_app::lodes_tiger;
 use us_census_app::model::lodes_tiger_output_row::LodesTigerOutputRow;
 use us_census_core::model::identifier::geoid_type::GeoidType;
+use us_census_core::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 use us_census_core::model::{fips::state_code::StateCode, identifier::geoid::Geoid};
-use us_census_lehd::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]

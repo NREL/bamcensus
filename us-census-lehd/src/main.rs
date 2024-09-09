@@ -1,9 +1,9 @@
 use clap::Parser;
 use itertools::Itertools;
 use us_census_core::model::identifier::GeoidType;
+use us_census_core::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 use us_census_core::ops::agg::aggregation_function::NumericAggregation;
 use us_census_lehd::api::lodes_api;
-use us_census_lehd::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 
 // todo: top level here should be a LEHD command
 #[derive(Parser)]

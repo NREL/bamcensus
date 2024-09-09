@@ -6,7 +6,7 @@ members = [
   "us-census-tiger",
   "us-census-app",
   "us-census-lehd",
-  # "us-census-api-py",
+  "us-census-api-py",
 ]
 
 [workspace.dependencies]

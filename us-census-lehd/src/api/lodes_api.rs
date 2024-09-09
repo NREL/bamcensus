@@ -1,15 +1,12 @@
-use std::sync::{Arc, Mutex};
-
-use crate::{
-    model::lodes::{wac_row::WacRow, wac_value::WacValue, WacSegment},
-    ops::lodes_agg,
-};
+use crate::ops::lodes_agg;
 use csv::ReaderBuilder;
 use flate2::read::GzDecoder;
 use futures::future;
 use itertools::Itertools;
 use kdam::BarExt;
 use reqwest::Client;
+use std::sync::{Arc, Mutex};
+use us_census_core::model::lodes::{wac_row::WacRow, wac_value::WacValue, WacSegment};
 use us_census_core::{
     model::identifier::{Geoid, GeoidType},
     ops::agg::aggregation_function::NumericAggregation,

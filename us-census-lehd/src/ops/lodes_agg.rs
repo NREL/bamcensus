@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
-use crate::model::lodes::{wac_value::WacValue, WacSegment};
 use itertools::Itertools;
 use kdam::BarExt;
+use std::collections::HashMap;
+use us_census_core::model::lodes::{wac_value::WacValue, WacSegment};
 use us_census_core::{
     model::identifier::{Geoid, GeoidType},
     ops::agg::aggregation_function::NumericAggregation,
