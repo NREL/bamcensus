@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use super::{fips, geoid_type::GeoidType, has_geoid_string::HasGeoidString};
 use std::fmt::Display;
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum Geoid {
     State(fips::State),
     County(fips::State, fips::County),
@@ -194,29 +194,6 @@ impl Geoid {
             Geoid::CensusTract(st, ct, tr) => Ok(Geoid::CensusTract(*st, *ct, *tr)),
             Geoid::BlockGroup(st, ct, tr, _) => Ok(Geoid::CensusTract(*st, *ct, *tr)),
             Geoid::Block(st, ct, tr, _) => Ok(Geoid::CensusTract(*st, *ct, *tr)),
-        }
-    }
-}
-
-impl PartialEq for Geoid {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::State(l0), Self::State(r0)) => l0 == r0,
-            (Self::County(l0, l1), Self::County(r0, r1)) => l0 == r0 && l1 == r1,
-            (Self::CountySubdivision(l0, l1, l2), Self::CountySubdivision(r0, r1, r2)) => {
-                l0 == r0 && l1 == r1 && l2 == r2
-            }
-            (Self::Place(l0, l1), Self::Place(r0, r1)) => l0 == r0 && l1 == r1,
-            (Self::CensusTract(l0, l1, l2), Self::CensusTract(r0, r1, r2)) => {
-                l0 == r0 && l1 == r1 && l2 == r2
-            }
-            (Self::BlockGroup(l0, l1, l2, l3), Self::BlockGroup(r0, r1, r2, r3)) => {
-                l0 == r0 && l1 == r1 && l2 == r2 && l3 == r3
-            }
-            (Self::Block(l0, l1, l2, l3), Self::Block(r0, r1, r2, r3)) => {
-                l0 == r0 && l1 == r1 && l2 == r2 && l3 == r3
-            }
-            _ => false,
         }
     }
 }
