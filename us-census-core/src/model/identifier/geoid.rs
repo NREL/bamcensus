@@ -32,7 +32,7 @@ impl TryFrom<&str> for Geoid {
             12 => GeoidType::BlockGroup.geoid_from_str(value),
             x if x == 15 || x == 16 => GeoidType::Block.geoid_from_str(value),
             x => Err(format!(
-                "unsupported GEOID type with lenght {}: {}",
+                "unsupported GEOID type with length {}: {}",
                 x, value
             )),
         }

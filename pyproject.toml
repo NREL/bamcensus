@@ -32,8 +32,8 @@ Homepage = "https://github.com/robfitzgerald/us-census"
 [tool.maturin]
 python-source = "python"
 features = ["pyo3/extension-module"]
-module-name = "uscensus"
-manifest-path = "us-census-app-py/Cargo.toml"
+# module-name = "uscensus"
+manifest-path = "us-census-api-py/Cargo.toml"
 # include = [
 #   "python/nrel/routee/compass/resources/models/*.bin",
 #   "python/nrel/routee/compass/resources/*.toml",

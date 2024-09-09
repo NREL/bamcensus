@@ -1,28 +1,26 @@
+use itertools::Itertools;
 use pyo3::types::IntoPyDict;
 use pyo3::types::PyDict;
 use pyo3::{exceptions::PyException, prelude::*};
 use serde::de;
 use us_census_app::lodes_tiger;
+use us_census_core::model::identifier::Geoid;
 use us_census_core::model::lodes::{
     LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment,
 };
 use wkt::ToWkt;
 
-#[pyclass]
-pub struct UsCensusPythonApi {}
-
-#[pymethods]
-impl UsCensusPythonApi {
-    /// kwds example: https://pyo3.rs/main/function/signature#using-pyo3signature--
-    #[pyo3(signature = (year, **kwds))]
-    fn run_lodes_wac_tiger<'a>(
-        &self,
-        year: u64,
-        kwds: Option<&Bound<'a, PyDict>>,
-        py: Python<'a>,
-    ) -> PyResult<pyo3::Bound<'a, PyDict>> {
-        let dataset_result: PyResult<LodesDataset> =
-            kwds.map_or(Ok(LodesDataset::default()), |m| {
+/// kwds example: https://pyo3.rs/main/function/signature#using-pyo3signature--
+#[pyfunction]
+#[pyo3(signature = (year, **kwds))]
+pub fn wac_tiger<'a>(
+    year: u64,
+    kwds: Option<&Bound<'a, PyDict>>,
+    py: Python<'a>,
+) -> PyResult<pyo3::Bound<'a, PyDict>> {
+    let dataset_result: Result<LodesDataset, PyErr> = kwds
+        .map(|m| {
+            if m.contains("edition")? && m.contains("job_type")? && m.contains("segment")? {
                 let edition: LodesEdition = get_string_deserializable(&"edition", m)?;
                 let job_type: LodesJobType = get_string_deserializable(&"job_type", m)?;
                 let segment: WorkplaceSegment = get_string_deserializable(&"segment", m)?;
@@ -33,49 +31,74 @@ impl UsCensusPythonApi {
                     year,
                 };
                 Ok(dataset)
-            });
-        let dataset = dataset_result?;
-        // .map_err(|e| PyException::new_err(format!("failure building LodesDataset: {}", e)))?;
-        let geoids = kwds.map_or(Ok(vec![]), |m| get_comma_separated(&"geoids", m))?;
-        let wac_segments = kwds.map_or(Ok(vec![WacSegment::C000]), |m| {
+            } else {
+                Ok(LodesDataset::default())
+            }
+        })
+        .unwrap_or_else(|| Ok(LodesDataset::default()));
+    let dataset = dataset_result?;
+
+    let geoids_string: String = kwds.map_or(Ok(String::from("")), |m| get_string(&"geoids", m))?;
+    let geoids = geoids_string
+        .split(",")
+        .map(|s| Geoid::try_from(s))
+        .collect::<Result<Vec<_>, String>>()
+        .map_err(|e| PyException::new_err(format!("failure decoding geoids argument: {}", e)))?;
+    let wac_segments = kwds.map_or(Ok(vec![WacSegment::C000]), |m| {
+        if m.contains("wac_segments")? {
             get_comma_separated(&"wac_segments", m)
-        })?;
-        let wildcard = kwds.map_or(Ok(None), |m| {
-            get_string_deserializable(&"geoids", m).map(|g| Some(g))
-        })?;
+        } else {
+            Ok(vec![WacSegment::default()])
+        }
+    })?;
+    let wildcard = kwds.map_or(Ok(None), |m| {
+        if m.contains("wildcard")? {
+            get_string_deserializable(&"wildcard", m).map(|g| Some(g))
+        } else {
+            Ok(None)
+        }
+    })?;
 
-        let future = lodes_tiger::run(year, geoids, &wildcard, &wac_segments, dataset);
-        let runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .map_err(|e| {
-                PyException::new_err(format!("failure creating async rust tokio runtime: {}", e))
-            })?;
-        let result = runtime.block_on(future).map_err(|e| {
-            PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
+    let future = lodes_tiger::run(year, geoids, &wildcard, &wac_segments, dataset);
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .map_err(|e| {
+            PyException::new_err(format!("failure creating async rust tokio runtime: {}", e))
         })?;
+    let result = runtime.block_on(future).map_err(|e| {
+        PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
+    })?;
 
-        let vals = result
-            .join_dataset
-            .into_iter()
-            .map(|row| {
-                let dict = PyDict::new_bound(py);
-                dict.set_item("segment", row.value.segment.to_string())?;
-                dict.set_item("value", row.value.value)?;
-                dict.set_item("geometry", row.geometry.to_wkt().to_string())?;
-                Ok((row.geoid.to_string(), dict.to_object(py)))
-            })
-            .collect::<PyResult<Vec<_>>>()?;
-        let out_dict = vals.into_py_dict_bound(py);
-        Ok(out_dict)
+    if result.tiger_errors.len() > 0 {
+        let msg = result.tiger_errors.iter().join(",");
+        return Err(PyException::new_err(format!("tiger errors: {}", msg)));
     }
+    if result.join_errors.len() > 0 {
+        let msg = result.join_errors.iter().join(",");
+        return Err(PyException::new_err(format!("join errors: {}", msg)));
+    }
+
+    let vals = result
+        .join_dataset
+        .into_iter()
+        .map(|row| {
+            let dict = PyDict::new_bound(py);
+            dict.set_item("segment", row.value.segment.to_string())?;
+            dict.set_item("value", row.value.value)?;
+            dict.set_item("geometry", row.geometry.to_wkt().to_string())?;
+            Ok((row.geoid.to_string(), dict.to_object(py)))
+        })
+        .collect::<PyResult<Vec<_>>>()?;
+    let out_dict = vals.into_py_dict_bound(py);
+    Ok(out_dict)
 }
 
 fn get_comma_separated<'a, T>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<Vec<T>>
 where
     T: de::DeserializeOwned,
 {
-    let ss: String = get_string_deserializable(key, map)?;
+    let ss: String = get_string(key, map)?;
     let result = ss
         .split(",")
         .map(|s| {
@@ -93,6 +116,20 @@ where
             key, e
         ))
     })
+}
+
+fn get_string<'a>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<String> {
+    let item_opt = map
+        .get_item(&key)
+        .map_err(|e| PyException::new_err(format!("failure retreiving key {}: {}", key, e)))?;
+    let item = match item_opt {
+        None => Err(PyException::new_err(format!("key {} not present", key))),
+        Some(item) => Ok(item),
+    }?;
+    let string: String = item.extract().map_err(|e| {
+        PyException::new_err(format!("value at {} is not string. error: {}", key, e))
+    })?;
+    Ok(string)
 }
 
 fn get_string_deserializable<'a, T>(key: &str, map: &Bound<'_, PyDict>) -> PyResult<T>

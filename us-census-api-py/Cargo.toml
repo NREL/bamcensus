@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+itertools = { workspace = true }
 us-census-core = { path = "../us-census-core" }
 us-census-lehd = { path = "../us-census-lehd" }
 us-census-acs = { path = "../us-census-acs" }
