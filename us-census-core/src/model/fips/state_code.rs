@@ -62,13 +62,13 @@ impl TryFrom<State> for StateCode {
 
     fn try_from(value: State) -> Result<Self, Self::Error> {
         match value {
-            State(01) => Ok(StateCode::Alabama),
-            State(02) => Ok(StateCode::Alaska),
-            State(04) => Ok(StateCode::Arizona),
-            State(05) => Ok(StateCode::Arkansas),
-            State(06) => Ok(StateCode::California),
-            State(08) => Ok(StateCode::Colorado),
-            State(09) => Ok(StateCode::Connecticut),
+            State(1) => Ok(StateCode::Alabama),
+            State(2) => Ok(StateCode::Alaska),
+            State(4) => Ok(StateCode::Arizona),
+            State(5) => Ok(StateCode::Arkansas),
+            State(6) => Ok(StateCode::California),
+            State(8) => Ok(StateCode::Colorado),
+            State(9) => Ok(StateCode::Connecticut),
             State(10) => Ok(StateCode::Delaware),
             State(11) => Ok(StateCode::DistrictOfColumbia),
             State(12) => Ok(StateCode::Florida),
@@ -121,13 +121,13 @@ impl TryFrom<State> for StateCode {
 impl From<StateCode> for State {
     fn from(val: StateCode) -> Self {
         match val {
-            StateCode::Alabama => State(01),
-            StateCode::Alaska => State(02),
-            StateCode::Arizona => State(04),
-            StateCode::Arkansas => State(05),
-            StateCode::California => State(06),
-            StateCode::Colorado => State(08),
-            StateCode::Connecticut => State(09),
+            StateCode::Alabama => State(1),
+            StateCode::Alaska => State(2),
+            StateCode::Arizona => State(4),
+            StateCode::Arkansas => State(5),
+            StateCode::California => State(6),
+            StateCode::Colorado => State(8),
+            StateCode::Connecticut => State(9),
             StateCode::Delaware => State(10),
             StateCode::DistrictOfColumbia => State(11),
             StateCode::Florida => State(12),
