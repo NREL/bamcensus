@@ -56,15 +56,18 @@ pub struct LodesTigerResponse {
 pub async fn run(
     year: u64,
     geoids: Vec<Geoid>,
-    wildcard: &Option<GeoidType>,
+    agg_geoid_type: &Option<GeoidType>,
     wac_segments: &[WacSegment],
     dataset: LodesDataset,
 ) -> Result<LodesTigerResponse, String> {
+    // input: i have a set of geoids that describe a region. i want to download
+    // lodes data and aggregate it to some GeoidType.
+
     let state_codes = match geoids.len() {
         0 => Ok(ALL_STATES.map(String::from).to_vec()),
         _ => {
             let states_result: Result<Vec<_>, String> = geoids
-                .into_iter()
+                .iter()
                 .map(|geoid| {
                     let state_fips = match geoid.to_state() {
                         Geoid::State(s) => Ok(s),
@@ -86,15 +89,21 @@ pub async fn run(
     let client: Client = Client::new();
 
     // execute LODES downloads
-    let output_geoid_type = wildcard.as_ref().unwrap_or(&GeoidType::Block);
-    let agg = us_census_core::ops::agg::NumericAggregation::Sum;
-    let lodes_rows =
-        lodes_api::run(&client, &queries, wac_segments, *output_geoid_type, agg).await?;
+    let agg_fn = us_census_core::ops::agg::NumericAggregation::Sum;
+    let agg = agg_geoid_type.map(|g| (g, agg_fn));
+    let lodes_rows = lodes_api::run(&client, &queries, wac_segments, agg).await?;
+
+    // filter result. LODES collects by State. here we only accept rows where the
+    // input geoids are the (FIPS hierarchical) parent.
+    let lodes_filtered = lodes_rows
+        .into_iter()
+        .filter(|(c, _)| geoids.iter().any(|p| p.is_parent_of(c)))
+        .collect_vec();
 
     // execute TIGER/Lines downloads
     let tiger_uri_builder = TigerUriBuilder::new(year)?;
-    let geoids = &lodes_rows.iter().map(|(geoid, _)| geoid).collect_vec();
-    let tiger_response = tiger_api::run(&client, &tiger_uri_builder, geoids).await?;
+    let lodes_geoids = &lodes_filtered.iter().map(|(geoid, _)| geoid).collect_vec();
+    let tiger_response = tiger_api::run(&client, &tiger_uri_builder, lodes_geoids).await?;
 
     type NestedResult = (Vec<Vec<(Geoid, Geometry<f64>)>>, Vec<String>);
     let (tiger_rows_nested, tiger_errors): NestedResult =
@@ -105,7 +114,7 @@ pub async fn run(
         .collect::<HashMap<Geoid, Geometry>>();
 
     // join responses by GEOID
-    let (rows_nested, join_errors): (Vec<Vec<LodesWacTigerRow>>, Vec<String>) = lodes_rows
+    let (rows_nested, join_errors): (Vec<Vec<LodesWacTigerRow>>, Vec<String>) = lodes_filtered
         .into_iter()
         .map(|(geoid, lodes_values)| match tiger_lookup.get(&geoid) {
             Some(geometry) => {

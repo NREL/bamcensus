@@ -130,6 +130,29 @@ impl Geoid {
         }
     }
 
+    /// predicate to filter by hierarchical geoshed.
+    pub fn is_parent_of(&self, child: &Geoid) -> bool {
+        match (self, child) {
+            (Geoid::State(s1), Geoid::County(s2, _)) => s1 == s2,
+            (Geoid::State(s1), Geoid::CountySubdivision(s2, _, _)) => s1 == s2,
+            (Geoid::State(s1), Geoid::Place(s2, _)) => s1 == s2,
+            (Geoid::State(s1), Geoid::CensusTract(s2, _, _)) => s1 == s2,
+            (Geoid::State(s1), Geoid::BlockGroup(s2, _, _, _)) => s1 == s2,
+            (Geoid::State(s1), Geoid::Block(s2, _, _, _)) => s1 == s2,
+            (Geoid::County(s1, c1), Geoid::CountySubdivision(s2, c2, _)) => s1 == s2 && c1 == c2,
+            (Geoid::County(s1, c1), Geoid::CensusTract(s2, c2, _)) => s1 == s2 && c1 == c2,
+            (Geoid::County(s1, c1), Geoid::BlockGroup(s2, c2, _, _)) => s1 == s2 && c1 == c2,
+            (Geoid::County(s1, c1), Geoid::Block(s2, c2, _, _)) => s1 == s2 && c1 == c2,
+            (Geoid::CensusTract(s1, c1, t1), Geoid::BlockGroup(s2, c2, t2, _)) => {
+                s1 == s2 && c1 == c2 && t1 == t2
+            }
+            (Geoid::CensusTract(s1, c1, t1), Geoid::Block(s2, c2, t2, _)) => {
+                s1 == s2 && c1 == c2 && t1 == t2
+            }
+            _ => false,
+        }
+    }
+
     /// manipulates this GEOID via truncation to transform it's GEOID type to that
     /// of it's parent.
     ///

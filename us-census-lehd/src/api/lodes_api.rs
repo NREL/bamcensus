@@ -20,8 +20,7 @@ pub async fn run(
     client: &Client,
     queries: &[String],
     wac_segments: &[WacSegment],
-    output_geoid_type: GeoidType,
-    agg: NumericAggregation,
+    agg: Option<(GeoidType, NumericAggregation)>,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
     let pb_builder = kdam::BarBuilder::default().total(queries.len());
     let pb = Arc::new(Mutex::new(
@@ -77,6 +76,11 @@ pub async fn run(
         .flatten()
         .collect_vec();
     println!(); // progress bar terminated
-    let aggregated_rows = lodes_agg::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?;
+    let aggregated_rows = match agg {
+        Some((output_geoid_type, agg)) => {
+            lodes_agg::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?
+        }
+        None => response_rows.to_vec(),
+    };
     Ok(aggregated_rows)
 }
