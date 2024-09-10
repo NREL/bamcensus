@@ -72,9 +72,14 @@ async fn main() {
 
     println!("executing LODES download");
     let client = reqwest::Client::new();
-    let agg_rows = lodes_api::run(&client, &queries, &wac_segments, output_geoid_type, agg_fn)
-        .await
-        .unwrap();
+    let agg_rows = lodes_api::run(
+        &client,
+        &queries,
+        &wac_segments,
+        Some((output_geoid_type, agg_fn)),
+    )
+    .await
+    .unwrap();
 
     let n_res = agg_rows.len();
     println!("{} agg rows", n_res);
