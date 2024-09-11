@@ -63,7 +63,7 @@ pub fn run_acs_tiger_python<'a>(
 
     // run ACS queries and collect ACS/TIGER joined Rows
     let mut results = vec![];
-    if geoids.len() == 0 {
+    if geoids.is_empty() {
         let future = acs_tiger::run(
             year,
             acs_type,
@@ -76,8 +76,7 @@ pub fn run_acs_tiger_python<'a>(
             PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
         })?;
         results.push(result.join_dataset);
-    } else {
-    }
+    } 
     for geoid in geoids.into_iter() {
         let future = acs_tiger::run(
             year,
