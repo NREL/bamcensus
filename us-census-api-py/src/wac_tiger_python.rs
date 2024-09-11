@@ -13,7 +13,7 @@ use wkt::ToWkt;
 /// kwds example: https://pyo3.rs/main/function/signature#using-pyo3signature--
 #[pyfunction]
 #[pyo3(signature = (year, **kwds))]
-pub fn wac_tiger<'a>(
+pub fn run_wac_tiger_python<'a>(
     year: u64,
     kwds: Option<&Bound<'a, PyDict>>,
     py: Python<'a>,
