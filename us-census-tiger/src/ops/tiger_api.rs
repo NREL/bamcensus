@@ -4,6 +4,7 @@ use futures::StreamExt;
 use geo_types::Geometry;
 use itertools::Itertools;
 use kdam::BarExt;
+use log;
 use reqwest::Client;
 use shapefile::dbase::Record;
 use shapefile::{dbase, Shape, ShapeReader};
@@ -40,6 +41,7 @@ pub async fn run<'a>(
     let run_results = uris
         .into_iter()
         .map(|tiger| {
+            log::debug!("downloading {}", tiger.uri);
             let client = &client;
             let lookup = &lookup;
             let pb = &pb;

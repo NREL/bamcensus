@@ -43,6 +43,7 @@ pub struct LodesWacTigerAppCli {
 
 #[tokio::main]
 async fn main() {
+    env_logger::init();
     let cli = LodesTigerApp::parse();
     match &cli.dataset {
         LodesDatasetCli::Wac(wac) => run_wac(wac).await,
