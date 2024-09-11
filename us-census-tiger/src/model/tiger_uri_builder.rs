@@ -157,7 +157,11 @@ impl TigerUriBuilder {
                 format!("BG/tl_{}_{}_bg.zip", year, state.geoid_string())
             }
             (TigerUriBuilder::Tiger2010Format { year }, Geoid::Block(state, _, _, _)) => {
-                format!("TABBLOCK/tl_{}_{}_tabblock.zip", year, state.geoid_string())
+                format!(
+                    "TABBLOCK/tl_{}_{}_tabblock10.zip",
+                    year,
+                    state.geoid_string()
+                )
             }
             //// ~~~~ 2020-2029 ~~~~ ////
             (TigerUriBuilder::Tiger2020Format { year }, Geoid::State(_)) => {
@@ -211,7 +215,9 @@ impl TigerUriBuilder {
             (TigerUriBuilder::Tiger2010Format { year: _ }, Geoid::BlockGroup(_, _, _, _)) => {
                 Some(GeoidType::State)
             }
-            (TigerUriBuilder::Tiger2010Format { year: _ }, Geoid::Block(_, _, _, _)) => todo!(),
+            (TigerUriBuilder::Tiger2010Format { year: _ }, Geoid::Block(_, _, _, _)) => {
+                Some(GeoidType::State)
+            }
             (TigerUriBuilder::Tiger2020Format { year: _ }, Geoid::State(_)) => None,
             (TigerUriBuilder::Tiger2020Format { year: _ }, Geoid::County(_, _)) => None,
             (TigerUriBuilder::Tiger2020Format { year: _ }, Geoid::CountySubdivision(_, _, _)) => {
