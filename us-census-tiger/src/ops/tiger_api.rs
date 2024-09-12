@@ -44,7 +44,7 @@ pub async fn run<'a>(
             log::debug!("downloading {}", tiger.uri);
             let client = &client;
             let lookup = &lookup;
-            let pb = &pb;
+            let pb = pb.clone();
             async move {
                 // create temporary file for writing .zip download
                 let named_tmp = tempfile::NamedTempFile::new().map_err(|e| {
