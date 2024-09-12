@@ -166,20 +166,23 @@ impl LodesDataset {
         }
     }
 
+    /// LODES editions correspond to specific TIGER/Lines datasets. see
+    /// [`LodesEdition::tiger_year`] for details. this year value should
+    /// be used when downloading complimentary TIGER/Lines datasets.
     pub fn tiger_year(&self) -> u64 {
         match self {
             LodesDataset::OD {
                 edition,
-                job_type,
-                od_part,
-                year,
+                job_type: _,
+                od_part: _,
+                year: _,
             } => edition.tiger_year(),
             LodesDataset::RAC => todo!(),
             LodesDataset::WAC {
                 edition,
-                job_type,
-                segment,
-                year,
+                job_type: _,
+                segment: _,
+                year: _,
             } => edition.tiger_year(),
         }
     }
