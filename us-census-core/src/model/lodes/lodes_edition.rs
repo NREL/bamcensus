@@ -28,18 +28,18 @@ impl LodesEdition {
     /// corresponding TIGER/Lines data year, preventing mismatches.
     ///
     /// Geography Vintage
-    /// LODES Version 8.1 is based on 2021 TIGER/Line shapefiles.8 The data are enumerated with 2020 census
+    /// LODES Version 8.1 is based on 2021 TIGER/Line shapefiles. The data are enumerated with 2020 census
     /// blocks. LODES Version 7 and 6 used 2010 census blocks. Basic information on 2020 census blocks can be
     /// found at www.census.gov/geographies/reference-files/time-series/geo/block-assignment-files.html.
     /// General information on the relationships between 2010 census blocks and 2020 census blocks can be
     /// found at www.census.gov/geographies/reference-files/time-series/geo/relationship-files.html. The
     /// methods used to translate historical data into 2020 census blocks can be found at
     /// lehd.ces.census.gov/doc/help/onthemap/OnTheMap2020Geography.pdf.
-    pub fn tiger_year(&self) -> Result<u64, String> {
+    pub fn tiger_year(&self) -> u64 {
         match self {
-            LodesEdition::Lodes6 => Ok(2010),
-            LodesEdition::Lodes7 => Ok(2010),
-            LodesEdition::Lodes8 => Ok(2020),
+            LodesEdition::Lodes6 => 2010,
+            LodesEdition::Lodes7 => 2010,
+            LodesEdition::Lodes8 => 2021,
         }
     }
 

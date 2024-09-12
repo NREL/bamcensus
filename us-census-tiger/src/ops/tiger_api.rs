@@ -95,7 +95,7 @@ pub async fn run<'a>(
         })
         .collect::<Vec<_>>();
     let result = futures::future::join_all(run_results).await;
-    println!(); // terminate progress bar
+    eprintln!(); // terminate progress bar
     Ok(result)
 }
 

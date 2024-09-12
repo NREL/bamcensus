@@ -16,7 +16,7 @@ use us_census_core::{
 /// memory and deserialized into rows of Geoids with WacValues for each
 /// requested WacSegment. the entire dataset is aggregated to the requested
 /// output GeoidType, which should be
-pub async fn run(
+pub async fn run_wac(
     client: &Client,
     queries: &[String],
     wac_segments: &[WacSegment],
@@ -75,7 +75,7 @@ pub async fn run(
         .into_iter()
         .flatten()
         .collect_vec();
-    println!(); // progress bar terminated
+    eprintln!(); // progress bar terminated
     let aggregated_rows = match agg {
         Some((output_geoid_type, agg)) => {
             lodes_agg::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?

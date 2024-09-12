@@ -249,9 +249,9 @@ impl TigerUriBuilder {
         // handle the GEOID column naming conventions that differ under
         // edge cases, such as TABBLOCK10 in 2010 + TABBLOCK20 in 2020
         // matching off of "n.zip" as a quick and easy pattern match
-        if self.get_year() == 2010 && filename.ends_with("10.zip") {
+        if self.get_year() == 2010 || filename.ends_with("10.zip") {
             String::from("GEOID10")
-        } else if self.get_year() == 2020 && filename.ends_with("20.zip") {
+        } else if self.get_year() == 2020 || filename.ends_with("20.zip") {
             String::from("GEOID20")
         } else {
             String::from("GEOID")

@@ -72,7 +72,7 @@ async fn main() {
 
     println!("executing LODES download");
     let client = reqwest::Client::new();
-    let agg_rows = lodes_api::run(
+    let agg_rows = lodes_api::run_wac(
         &client,
         &queries,
         &wac_segments,

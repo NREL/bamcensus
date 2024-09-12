@@ -54,7 +54,6 @@ pub struct LodesTigerResponse {
 ///
 /// ```
 pub async fn run(
-    year: u64,
     geoids: Vec<Geoid>,
     agg_geoid_type: &Option<GeoidType>,
     wac_segments: &[WacSegment],
@@ -91,7 +90,7 @@ pub async fn run(
     // execute LODES downloads
     let agg_fn = us_census_core::ops::agg::NumericAggregation::Sum;
     let agg = agg_geoid_type.map(|g| (g, agg_fn));
-    let lodes_rows = lodes_api::run(&client, &queries, wac_segments, agg).await?;
+    let lodes_rows = lodes_api::run_wac(&client, &queries, wac_segments, agg).await?;
 
     // filter result. LODES collects by State. here we only accept rows where the
     // input geoids are the (FIPS hierarchical) parent.
@@ -100,8 +99,9 @@ pub async fn run(
         .filter(|(c, _)| geoids.iter().any(|p| p.is_parent_of(c)))
         .collect_vec();
 
-    // execute TIGER/Lines downloads
-    let tiger_uri_builder = TigerUriBuilder::new(year)?;
+    // execute TIGER/Lines downloads selecting a data vintage based on the LODES edition chosen
+    let tiger_year = dataset.tiger_year();
+    let tiger_uri_builder = TigerUriBuilder::new(tiger_year)?;
     let lodes_geoids = &lodes_filtered.iter().map(|(geoid, _)| geoid).collect_vec();
     let tiger_response = tiger_api::run(&client, &tiger_uri_builder, lodes_geoids).await?;
 

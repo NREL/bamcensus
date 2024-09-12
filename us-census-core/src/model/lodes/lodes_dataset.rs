@@ -165,4 +165,22 @@ impl LodesDataset {
             }
         }
     }
+
+    pub fn tiger_year(&self) -> u64 {
+        match self {
+            LodesDataset::OD {
+                edition,
+                job_type,
+                od_part,
+                year,
+            } => edition.tiger_year(),
+            LodesDataset::RAC => todo!(),
+            LodesDataset::WAC {
+                edition,
+                job_type,
+                segment,
+                year,
+            } => edition.tiger_year(),
+        }
+    }
 }
