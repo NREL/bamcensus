@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::model::fips::state_code::StateCode;
+
 use super::{fips, geoid_type::GeoidType, has_geoid_string::HasGeoidString};
 use std::fmt::Display;
 
@@ -186,6 +188,16 @@ impl Geoid {
             Geoid::BlockGroup(st, _, _, _) => Geoid::State(*st),
             Geoid::Block(st, _, _, _) => Geoid::State(*st),
         }
+    }
+
+    pub fn to_state_abbreviation(&self) -> Result<String, String> {
+        let state_fips = match self.to_state() {
+            Geoid::State(s) => Ok(s),
+            _ => Err(String::from("internal error")),
+        }?;
+        let state_code = StateCode::try_from(state_fips)?;
+        let state_str = state_code.to_state_abbreviation();
+        Ok(state_str)
     }
 
     pub fn to_county(&self) -> Result<Geoid, String> {

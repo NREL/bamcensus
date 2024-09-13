@@ -103,9 +103,10 @@ pub fn aggregate_lodes_wac(
                 }
             }
         }
-        let _ = pb1.update(1);
+        pb1.update(1)
+            .map_err(|e| format!("error updating progress bar: {}", e))?;
     }
-    println!();
+    eprintln!();
 
     // flattended into vector collection
     let n_grouped = grouped.len();
@@ -116,7 +117,7 @@ pub fn aggregate_lodes_wac(
     let mut pb2 = pb2_builder
         .build()
         .map_err(|e| format!("error building progress bar: {}", e))?;
-    let output = grouped
+    let output: Result<Vec<(Geoid, Vec<WacValue>)>, String> = grouped
         .into_iter()
         .map(|(geoid, map)| {
             let values = map
@@ -127,11 +128,12 @@ pub fn aggregate_lodes_wac(
                     WacValue::new(seg, value)
                 })
                 .collect_vec();
-            let _ = pb2.update(1);
-            (geoid, values)
+            pb2.update(1)
+                .map_err(|e| format!("error updating progress bar: {}", e))?;
+            Ok((geoid, values))
         })
-        .collect_vec();
-    println!(); // end progress bar
+        .collect::<Result<Vec<_>, _>>();
+    eprintln!(); // end progress bar
 
-    Ok(output)
+    Ok(output?)
 }

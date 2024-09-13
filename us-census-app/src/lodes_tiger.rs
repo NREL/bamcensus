@@ -67,21 +67,14 @@ pub async fn run(
         _ => {
             let states_result: Result<Vec<_>, String> = geoids
                 .iter()
-                .map(|geoid| {
-                    let state_fips = match geoid.to_state() {
-                        Geoid::State(s) => Ok(s),
-                        _ => Err(String::from("internal error")),
-                    }?;
-                    let state_code = StateCode::try_from(state_fips)?;
-                    let state_str = state_code.to_state_abbreviation();
-                    Ok(state_str)
-                })
+                .map(|geoid| geoid.to_state_abbreviation())
                 .collect::<Result<Vec<_>, _>>();
             states_result
         }
     }?;
 
-    let queries = state_codes
+    // use the LODES dataset argument to build URIs for all LODES downloads
+    let lodes_queries = state_codes
         .into_iter()
         .map(|s| dataset.create_uri(&s))
         .collect_vec();
@@ -90,7 +83,7 @@ pub async fn run(
     // execute LODES downloads
     let agg_fn = us_census_core::ops::agg::NumericAggregation::Sum;
     let agg = agg_geoid_type.map(|g| (g, agg_fn));
-    let lodes_rows = lodes_api::run_wac(&client, &queries, wac_segments, agg).await?;
+    let lodes_rows = lodes_api::run_wac(&client, &lodes_queries, wac_segments, agg).await?;
 
     // filter result. LODES collects by State. here we only accept rows where the
     // input geoids are the (FIPS hierarchical) parent.
@@ -108,35 +101,20 @@ pub async fn run(
     type NestedResult = (Vec<Vec<(Geoid, Geometry<f64>)>>, Vec<String>);
     let (tiger_rows_nested, tiger_errors): NestedResult =
         tiger_response.into_iter().partition_result();
-    let tiger_lookup = tiger_rows_nested
-        .into_iter()
-        .flatten()
-        .collect::<HashMap<Geoid, Geometry>>();
 
-    // join responses by GEOID
-    let (rows_nested, join_errors): (Vec<Vec<LodesWacTigerRow>>, Vec<String>) = lodes_filtered
+    let (join_dataset, join_errors) =
+        crate::ops::join::dataset_with_geometries(lodes_filtered, tiger_rows_nested)?;
+    let output_dataset = join_dataset
         .into_iter()
-        .map(|(geoid, lodes_values)| match tiger_lookup.get(&geoid) {
-            Some(geometry) => {
-                let lodes_tiger_rows = lodes_values
-                    .into_iter()
-                    .map(|acs_value| {
-                        LodesWacTigerRow::new(geoid.clone(), acs_value, geometry.clone())
-                    })
-                    .collect_vec();
-                Ok(lodes_tiger_rows)
-            }
-            None => Err(format!(
-                "geometry not found for geoid {}, has {} LODES values from API response",
-                geoid,
-                lodes_values.len()
-            )),
+        .flat_map(|(geoid, geometry, lodes_values)| {
+            lodes_values.into_iter().map(move |lodes_value| {
+                LodesWacTigerRow::new(geoid.clone(), lodes_value, geometry.clone())
+            })
         })
-        .partition_result();
+        .collect_vec();
 
-    let join_dataset = rows_nested.into_iter().flatten().collect_vec();
     let result = LodesTigerResponse {
-        join_dataset,
+        join_dataset: output_dataset,
         tiger_errors,
         join_errors,
     };
