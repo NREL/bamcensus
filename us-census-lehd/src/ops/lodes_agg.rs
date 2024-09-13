@@ -135,5 +135,5 @@ pub fn aggregate_lodes_wac(
         .collect::<Result<Vec<_>, _>>();
     eprintln!(); // end progress bar
 
-    Ok(output?)
+    output
 }

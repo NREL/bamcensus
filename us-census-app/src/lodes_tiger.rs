@@ -3,8 +3,6 @@ use geo::Geometry;
 use itertools::Itertools;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use us_census_core::model::fips::state_code::StateCode;
 use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
 use us_census_core::model::lodes::{LodesDataset, WacSegment, ALL_STATES};
