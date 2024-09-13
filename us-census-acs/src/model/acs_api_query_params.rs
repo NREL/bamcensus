@@ -3,7 +3,9 @@ use itertools::Itertools;
 use us_census_core::model::acs::acs_type::AcsType;
 
 pub struct AcsApiQueryParams {
-    pub url: String,
+    pub base_url: Option<String>,
+    pub year: u64,
+    pub acs_type: AcsType,
     pub get_query: Vec<String>,
     pub for_query: AcsGeoidQuery,
     pub api_token: Option<String>,
@@ -20,15 +22,23 @@ impl AcsApiQueryParams {
         for_query: AcsGeoidQuery,
         api_token: Option<String>,
     ) -> AcsApiQueryParams {
-        let base = base_url.unwrap_or(String::from(AcsApiQueryParams::BASE_URL));
-        let type_s = acs_type.to_directory_name();
-        let url = format!("{}/{}/acs/{}", base, year, type_s);
         AcsApiQueryParams {
-            url,
+            base_url,
+            year,
+            acs_type,
             get_query,
             for_query,
             api_token,
         }
+    }
+
+    pub fn acs_dataset_url(&self) -> String {
+        let base = self
+            .base_url
+            .clone()
+            .unwrap_or(String::from(AcsApiQueryParams::BASE_URL));
+        let type_s = self.acs_type.to_directory_name();
+        format!("{}/{}/acs/{}", base, self.year, type_s)
     }
 
     /// builds an ACS REST query URL from application parameters.
@@ -76,13 +86,17 @@ impl AcsApiQueryParams {
     /// assert_eq!(api_url, String::from("https://api.census.gov/data/2022/acs/acs5?get=NAME,B01001_001E&for=county:*&in=state:08"))
     /// ```
     pub fn build_url(&self) -> Result<String, String> {
+        let dataset_url = self.acs_dataset_url();
         let get_query = self.get_query.iter().join(",");
         let for_query = self.for_query.to_query_key();
         let token_query = match &self.api_token {
             Some(k) => format!("&key={}", k),
             None => String::from(""),
         };
-        let query = format!("{}?get={}{}{}", self.url, get_query, for_query, token_query,);
+        let query = format!(
+            "{}?get={}{}{}",
+            dataset_url, get_query, for_query, token_query,
+        );
         Ok(query)
     }
 
@@ -98,5 +112,15 @@ impl AcsApiQueryParams {
             .collect_vec();
         cols.extend(self.for_query.response_column_names());
         cols
+    }
+
+    pub fn output_filename(&self) -> String {
+        let get_query = self.get_query.join("&");
+        let for_query = self.for_query.to_query_key();
+
+        format!(
+            "{}-{}-{}-{}.csv",
+            self.acs_type, self.year, get_query, for_query
+        )
     }
 }

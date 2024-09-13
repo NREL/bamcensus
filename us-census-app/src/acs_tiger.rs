@@ -1,14 +1,10 @@
-
 use crate::model::acs_tiger_row::AcsTigerRow;
 use geo::Geometry;
 use itertools::Itertools;
 use reqwest::Client;
 use us_census_acs::api::acs_api;
 use us_census_acs::model::acs_api_query_params::AcsApiQueryParams;
-use us_census_acs::model::acs_geoid_query::AcsGeoidQuery;
-use us_census_core::model::acs::AcsType;
 use us_census_core::model::identifier::geoid::Geoid;
-use us_census_core::model::identifier::geoid_type::GeoidType;
 use us_census_tiger::model::tiger_uri_builder::TigerUriBuilder;
 use us_census_tiger::ops::tiger_api;
 
@@ -53,25 +49,13 @@ pub struct AcsTigerResponse {
 /// # })
 ///
 /// ```
-pub async fn run(
-    year: u64,
-    acs_type: AcsType,
-    acs_get_query: Vec<String>,
-    geoid: Option<Geoid>,
-    wildcard: Option<GeoidType>,
-    acs_api_token: Option<String>,
-) -> Result<AcsTigerResponse, String> {
+pub async fn run(query: &AcsApiQueryParams) -> Result<AcsTigerResponse, String> {
     let client: Client = Client::new();
 
-    // execute ACS API queries
-    let query: AcsGeoidQuery = AcsGeoidQuery::new(geoid, wildcard)?;
-    // let acs_year = AcsYear::try_from(year)?;
-    let query_params =
-        AcsApiQueryParams::new(None, year, acs_type, acs_get_query, query, acs_api_token);
-    let acs_rows = acs_api::batch_run(&client, vec![query_params]).await?;
+    let acs_rows = acs_api::batch_run(&client, vec![&query]).await?;
 
     // execute TIGER/Lines downloads
-    let tiger_uri_builder = TigerUriBuilder::new(year)?;
+    let tiger_uri_builder = TigerUriBuilder::new(query.year)?;
     let geoids = &acs_rows.iter().map(|(geoid, _)| geoid).collect_vec();
     let tiger_response = tiger_api::run(&client, &tiger_uri_builder, geoids).await?;
 

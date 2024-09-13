@@ -1,5 +1,6 @@
 use clap::Parser;
 use itertools::Itertools;
+use us_census_acs::model::{AcsApiQueryParams, AcsGeoidQuery};
 use us_census_app::acs_tiger;
 use us_census_app::model::acs_tiger_output_row::AcsTigerOutputRow;
 use us_census_core::model::acs::AcsType;
@@ -28,17 +29,17 @@ async fn main() {
     let args = AcsTigerAppCli::parse();
     let acs_get_query = args.acs_query.split(',').map(String::from).collect_vec();
     let geoid = Geoid::try_from(args.geoid.as_str()).unwrap();
-
-    let res = acs_tiger::run(
+    let query: AcsGeoidQuery = AcsGeoidQuery::new(Some(geoid), args.wildcard).unwrap();
+    let query_params = AcsApiQueryParams::new(
+        None,
         args.year,
         args.acs_type,
         acs_get_query,
-        Some(geoid),
-        args.wildcard,
+        query,
         args.acs_token,
-    )
-    .await
-    .unwrap();
+    );
+
+    let res = acs_tiger::run(&query_params).await.unwrap();
     println!(
         "found {} responses, {}/{} errors",
         res.join_dataset.len(),
@@ -53,7 +54,8 @@ async fn main() {
     for row in res.join_errors.into_iter() {
         println!("{}", row)
     }
-    let mut writer = csv::WriterBuilder::new().from_path("output.csv").unwrap();
+    let filename = query_params.output_filename();
+    let mut writer = csv::WriterBuilder::new().from_path(filename).unwrap();
     for row in res.join_dataset {
         let out_row = AcsTigerOutputRow::from(row);
         writer.serialize(out_row).unwrap();

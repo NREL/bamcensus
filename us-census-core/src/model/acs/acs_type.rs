@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
@@ -6,6 +8,15 @@ use serde::{Deserialize, Serialize};
 pub enum AcsType {
     OneYear,
     FiveYear,
+}
+
+impl Display for AcsType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            AcsType::OneYear => write!(f, "acs1"),
+            AcsType::FiveYear => write!(f, "acs5"),
+        }
+    }
 }
 
 impl AcsType {

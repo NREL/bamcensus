@@ -10,7 +10,7 @@ use us_census_core::model::identifier::geoid::Geoid;
 /// sets up a run of ACS queries.
 pub async fn batch_run<'a>(
     client: &Client,
-    queries: Vec<AcsApiQueryParams>,
+    queries: Vec<&AcsApiQueryParams>,
 ) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     let pb_builder = kdam::BarBuilder::default()
         .total(queries.len())
