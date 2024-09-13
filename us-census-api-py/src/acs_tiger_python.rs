@@ -4,6 +4,8 @@ use pyo3::types::PyDict;
 use pyo3::types::PyNone;
 use pyo3::{exceptions::PyException, prelude::*};
 use serde::de;
+use us_census_acs::model::AcsApiQueryParams;
+use us_census_acs::model::AcsGeoidQuery;
 use us_census_app::acs_tiger;
 use us_census_core::model::acs::AcsType;
 use us_census_core::model::identifier::Geoid;
@@ -61,48 +63,46 @@ pub fn run_acs_tiger_python<'a>(
             PyException::new_err(format!("failure creating async rust tokio runtime: {}", e))
         })?;
 
+    // if no geoids are supplied we can run a query across the entire ACS dataset
+    let queries = if geoids.is_empty() {
+        vec![AcsGeoidQuery::new(None, wildcard).unwrap()]
+    } else {
+        geoids
+            .into_iter()
+            .map(|g| AcsGeoidQuery::new(Some(g), wildcard).unwrap())
+            .collect_vec()
+    };
+
     // run ACS queries and collect ACS/TIGER joined Rows
-    let mut results = vec![];
-    if geoids.is_empty() {
-        let future = acs_tiger::run(
-            year,
-            acs_type,
-            acs_get_query.clone(),
-            None,
-            wildcard,
-            acs_api_token.clone(),
-        );
-        let result = runtime.block_on(future).map_err(|e| {
-            PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
-        })?;
-        results.push(result.join_dataset);
-    }
-    for geoid in geoids.into_iter() {
-        let future = acs_tiger::run(
-            year,
-            acs_type,
-            acs_get_query.clone(),
-            Some(geoid),
-            wildcard,
-            acs_api_token.clone(),
-        );
+    let results = queries
+        .into_iter()
+        .map(|q| {
+            let query_params = AcsApiQueryParams::new(
+                None,
+                year,
+                acs_type,
+                acs_get_query.clone(),
+                q,
+                acs_api_token.clone(),
+            );
+            let future = acs_tiger::run(&query_params);
+            let result = runtime.block_on(future).map_err(|e| {
+                PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
+            })?;
+            if !result.tiger_errors.is_empty() {
+                let msg = result.tiger_errors.iter().join(",");
+                return Err(PyException::new_err(format!("tiger errors: {}", msg)));
+            }
+            if !result.join_errors.is_empty() {
+                let msg = result.join_errors.iter().join(",");
+                return Err(PyException::new_err(format!("join errors: {}", msg)));
+            }
 
-        let result = runtime.block_on(future).map_err(|e| {
-            PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
-        })?;
+            Ok(result.join_dataset)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
 
-        if !result.tiger_errors.is_empty() {
-            let msg = result.tiger_errors.iter().join(",");
-            return Err(PyException::new_err(format!("tiger errors: {}", msg)));
-        }
-        if !result.join_errors.is_empty() {
-            let msg = result.join_errors.iter().join(",");
-            return Err(PyException::new_err(format!("join errors: {}", msg)));
-        }
-
-        results.push(result.join_dataset);
-    }
-
+    //
     let vals = results
         .into_iter()
         .flatten()
