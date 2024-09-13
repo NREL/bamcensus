@@ -1,6 +1,5 @@
 use clap::Parser;
-use itertools::Itertools;
-use us_census_core::model::identifier::GeoidType;
+use us_census_core::model::identifier::{Geoid, GeoidType};
 use us_census_core::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 use us_census_core::ops::agg::aggregation_function::NumericAggregation;
 use us_census_lehd::api::lodes_api;
@@ -12,9 +11,9 @@ pub struct LodesCliArgs {
     /// LODES year in [2002, 2016]
     #[arg(short, long)]
     year: u64,
-    /// states to download. omit to download all states.
+    /// states to download by FIPS code. omit to download all states.
     #[arg(short, long)]
-    states: Option<String>,
+    geoids: Option<String>,
     /// LODES are created in editions, see website for details. LODES8 by default if not provided.
     #[arg(long)]
     edition: Option<lodes_model::LodesEdition>,
@@ -35,13 +34,13 @@ pub struct LodesCliArgs {
 }
 
 impl LodesCliArgs {
-    pub fn get_state_codes(&self) -> Vec<String> {
-        match &self.states {
-            Some(s) => s.split(',').map(|sc| sc.to_lowercase()).collect_vec(),
-            None => lodes_model::ALL_STATES
-                .iter()
-                .map(|s| s.to_string())
-                .collect_vec(),
+    pub fn get_state_geoids(&self) -> Result<Vec<Geoid>, String> {
+        match &self.geoids {
+            Some(s) => s
+                .split(',')
+                .map(Geoid::try_from)
+                .collect::<Result<Vec<_>, _>>(),
+            None => Ok(Geoid::all_states()),
         }
     }
 }
@@ -62,13 +61,14 @@ async fn main() {
         year,
     };
     let wac_segments = vec![WacSegment::C000];
-    let state_codes = &args.get_state_codes();
+    let state_codes = args.get_state_geoids().unwrap();
     let agg_fn = args.agg_fn.unwrap_or_default();
     let output_geoid_type = args.agg_geoid_type.unwrap_or(GeoidType::Block);
     let queries = state_codes
         .iter()
         .map(|s| dataset.create_uri(s))
-        .collect_vec();
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap();
 
     println!("executing LODES download");
     let client = reqwest::Client::new();

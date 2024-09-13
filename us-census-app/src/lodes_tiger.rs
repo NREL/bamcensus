@@ -59,28 +59,23 @@ pub async fn run(
 ) -> Result<LodesTigerResponse, String> {
     // input: i have a set of geoids that describe a region. i want to download
     // lodes data and aggregate it to some GeoidType.
-
-    let state_codes = match geoids.len() {
-        0 => Ok(ALL_STATES.map(String::from).to_vec()),
-        _ => {
-            let states_result: Result<Vec<_>, String> = geoids
-                .iter()
-                .map(|geoid| geoid.to_state_abbreviation())
-                .collect::<Result<Vec<_>, _>>();
-            states_result
-        }
-    }?;
-
     // use the LODES dataset argument to build URIs for all LODES downloads
-    let lodes_queries = state_codes
-        .into_iter()
-        .map(|s| dataset.create_uri(&s))
-        .collect_vec();
-    let client: Client = Client::new();
+    // if the user did not provide geoids, use all states
+    let geoids = match geoids.len() {
+        0 => Geoid::all_states(),
+        _ => geoids,
+    };
+    let lodes_queries = geoids
+        .iter()
+        .map(|geoid| dataset.create_uri(geoid))
+        .collect::<Result<Vec<_>, _>>()?;
 
-    // execute LODES downloads
     let agg_fn = us_census_core::ops::agg::NumericAggregation::Sum;
     let agg = agg_geoid_type.map(|g| (g, agg_fn));
+
+    // execute LODES downloads
+
+    let client: Client = Client::new();
     let lodes_rows = lodes_api::run_wac(&client, &lodes_queries, wac_segments, agg).await?;
 
     // filter result. LODES collects by State. here we only accept rows where the

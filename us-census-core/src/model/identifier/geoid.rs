@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
 use crate::model::fips::state_code::StateCode;
@@ -45,6 +46,17 @@ impl TryFrom<&str> for Geoid {
 // - Geoid methods to unpack/pack between types (Geoid::County.to_state())
 
 impl Geoid {
+    /// generates all state level Geoids for the U.S.
+    pub fn all_states() -> Vec<Geoid> {
+        StateCode::ALL
+            .iter()
+            .map(|sc| {
+                let s: fips::State = (*sc).into();
+                Geoid::State(s)
+            })
+            .collect_vec()
+    }
+
     pub fn geoid_type(&self) -> GeoidType {
         match self {
             Geoid::State(_) => GeoidType::State,

@@ -1,5 +1,8 @@
 use super::{LodesEdition, LodesJobType, OdPart, WorkplaceSegment, BASE_URL, LATEST_YEAR};
-use crate::model::identifier::GeoidType;
+use crate::model::{
+    fips::state_code::StateCode,
+    identifier::{Geoid, GeoidType},
+};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
@@ -86,7 +89,9 @@ impl LodesDataset {
     /// creates a URI to a LODES datasets based on the directory and file
     /// naming conventions described in the LODESTechDoc8.1.pdf file.
     /// see https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.1.pdf
-    pub fn create_uri(&self, state_code: &str) -> String {
+    pub fn create_uri(&self, geoid: &Geoid) -> Result<String, String> {
+        let sc: StateCode = geoid.to_state().try_into()?;
+        let state_code = sc.to_state_abbreviation();
         match self {
             LodesDataset::OD {
                 edition,
@@ -101,14 +106,15 @@ impl LodesDataset {
                     job_type,
                     year
                 );
-                format!(
+                let uri = format!(
                     "{}/{}/{}/{}/{}",
                     BASE_URL,
                     edition,
                     state_code.to_lowercase(),
                     self.dataset_directory(),
                     filename
-                )
+                );
+                Ok(uri)
             }
             LodesDataset::RAC => todo!(),
             LodesDataset::WAC {
@@ -117,6 +123,7 @@ impl LodesDataset {
                 segment,
                 year,
             } => {
+                validate_wac_availability(*year, &sc)?;
                 let filename = format!(
                     "{}_wac_{}_{}_{}.csv.gz",
                     state_code.to_lowercase(),
@@ -124,14 +131,15 @@ impl LodesDataset {
                     job_type,
                     year
                 );
-                format!(
+                let uri = format!(
                     "{}/{}/{}/{}/{}",
                     BASE_URL,
                     edition,
                     state_code.to_lowercase(),
                     self.dataset_directory(),
                     filename
-                )
+                );
+                Ok(uri)
             }
         }
     }
@@ -186,4 +194,32 @@ impl LodesDataset {
             } => edition.tiger_year(),
         }
     }
+}
+
+/// as outlined in the tech doc, some states do not have WAC
+/// data for certain years
+fn validate_wac_availability(year: u64, state_code: &StateCode) -> Result<(), String> {
+    let err = || {
+        Err(format!(
+            "WAC is not available in {} for {}",
+            year,
+            state_code.to_full_name()
+        ))
+    };
+    match (year, state_code) {
+        (2002, StateCode::Arkansas) => err(),
+        (2002, StateCode::NewHampshire) => err(),
+        (y, StateCode::Arizona) if in_range(y, 2002, 2003) => err(),
+        (y, StateCode::Mississippi) if in_range(y, 2002, 2003) => err(),
+        (y, StateCode::DistrictOfColumbia) if in_range(y, 2002, 2009) => err(),
+        (y, StateCode::Massachusetts) if in_range(y, 2002, 2010) => err(),
+        (y, StateCode::Alaska) if in_range(y, 2017, 2020) => err(),
+        (y, StateCode::Arkansas) if in_range(y, 2019, 2020) => err(),
+        (y, StateCode::Mississippi) if in_range(y, 2019, 2020) => err(),
+        _ => Ok(()),
+    }
+}
+
+fn in_range(min: u64, max: u64, y: u64) -> bool {
+    min <= y && y <= max
 }

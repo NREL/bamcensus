@@ -1,7 +1,7 @@
-use crate::model::identifier::{fips::State, has_geoid_string::HasGeoidString};
+use crate::model::identifier::{fips::State, has_geoid_string::HasGeoidString, Geoid};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum StateCode {
     Alabama,
@@ -114,6 +114,17 @@ impl TryFrom<State> for StateCode {
             State(55) => Ok(StateCode::Wisconsin),
             State(56) => Ok(StateCode::Wyoming),
             _ => Err(format!("unknown FIPS state code {}", value.geoid_string())),
+        }
+    }
+}
+
+impl TryFrom<Geoid> for StateCode {
+    type Error = String;
+
+    fn try_from(value: Geoid) -> Result<Self, Self::Error> {
+        match value.to_state() {
+            Geoid::State(s) => s.try_into(),
+            _ => Err(String::from("internal error")),
         }
     }
 }
@@ -341,6 +352,62 @@ impl StateCode {
             StateCode::WestVirginia => String::from("54"),
             StateCode::Wisconsin => String::from("55"),
             StateCode::Wyoming => String::from("56"),
+        }
+    }
+
+    pub fn to_full_name(&self) -> String {
+        match self {
+            StateCode::Alabama => String::from("Alabama"),
+            StateCode::Alaska => String::from("Alaska"),
+            StateCode::Arizona => String::from("Arizona"),
+            StateCode::Arkansas => String::from("Arkansas"),
+            StateCode::California => String::from("California"),
+            StateCode::Colorado => String::from("Colorado"),
+            StateCode::Connecticut => String::from("Connecticut"),
+            StateCode::Delaware => String::from("Delaware"),
+            StateCode::DistrictOfColumbia => String::from("DistrictOfColumbia"),
+            StateCode::Florida => String::from("Florida"),
+            StateCode::Georgia => String::from("Georgia"),
+            StateCode::Hawaii => String::from("Hawaii"),
+            StateCode::Idaho => String::from("Idaho"),
+            StateCode::Illinois => String::from("Illinois"),
+            StateCode::Indiana => String::from("Indiana"),
+            StateCode::Iowa => String::from("Iowa"),
+            StateCode::Kansas => String::from("Kansas"),
+            StateCode::Kentucky => String::from("Kentucky"),
+            StateCode::Louisiana => String::from("Louisiana"),
+            StateCode::Maine => String::from("Maine"),
+            StateCode::Maryland => String::from("Maryland"),
+            StateCode::Massachusetts => String::from("Massachusetts"),
+            StateCode::Michigan => String::from("Michigan"),
+            StateCode::Minnesota => String::from("Minnesota"),
+            StateCode::Mississippi => String::from("Mississippi"),
+            StateCode::Missouri => String::from("Missouri"),
+            StateCode::Montana => String::from("Montana"),
+            StateCode::Nebraska => String::from("Nebraska"),
+            StateCode::Nevada => String::from("Nevada"),
+            StateCode::NewHampshire => String::from("NewHampshire"),
+            StateCode::NewJersey => String::from("NewJersey"),
+            StateCode::NewMexico => String::from("NewMexico"),
+            StateCode::NewYork => String::from("NewYork"),
+            StateCode::NorthCarolina => String::from("NorthCarolina"),
+            StateCode::NorthDakota => String::from("NorthDakota"),
+            StateCode::Ohio => String::from("Ohio"),
+            StateCode::Oklahoma => String::from("Oklahoma"),
+            StateCode::Oregon => String::from("Oregon"),
+            StateCode::Pennsylvania => String::from("Pennsylvania"),
+            StateCode::RhodeIsland => String::from("RhodeIsland"),
+            StateCode::SouthCarolina => String::from("SouthCarolina"),
+            StateCode::SouthDakota => String::from("SouthDakota"),
+            StateCode::Tennessee => String::from("Tennessee"),
+            StateCode::Texas => String::from("Texas"),
+            StateCode::Utah => String::from("Utah"),
+            StateCode::Vermont => String::from("Vermont"),
+            StateCode::Virginia => String::from("Virginia"),
+            StateCode::Washington => String::from("Washington"),
+            StateCode::WestVirginia => String::from("WestVirginia"),
+            StateCode::Wisconsin => String::from("Wisconsin"),
+            StateCode::Wyoming => String::from("Wyoming"),
         }
     }
 }
