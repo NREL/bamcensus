@@ -220,6 +220,6 @@ fn validate_wac_availability(year: u64, state_code: &StateCode) -> Result<(), St
     }
 }
 
-fn in_range(min: u64, max: u64, y: u64) -> bool {
+fn in_range(y: u64, min: u64, max: u64) -> bool {
     min <= y && y <= max
 }
