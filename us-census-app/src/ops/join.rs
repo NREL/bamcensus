@@ -4,6 +4,8 @@ use kdam::BarExt;
 use std::collections::HashMap;
 use us_census_core::model::identifier::Geoid;
 
+type PartitionedJoinResult<T> = (Vec<(Geoid, Geometry, Vec<T>)>, Vec<String>);
+
 /// joins a dataset with a geometry dataset. it is assumed that all Geoids in the data rows
 /// are present in the tiger rows. this join builds an index over the geometries, steps through
 /// the data row iterator, and looks up the geometry in the index. the geometry value is cloned
@@ -11,7 +13,7 @@ use us_census_core::model::identifier::Geoid;
 pub fn dataset_with_geometries<T>(
     data_rows: Vec<(Geoid, Vec<T>)>,
     tiger_rows: Vec<Vec<(Geoid, Geometry<f64>)>>,
-) -> Result<(Vec<(Geoid, Geometry, Vec<T>)>, Vec<String>), String> {
+) -> Result<PartitionedJoinResult<T>, String> {
     let mut pb = kdam::Bar::builder()
         .total(data_rows.len())
         .desc("dataset join")
