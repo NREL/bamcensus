@@ -5,7 +5,7 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
-use us_census_core::model::lodes::{LodesDataset, WacSegment, ALL_STATES};
+use us_census_core::model::lodes::{LodesDataset, WacSegment};
 use us_census_lehd::api::lodes_api;
 use us_census_tiger::model::tiger_uri_builder::TigerUriBuilder;
 use us_census_tiger::ops::tiger_api;
