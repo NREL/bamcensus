@@ -24,7 +24,7 @@ pub fn dataset_with_geometries<T>(
         .flatten()
         .collect::<HashMap<Geoid, Geometry>>();
 
-    let (join_dataset, join_errors): (Vec<(Geoid, Geometry, Vec<T>)>, Vec<String>) = data_rows
+    let (join_dataset, join_errors) = data_rows
         .into_iter()
         .map(|(geoid, lodes_values)| {
             let row = match tiger_lookup.get(&geoid) {
