@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 
 use crate::model::acs_tiger_row::AcsTigerRow;
 use geo::Geometry;
