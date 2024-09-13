@@ -22,12 +22,10 @@ pub async fn run_wac(
     wac_segments: &[WacSegment],
     agg: Option<(GeoidType, NumericAggregation)>,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
-    let pb_builder = kdam::BarBuilder::default().total(queries.len());
-    let pb = Arc::new(Mutex::new(
-        pb_builder
-            .build()
-            .map_err(|e| format!("error building progress bar: {}", e))?,
-    ));
+    let pb_builder = kdam::BarBuilder::default()
+        .total(queries.len())
+        .desc("LODES downloads");
+    let pb = Arc::new(Mutex::new(pb_builder.build()?));
 
     let responses = queries.iter().map(|url| {
         let client = &client;

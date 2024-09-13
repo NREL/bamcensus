@@ -14,12 +14,10 @@ pub async fn batch_run<'a>(
     client: &Client,
     queries: Vec<AcsApiQueryParams>,
 ) -> Result<Vec<AcsResponse>, String> {
-    let pb_builder = kdam::BarBuilder::default().total(queries.len());
-    let pb = Arc::new(Mutex::new(
-        pb_builder
-            .build()
-            .map_err(|e| format!("error building progress bar: {}", e))?,
-    ));
+    let pb_builder = kdam::BarBuilder::default()
+        .total(queries.len())
+        .desc("ACS API calls");
+    let pb = Arc::new(Mutex::new(pb_builder.build()?));
 
     let response = queries.into_iter().map(|params| {
         let pb = pb.clone();

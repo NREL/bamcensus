@@ -31,12 +31,10 @@ pub async fn run<'a>(
     let uris = builder.create_uris(geoids)?;
     let lookup = geoids.iter().collect::<HashSet<_>>();
 
-    let pb_builder = kdam::BarBuilder::default().total(uris.len());
-    let pb: Arc<Mutex<kdam::Bar>> = Arc::new(Mutex::new(
-        pb_builder
-            .build()
-            .map_err(|e| format!("error building progress bar: {}", e))?,
-    ));
+    let pb_builder = kdam::BarBuilder::default()
+        .total(uris.len())
+        .desc("TIGER/Lines downloads");
+    let pb = Arc::new(Mutex::new(pb_builder.build()?));
 
     let run_results = uris
         .into_iter()
