@@ -63,7 +63,11 @@ pub async fn run(
     // if the user did not provide geoids, use all states
     let geoids = match geoids.len() {
         0 => Geoid::all_states(),
-        _ => geoids,
+        _ => geoids
+            .into_iter()
+            .map(|g| g.to_state())
+            .unique()
+            .collect_vec(),
     };
     let lodes_queries = geoids
         .iter()
