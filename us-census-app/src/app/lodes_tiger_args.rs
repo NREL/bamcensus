@@ -1,4 +1,4 @@
-use crate::lodes_tiger;
+use super::lodes_tiger;
 use crate::model::lodes_tiger_output_row::LodesTigerOutputRow;
 use clap::{Args, Parser, Subcommand};
 use itertools::Itertools;
