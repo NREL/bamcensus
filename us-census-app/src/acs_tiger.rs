@@ -7,7 +7,7 @@ use reqwest::Client;
 use us_census_acs::api::acs_api;
 use us_census_acs::model::acs_api_query_params::AcsApiQueryParams;
 use us_census_acs::model::acs_geoid_query::AcsGeoidQuery;
-use us_census_core::model::acs::{AcsType, AcsValue};
+use us_census_core::model::acs::AcsType;
 use us_census_core::model::identifier::geoid::Geoid;
 use us_census_core::model::identifier::geoid_type::GeoidType;
 use us_census_tiger::model::tiger_uri_builder::TigerUriBuilder;
@@ -15,7 +15,6 @@ use us_census_tiger::ops::tiger_api;
 
 pub struct AcsTigerResponse {
     pub join_dataset: Vec<AcsTigerRow>,
-    pub acs_errors: Vec<String>,
     pub tiger_errors: Vec<String>,
     pub join_errors: Vec<String>,
 }
@@ -70,56 +69,30 @@ pub async fn run(
     // let acs_year = AcsYear::try_from(year)?;
     let query_params =
         AcsApiQueryParams::new(None, year, acs_type, acs_get_query, query, acs_api_token);
-    let acs_response = acs_api::batch_run(&client, vec![query_params]).await?;
-
-    type AcsRows = Vec<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>)>;
-    let (acs_rows, acs_errors): (AcsRows, Vec<String>) =
-        acs_response.into_iter().partition_result();
+    let acs_rows = acs_api::batch_run(&client, vec![query_params]).await?;
 
     // execute TIGER/Lines downloads
     let tiger_uri_builder = TigerUriBuilder::new(year)?;
-    let geoids = &acs_rows
-        .iter()
-        .flat_map(|(_, rows)| rows.iter().map(|(geoid, _)| geoid))
-        .collect_vec();
+    let geoids = &acs_rows.iter().map(|(geoid, _)| geoid).collect_vec();
     let tiger_response = tiger_api::run(&client, &tiger_uri_builder, geoids).await?;
 
     type NestedResult = (Vec<Vec<(Geoid, Geometry<f64>)>>, Vec<String>);
     let (tiger_rows_nested, tiger_errors): NestedResult =
         tiger_response.into_iter().partition_result();
-    let tiger_lookup = tiger_rows_nested
-        .into_iter()
-        .flatten()
-        .collect::<HashMap<Geoid, Geometry>>();
 
-    // join responses by GEOID
-    let (acs_tiger_rows_nested, join_errors): (Vec<Vec<AcsTigerRow>>, Vec<String>) = acs_rows
+    let (join_dataset, join_errors) =
+        crate::ops::join::dataset_with_geometries(acs_rows, tiger_rows_nested)?;
+    let output_dataset = join_dataset
         .into_iter()
-        .flat_map(|(_, rows)| {
-            rows.into_iter()
-                .map(|(geoid, acs_values)| match tiger_lookup.get(&geoid) {
-                    Some(geometry) => {
-                        let acs_tiger_rows = acs_values
-                            .into_iter()
-                            .map(|acs_value| {
-                                AcsTigerRow::new(geoid.clone(), acs_value, geometry.clone())
-                            })
-                            .collect_vec();
-                        Ok(acs_tiger_rows)
-                    }
-                    None => Err(format!(
-                        "geometry not found for geoid {}, has {} ACS values from API response",
-                        geoid,
-                        acs_values.len()
-                    )),
-                })
+        .flat_map(|(geoid, geometry, acs_values)| {
+            acs_values
+                .into_iter()
+                .map(move |acs_value| AcsTigerRow::new(geoid.clone(), acs_value, geometry.clone()))
         })
-        .partition_result();
+        .collect_vec();
 
-    let join_dataset = acs_tiger_rows_nested.into_iter().flatten().collect_vec();
     let result = AcsTigerResponse {
-        join_dataset,
-        acs_errors,
+        join_dataset: output_dataset,
         tiger_errors,
         join_errors,
     };

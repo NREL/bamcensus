@@ -7,13 +7,11 @@ use std::sync::{Arc, Mutex};
 use us_census_core::model::acs::acs_value::AcsValue;
 use us_census_core::model::identifier::geoid::Geoid;
 
-type AcsResponse = Result<(AcsApiQueryParams, Vec<(Geoid, Vec<AcsValue>)>), String>;
-
 /// sets up a run of ACS queries.
 pub async fn batch_run<'a>(
     client: &Client,
     queries: Vec<AcsApiQueryParams>,
-) -> Result<Vec<AcsResponse>, String> {
+) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     let pb_builder = kdam::BarBuilder::default()
         .total(queries.len())
         .desc("ACS API calls");
@@ -23,7 +21,7 @@ pub async fn batch_run<'a>(
         let pb = pb.clone();
         async move {
             let desc = params.build_url()?;
-            let res = run(client, &params).await.map(|res| (params, res));
+            let res = run(client, &params).await;
 
             // update progress bar
             let mut pb_update = pb
@@ -38,9 +36,15 @@ pub async fn batch_run<'a>(
             res
         }
     });
-    let result = future::join_all(response).await;
+    let result = future::join_all(response)
+        .await
+        .into_iter()
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .flatten()
+        .collect_vec();
 
-    println!(); // terminate progress bar
+    eprintln!(); // terminate progress bar
     Ok(result)
 }
 

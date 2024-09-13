@@ -40,20 +40,11 @@ async fn main() {
     .await
     .unwrap();
     println!(
-        "found {} responses, {}/{}/{} errors",
+        "found {} responses, {}/{} errors",
         res.join_dataset.len(),
-        res.acs_errors.len(),
         res.tiger_errors.len(),
         res.join_errors.len(),
     );
-    // println!("RESULTS");
-    // for row in res.join_dataset.into_iter() {
-    //     println!("{}", row)
-    // }
-    println!("ACS ERRORS");
-    for row in res.acs_errors.into_iter() {
-        println!("{}", row)
-    }
     println!("TIGER ERRORS");
     for row in res.tiger_errors.into_iter() {
         println!("{}", row)
