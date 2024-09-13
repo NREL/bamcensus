@@ -3,7 +3,7 @@ use pyo3::types::IntoPyDict;
 use pyo3::types::PyDict;
 use pyo3::{exceptions::PyException, prelude::*};
 use serde::de;
-use us_census_app::lodes_tiger;
+use us_census_app::app::lodes_tiger;
 use us_census_core::model::identifier::Geoid;
 use us_census_core::model::lodes::{
     LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment,

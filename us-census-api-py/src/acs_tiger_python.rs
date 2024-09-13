@@ -6,7 +6,7 @@ use pyo3::{exceptions::PyException, prelude::*};
 use serde::de;
 use us_census_acs::model::AcsApiQueryParams;
 use us_census_acs::model::AcsGeoidQuery;
-use us_census_app::acs_tiger;
+use us_census_app::app::acs_tiger;
 use us_census_core::model::acs::AcsType;
 use us_census_core::model::identifier::Geoid;
 use wkt::ToWkt;
