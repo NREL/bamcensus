@@ -34,12 +34,20 @@ pub struct AcsTigerResponse {
 /// let geoid = Geoid::State(fips::State(08));
 /// let wildcard = GeoidType::County;
 ///
+/// let acs_geoid_query: AcsGeoidQuery = AcsGeoidQuery::new(Some(geoid), args.wildcard).unwrap();
+/// let query_params = AcsApiQueryParams::new(
+///     Some(Geoid::State(fips::State(08))),
+///     2020,
+///     AcsType::FiveYear,
+///     acs_get_query,
+///     acs_geoid_query,
+///     None,
+/// );
 /// # tokio_test::block_on(async {
-///     let res = acs_tiger::run(year, acs_type, acs_get_query, Some(geoid), Some(wildcard), None).await.unwrap();
+///     let res = acs_tiger::run(&query_params).await.unwrap();
 ///     println!(
-///         "found {} responses, {}/{}/{} errors",
+///         "found {} responses, {}/{} errors",
 ///         res.join_dataset.len(),
-///         res.acs_errors.len(),
 ///         res.tiger_errors.len(),
 ///         res.join_errors.len(),
 ///     );
