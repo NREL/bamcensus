@@ -21,7 +21,7 @@ pub async fn batch_run<'a>(
         let pb = pb.clone();
         async move {
             let desc = params.build_url()?;
-            let res = run(client, &params).await;
+            let res = run(client, params).await;
 
             // update progress bar
             let mut pb_update = pb
