@@ -39,7 +39,8 @@ async fn main() {
         args.acs_token,
     );
 
-    let res = acs_tiger::run(&query_params).await.unwrap();
+    let filename = &query_params.output_filename();
+    let res = acs_tiger::run(query_params).await.unwrap();
     println!(
         "found {} responses, {}/{} errors",
         res.join_dataset.len(),
@@ -54,7 +55,7 @@ async fn main() {
     for row in res.join_errors.into_iter() {
         println!("{}", row)
     }
-    let filename = query_params.output_filename();
+
     let mut writer = csv::WriterBuilder::new().from_path(filename).unwrap();
     for row in res.join_dataset {
         let out_row = AcsTigerOutputRow::from(row);

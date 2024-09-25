@@ -10,7 +10,7 @@ use us_census_core::model::identifier::geoid::Geoid;
 /// sets up a run of ACS queries.
 pub async fn batch_run<'a>(
     client: &Client,
-    queries: Vec<&AcsApiQueryParams>,
+    queries: Vec<AcsApiQueryParams>,
 ) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     let pb_builder = kdam::BarBuilder::default()
         .total(queries.len())
@@ -54,7 +54,7 @@ pub async fn batch_run<'a>(
 /// remove the awaits and let the coroutines do the work.
 pub async fn run(
     client: &Client,
-    query: &AcsApiQueryParams,
+    query: AcsApiQueryParams,
 ) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     let url = query.build_url()?;
 
@@ -79,7 +79,7 @@ pub async fn run(
                 .map_err(|e| format!("failure parsing JSON for response from {}: {}", url, e))?;
 
             // confirm the correct column names in the response arrays before deserializing
-            validate_header(query, &json)?;
+            validate_header(&query, &json)?;
 
             let deserialize_fn = query.for_query.build_deserialize_geoid_fn();
             let n_for_cols = query.for_query.response_column_count();
