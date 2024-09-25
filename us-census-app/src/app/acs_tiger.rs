@@ -57,13 +57,25 @@ pub struct AcsTigerResponse {
 /// # })
 ///
 /// ```
-pub async fn run(query: &AcsApiQueryParams) -> Result<AcsTigerResponse, String> {
+pub async fn run(query: AcsApiQueryParams) -> Result<AcsTigerResponse, String> {
+    run_batch(vec![query]).await
+}
+
+pub async fn run_batch(queries: Vec<AcsApiQueryParams>) -> Result<AcsTigerResponse, String> {
     let client: Client = Client::new();
 
-    let acs_rows = acs_api::batch_run(&client, vec![&query]).await?;
+    // todo: run tiger downloads for all requested years
+    let year = match &queries.iter().map(|q| q.year).unique().collect_vec()[..] {
+        [one_year] => Ok(*one_year),
+        _ => Err(String::from(
+            "acs.run_batch with queries with matching year for optimal geometry downloads",
+        )),
+    }?;
+
+    let acs_rows = acs_api::batch_run(&client, queries).await?;
 
     // execute TIGER/Lines downloads
-    let tiger_uri_builder = TigerUriBuilder::new(query.year)?;
+    let tiger_uri_builder = TigerUriBuilder::new(year)?;
     let geoids = &acs_rows.iter().map(|(geoid, _)| geoid).collect_vec();
     let tiger_response = tiger_api::run(&client, &tiger_uri_builder, geoids).await?;
 
