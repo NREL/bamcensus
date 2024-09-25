@@ -201,9 +201,10 @@ impl LodesDataset {
 fn validate_wac_availability(year: u64, state_code: &StateCode) -> Result<(), String> {
     let err = || {
         Err(format!(
-            "WAC is not available in {} for {}",
+            "WAC is not available in {} for {} (code {})",
             year,
-            state_code.to_full_name()
+            state_code.to_full_name(),
+            state_code.to_fips_string()
         ))
     };
     match (year, state_code) {
