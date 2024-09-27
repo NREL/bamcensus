@@ -14,6 +14,7 @@ use std::io::{Cursor, Read};
 use std::sync::{Arc, Mutex};
 use tokio::io::AsyncWriteExt;
 use us_census_core::model::identifier::geoid::Geoid;
+use us_census_core::model::identifier::GeoidType;
 use zip::ZipArchive;
 
 /// runs as many downloads of TIGER/Lines files as needed to cover
@@ -103,25 +104,7 @@ fn into_geoid_and_geometry(
     lookup: &HashSet<&&Geoid>,
     tiger_uri: &TigerResource,
 ) -> Result<Option<(Geoid, Geometry)>, String> {
-    let field_value = record.get(&tiger_uri.geoid_column_name).ok_or_else(|| {
-        format!(
-            "could not find expected column '{}' in shapefile",
-            &tiger_uri.geoid_column_name
-        )
-    })?;
-    let geoid = match field_value {
-        dbase::FieldValue::Character(s) => match s {
-            Some(geoid_string) => tiger_uri.geoid_type.geoid_from_str(geoid_string),
-            None => Err(format!(
-                "value at field '{}' is empty, should be a GEOID string",
-                &tiger_uri.geoid_column_name
-            )),
-        },
-        _ => Err(format!(
-            "value at column '{}' is not valid GEOID, found '{}'",
-            &tiger_uri.geoid_column_name, field_value
-        )),
-    }?;
+    let geoid = get_geoid_from_record(&record, &tiger_uri.geoid_type)?;
     if lookup.contains(&&geoid) {
         let geometry: Geometry<f64> = shape
             .try_into()
@@ -130,6 +113,44 @@ fn into_geoid_and_geometry(
     } else {
         Ok(None)
     }
+}
+
+const GEOID_COLUMN_NAMES: [&str; 3] = ["GEOID", "GEOID20", "GEOID10"];
+
+/// attempts all three conventions for GEOID column names. order is:
+/// 1. "GEOID"   - most general
+/// 2. "GEOID20" - latest
+/// 3. "GEOID10" - when general or latest is not present
+fn get_geoid_from_record(record: &Record, geoid_type: &GeoidType) -> Result<Geoid, String> {
+    let field_name = GEOID_COLUMN_NAMES
+        .iter()
+        .find(|col| record.get(*col).is_some())
+        .ok_or_else(|| {
+            format!(
+                "could not find any of {} in shapefile",
+                GEOID_COLUMN_NAMES.iter().join(","),
+            )
+        })?;
+    let field_value = record.get(&field_name).ok_or_else(|| {
+        format!(
+            "could not find any of {} in shapefile",
+            GEOID_COLUMN_NAMES.iter().join(","),
+        )
+    })?;
+    let geoid = match field_value {
+        dbase::FieldValue::Character(s) => match s {
+            Some(geoid_string) => geoid_type.geoid_from_str(geoid_string),
+            None => Err(format!(
+                "value at Geoid field '{}' is empty, should be a GEOID string",
+                field_name
+            )),
+        },
+        _ => Err(format!(
+            "value at column '{}' is not valid GEOID, found '{}'",
+            field_name, field_value
+        )),
+    }?;
+    Ok(geoid)
 }
 
 async fn download(client: &Client, uri: &str, write_file: File) -> Result<(), String> {
