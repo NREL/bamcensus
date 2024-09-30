@@ -67,8 +67,9 @@ pub async fn run_batch(queries: Vec<AcsApiQueryParams>) -> Result<AcsTigerRespon
     // todo: run tiger downloads for all requested years
     let year = match &queries.iter().map(|q| q.year).unique().collect_vec()[..] {
         [one_year] => Ok(*one_year),
-        _ => Err(String::from(
-            "acs.run_batch with queries with matching year for optimal geometry downloads",
+        years => Err(format!(
+            "acs.run_batch with queries should be run with one matching year for optimal geometry downloads, but found the following years: [{}]",
+            years.iter().map(|y| format!("{}", y)).join(",")
         )),
     }?;
 
