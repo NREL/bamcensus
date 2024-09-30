@@ -196,8 +196,7 @@ impl LodesDataset {
     }
 }
 
-/// as outlined in the tech doc, some states do not have WAC
-/// data for certain years
+/// as outlined in the tech doc, some states do not have WAC data for certain years
 fn validate_wac_availability(year: u64, state_code: &StateCode) -> Result<(), String> {
     let err = || {
         Err(format!(
