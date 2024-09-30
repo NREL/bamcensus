@@ -124,14 +124,14 @@ const GEOID_COLUMN_NAMES: [&str; 3] = ["GEOID", "GEOID20", "GEOID10"];
 fn get_geoid_from_record(record: &Record, geoid_type: &GeoidType) -> Result<Geoid, String> {
     let field_name = GEOID_COLUMN_NAMES
         .iter()
-        .find(|col| record.get(*col).is_some())
+        .find(|col| record.get(col).is_some())
         .ok_or_else(|| {
             format!(
                 "could not find any of {} in shapefile",
                 GEOID_COLUMN_NAMES.iter().join(","),
             )
         })?;
-    let field_value = record.get(&field_name).ok_or_else(|| {
+    let field_value = record.get(field_name).ok_or_else(|| {
         format!(
             "could not find any of {} in shapefile",
             GEOID_COLUMN_NAMES.iter().join(","),
