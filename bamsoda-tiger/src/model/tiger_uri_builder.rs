@@ -95,8 +95,7 @@ impl TigerUriBuilder {
     /// let expected = TigerResource::new(
     ///     expected_uri,
     ///     GeoidType::CountySubdivision,
-    ///     Some(expected_file_scope),
-    ///     String::from("GEOID"),
+    ///     Some(expected_file_scope)
     /// );
     /// assert_eq!(uri, expected);
     /// ```
