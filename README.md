@@ -1,7 +1,5 @@
-# US Census
-A tool for downloading US Census datasets written in Rust. 
-
-As of August 29th, 2024, this project is moving into **beta** phase of development.
+# BAMSODA - The Behavior and Advanced Mobility Scalable Open Dataset Aggregator
+A tool for downloading large scale geospatial datasets written in Rust. 
 
 ### Why
 
