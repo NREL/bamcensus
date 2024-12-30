@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-  "us-census-core",
-  "us-census-acs",
-  "us-census-tiger",
-  "us-census-app",
-  "us-census-lehd",
-  "us-census-api-py",
+  "bamsoda-core",
+  "bamsoda-acs",
+  "bamsoda-tiger",
+  "bamsoda-app",
+  "bamsoda-lehd",
+  "bamsoda-app-py",
 ]
 
 [workspace.dependencies]

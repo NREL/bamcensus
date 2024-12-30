@@ -1,0 +1,34 @@
+[package]
+name = "bamsoda-app"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "application integrating all bamsoda capabilities with a CLI and Rust API"
+
+# [[bin]]
+# name = "bamsoda-acs"
+# path = "src/bin/acs_tiger_app.rs"
+
+# [[bin]]
+# name = "bamsoda-lehd"
+# path = "src/bin/lodes_tiger_app.rs"
+
+[dependencies]
+env_logger = { workspace = true }
+clap = { workspace = true }
+bamsoda-core = { path = "../bamsoda-core" }
+bamsoda-acs = { path = "../bamsoda-acs" }
+bamsoda-lehd = { path = "../bamsoda-lehd" }
+bamsoda-tiger = { path = "../bamsoda-tiger" }
+itertools = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+geo = { workspace = true }
+wkt = { workspace = true }
+tokio-test = { workspace = true }
+tokio = { workspace = true }
+csv = { workspace = true }
+log = { workspace = true }
+kdam = { workspace = true }

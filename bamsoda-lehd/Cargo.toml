@@ -1,0 +1,20 @@
+[package]
+name = "bamsoda-lehd"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "Work with Longitudinal Employer-Household Dynamics (LEHD) datasets"
+
+[dependencies]
+bamsoda-core = { path = "../bamsoda-core" }
+tokio = { workspace = true }
+rayon = { workspace = true }
+clap = { workspace = true }
+env_logger = { workspace = true }
+itertools = { workspace = true }
+serde = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+csv = { workspace = true }
+flate2 = { workspace = true }
+kdam = { workspace = true }
