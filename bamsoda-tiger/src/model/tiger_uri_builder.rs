@@ -72,11 +72,8 @@ impl TigerUriBuilder {
     /// which are organized by state.
     ///
     /// ```rust
-    /// use bamsoda_tiger::model::{
-    ///     tiger_uri_builder::TigerUriBuilder,
-    ///     tiger_resource::TigerResource,
-    /// };
-    /// use bamsoda_core::model::identifier::{fips, geoid::Geoid, geoid_type::GeoidType};
+    /// use bamsoda_tiger::model::{TigerUriBuilder, TigerResource};
+    /// use bamsoda_core::model::identifier::{fips, Geoid, GeoidType};
     ///
     /// let builder = TigerUriBuilder::Tiger2010Format { year: 2011 };
     /// let geoid = Geoid::CountySubdivision(

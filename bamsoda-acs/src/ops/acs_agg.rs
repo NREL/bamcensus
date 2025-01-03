@@ -14,7 +14,7 @@ use serde_json::json;
 /// ```rust
 /// use bamsoda_core::model::identifier::{Geoid, GeoidType, fips};
 /// use bamsoda_core::ops::agg::NumericAggregation;
-/// use bamsoda_core::model::acs::AcsValue;
+/// use bamsoda_acs::model::AcsValue;
 /// use bamsoda_acs::ops::acs_agg;
 /// use serde_json::json;
 ///

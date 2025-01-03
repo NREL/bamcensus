@@ -155,9 +155,9 @@ fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> R
 ///
 /// ```rust
 /// use bamsoda_acs::api::acs_api::deserialize;
-/// use bamsoda_acs::model::acs_geoid_query::AcsGeoidQuery;
+/// use bamsoda_acs::model::AcsGeoidQuery;
 /// use bamsoda_core::model::identifier::fips;
-/// use bamsoda_core::model::identifier::geoid::Geoid;
+/// use bamsoda_core::model::identifier::Geoid;
 ///
 /// let data = r#"
 /// [

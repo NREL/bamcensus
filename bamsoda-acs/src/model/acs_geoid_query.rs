@@ -33,8 +33,8 @@ impl AcsGeoidQuery {
     /// when no wildcard is provided, the query is constructed for an exact location, which
     /// should return a single result.
     /// ```rust
-    /// use bamsoda_core::model::identifier::{fips, geoid::Geoid, geoid_type::GeoidType};
-    /// use bamsoda_acs::model::acs_geoid_query::AcsGeoidQuery;;
+    /// use bamsoda_core::model::identifier::{fips, Geoid, GeoidType};
+    /// use bamsoda_acs::model::AcsGeoidQuery;;
     ///
     /// let geoid = Geoid::County(fips::State(8), fips::County(1));
     /// let query = AcsGeoidQuery::new(Some(geoid), None).unwrap();
@@ -45,8 +45,8 @@ impl AcsGeoidQuery {
     /// some combinations simply append a wildcard one level below the geoid, for example,
     /// tacking a county=* on top of state=08.
     /// ```rust
-    /// use bamsoda_core::model::identifier::{fips, geoid::Geoid, geoid_type::GeoidType};
-    /// use bamsoda_acs::model::acs_geoid_query::AcsGeoidQuery;;
+    /// use bamsoda_core::model::identifier::{fips, Geoid, GeoidType};
+    /// use bamsoda_acs::model::AcsGeoidQuery;;
     ///
     /// let geoid = Geoid::State(fips::State(8));
     /// let wildcard = GeoidType::County;
@@ -59,8 +59,8 @@ impl AcsGeoidQuery {
     /// reported in the query, such as adding a wildcard to a tract query. in this case,
     /// the query simply drops the county wildcard, as it is implied.
     /// ```rust
-    /// use bamsoda_core::model::identifier::{fips, geoid::Geoid, geoid_type::GeoidType};
-    /// use bamsoda_acs::model::acs_geoid_query::AcsGeoidQuery;;
+    /// use bamsoda_core::model::identifier::{fips, Geoid, GeoidType};
+    /// use bamsoda_acs::model::AcsGeoidQuery;;
     ///
     /// let geoid = Geoid::CensusTract(fips::State(8), fips::County(1), fips::CensusTract(1));
     /// let wildcard = GeoidType::County;

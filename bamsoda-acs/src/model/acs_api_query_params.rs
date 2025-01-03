@@ -46,11 +46,11 @@ impl AcsApiQueryParams {
     /// their state name, population value, and state FIPS code.
     ///
     /// ```rust
-    /// use bamsoda_core::model::identifier::{fips, geoid_type::GeoidType};
-    /// use bamsoda_core::model::acs::AcsType;
+    /// use bamsoda_core::model::identifier::{fips, GeoidType};
     /// use bamsoda_acs::model::{
-    ///     acs_geoid_query::AcsGeoidQuery,
-    ///     acs_api_query_params::AcsApiQueryParams
+    ///     AcsType,
+    ///     AcsGeoidQuery,
+    ///     AcsApiQueryParams
     /// };
     ///
     /// let base_url = String::from("https://api.census.gov/data");
@@ -66,11 +66,11 @@ impl AcsApiQueryParams {
     /// their state name, population value, and state FIPS code.
     ///
     /// ```rust
-    /// use bamsoda_core::model::identifier::{fips, geoid_type::GeoidType, geoid::Geoid};
-    /// use bamsoda_core::model::acs::AcsType;
+    /// use bamsoda_core::model::identifier::{fips, GeoidType, Geoid};
     /// use bamsoda_acs::model::{
-    ///     acs_geoid_query::AcsGeoidQuery,
-    ///     acs_api_query_params::AcsApiQueryParams
+    ///     AcsType,
+    ///     AcsGeoidQuery,
+    ///     AcsApiQueryParams
     /// };
     ///
     /// let base_url = String::from("https://api.census.gov/data");
