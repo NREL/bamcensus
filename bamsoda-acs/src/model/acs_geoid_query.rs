@@ -1,7 +1,7 @@
 use bamsoda_core::model::identifier::{fips, Geoid, GeoidType, HasGeoidString};
 use std::rc::Rc;
 
-pub type DeserializeGeoidFn = Rc<dyn Fn(Vec<serde_json::Value>) -> Result<Geoid, String>>;
+use super::DeserializeGeoidFn;
 
 /// enumeration representing the scopes of various ACS queries.
 ///

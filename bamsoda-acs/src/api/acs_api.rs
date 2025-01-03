@@ -1,5 +1,4 @@
-use crate::model::{acs_api_query_params::AcsApiQueryParams, acs_geoid_query::DeserializeGeoidFn};
-use bamsoda_core::model::acs::AcsValue;
+use crate::model::{AcsApiQueryParams, AcsValue, DeserializeGeoidFn};
 use bamsoda_core::model::identifier::Geoid;
 use futures::future;
 use itertools::Itertools;

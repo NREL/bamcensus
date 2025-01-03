@@ -1,14 +1,14 @@
+use bamsoda_acs::model::AcsApiQueryParams;
+use bamsoda_acs::model::AcsGeoidQuery;
+use bamsoda_acs::model::AcsType;
+use bamsoda_app::app::acs_tiger;
+use bamsoda_core::model::identifier::Geoid;
 use itertools::Itertools;
 use pyo3::types::IntoPyDict;
 use pyo3::types::PyDict;
 use pyo3::types::PyNone;
 use pyo3::{exceptions::PyException, prelude::*};
 use serde::de;
-use bamsoda_acs::model::AcsApiQueryParams;
-use bamsoda_acs::model::AcsGeoidQuery;
-use bamsoda_app::app::acs_tiger;
-use bamsoda_core::model::acs::AcsType;
-use bamsoda_core::model::identifier::Geoid;
 use wkt::ToWkt;
 
 #[pyfunction]

@@ -1,6 +1,6 @@
 use crate::model::acs_tiger_row::AcsTigerRow;
 use bamsoda_acs::api::acs_api;
-use bamsoda_acs::model::acs_api_query_params::AcsApiQueryParams;
+use bamsoda_acs::model::AcsApiQueryParams;
 use bamsoda_core::model::identifier::Geoid;
 use bamsoda_tiger::model::TigerUriBuilder;
 use bamsoda_tiger::ops::tiger_api;

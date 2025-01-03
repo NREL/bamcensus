@@ -1,5 +1,4 @@
-use crate::model::acs_geoid_query::AcsGeoidQuery;
-use bamsoda_core::model::acs::AcsType;
+use crate::model::{AcsGeoidQuery, AcsType};
 use itertools::Itertools;
 
 pub struct AcsApiQueryParams {

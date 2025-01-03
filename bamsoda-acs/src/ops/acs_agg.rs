@@ -1,4 +1,4 @@
-use bamsoda_core::model::acs::AcsValue;
+use crate::model::AcsValue;
 use bamsoda_core::{
     model::identifier::{Geoid, GeoidType},
     ops::agg::NumericAggregation,

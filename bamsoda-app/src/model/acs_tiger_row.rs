@@ -1,4 +1,4 @@
-use bamsoda_core::model::acs::AcsValue;
+use bamsoda_acs::model::AcsValue;
 use bamsoda_core::model::identifier::{Geoid, HasGeoidString};
 use geo::Geometry;
 use serde::{Deserialize, Serialize};
