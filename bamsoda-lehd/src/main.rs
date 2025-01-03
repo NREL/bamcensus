@@ -1,7 +1,7 @@
 use bamsoda_core::model::identifier::{Geoid, GeoidType};
-use bamsoda_core::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 use bamsoda_core::ops::agg::NumericAggregation;
 use bamsoda_lehd::api::lodes_api;
+use bamsoda_lehd::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
 use clap::Parser;
 
 // todo: top level here should be a LEHD command

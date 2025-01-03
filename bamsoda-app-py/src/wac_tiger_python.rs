@@ -1,6 +1,6 @@
 use bamsoda_app::app::lodes_tiger;
 use bamsoda_core::model::identifier::Geoid;
-use bamsoda_core::model::lodes::{
+use bamsoda_lehd::model::lodes::{
     LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment,
 };
 use itertools::Itertools;

@@ -2,7 +2,7 @@ use super::lodes_tiger;
 use crate::model::lodes_tiger_output_row::LodesTigerOutputRow;
 use bamsoda_core::model::identifier::GeoidType;
 use bamsoda_core::model::identifier::{Geoid, StateCode};
-use bamsoda_core::model::lodes::{
+use bamsoda_lehd::model::lodes::{
     LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment,
 };
 use clap::{Args, Parser, Subcommand};

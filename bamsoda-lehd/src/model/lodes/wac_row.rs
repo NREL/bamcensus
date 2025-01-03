@@ -1,4 +1,4 @@
-use crate::model::identifier::{Geoid, GeoidType};
+use bamsoda_core::model::identifier::{Geoid, GeoidType};
 use serde::{Deserialize, Serialize};
 
 use super::WacSegment;

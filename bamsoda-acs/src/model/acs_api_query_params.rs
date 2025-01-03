@@ -12,8 +12,6 @@ pub struct AcsApiQueryParams {
 }
 
 impl AcsApiQueryParams {
-    pub const BASE_URL: &'static str = "https://api.census.gov/data";
-
     pub fn new(
         base_url: Option<String>,
         year: u64,
@@ -36,7 +34,7 @@ impl AcsApiQueryParams {
         let base = self
             .base_url
             .clone()
-            .unwrap_or(String::from(AcsApiQueryParams::BASE_URL));
+            .unwrap_or(String::from(super::constants::BASE_URL));
         let type_s = self.acs_type.to_directory_name();
         format!("{}/{}/acs/{}", base, self.year, type_s)
     }

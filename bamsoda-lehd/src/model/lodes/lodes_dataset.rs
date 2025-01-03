@@ -1,5 +1,5 @@
 use super::{LodesEdition, LodesJobType, OdPart, WorkplaceSegment, BASE_URL, LATEST_YEAR};
-use crate::model::identifier::{Geoid, GeoidType, StateCode};
+use bamsoda_core::model::identifier::{Geoid, GeoidType, StateCode};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 

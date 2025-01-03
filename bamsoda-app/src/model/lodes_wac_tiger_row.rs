@@ -1,5 +1,5 @@
 use bamsoda_core::model::identifier::{Geoid, HasGeoidString};
-use bamsoda_core::model::lodes::WacValue;
+use bamsoda_lehd::model::lodes::WacValue;
 use geo::Geometry;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;

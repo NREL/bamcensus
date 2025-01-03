@@ -1,8 +1,8 @@
 use crate::model::lodes_wac_tiger_row::LodesWacTigerRow;
 use bamsoda_core::model::identifier::Geoid;
 use bamsoda_core::model::identifier::GeoidType;
-use bamsoda_core::model::lodes::{LodesDataset, WacSegment};
 use bamsoda_lehd::api::lodes_api;
+use bamsoda_lehd::model::lodes::{LodesDataset, WacSegment};
 use bamsoda_tiger::model::TigerUriBuilder;
 use bamsoda_tiger::ops::tiger_api;
 use geo::Geometry;
