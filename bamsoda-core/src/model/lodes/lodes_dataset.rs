@@ -1,8 +1,5 @@
 use super::{LodesEdition, LodesJobType, OdPart, WorkplaceSegment, BASE_URL, LATEST_YEAR};
-use crate::model::{
-    fips::state_code::StateCode,
-    identifier::{Geoid, GeoidType},
-};
+use crate::model::identifier::{Geoid, GeoidType, StateCode};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 

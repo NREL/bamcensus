@@ -1,7 +1,6 @@
-use std::fmt::Display;
-
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 #[derive(Serialize, Deserialize, ValueEnum, Clone, Copy, Debug)]
 #[serde(rename_all = "snake_case")]

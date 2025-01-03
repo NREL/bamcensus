@@ -1,6 +1,6 @@
 use bamsoda_core::model::identifier::{Geoid, GeoidType};
 use bamsoda_core::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
-use bamsoda_core::ops::agg::aggregation_function::NumericAggregation;
+use bamsoda_core::ops::agg::NumericAggregation;
 use bamsoda_lehd::api::lodes_api;
 use clap::Parser;
 

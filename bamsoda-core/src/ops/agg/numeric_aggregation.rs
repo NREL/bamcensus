@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, ValueEnum, Default)]
 #[serde(rename_all = "snake_case")]
+/// operations for aggregating a collection of numeric values
 pub enum NumericAggregation {
     #[default]
     Sum,

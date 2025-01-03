@@ -1,4 +1,4 @@
-use crate::model::identifier::{geoid::Geoid, geoid_type::GeoidType};
+use crate::model::identifier::{Geoid, GeoidType};
 use serde::{Deserialize, Serialize};
 
 use super::WacSegment;

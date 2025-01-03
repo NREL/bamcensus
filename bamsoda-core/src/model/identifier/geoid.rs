@@ -1,9 +1,6 @@
+use super::{fips, GeoidType, HasGeoidString, StateCode};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-
-use crate::model::fips::state_code::StateCode;
-
-use super::{fips, geoid_type::GeoidType, has_geoid_string::HasGeoidString};
 use std::fmt::Display;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]

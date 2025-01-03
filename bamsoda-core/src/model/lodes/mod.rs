@@ -1,18 +1,19 @@
-pub mod lodes_dataset;
-pub mod lodes_edition;
-pub mod lodes_job_type;
-pub mod od_job_segment;
-pub mod od_part;
-pub mod wac_row;
-pub mod wac_segment;
-pub mod wac_value;
-pub mod workplace_segment;
+mod lodes_dataset;
+mod lodes_edition;
+mod lodes_job_type;
+mod od_job_segment;
+mod od_part;
+mod wac_row;
+mod wac_segment;
+mod wac_value;
+mod workplace_segment;
 
 pub use lodes_dataset::LodesDataset;
 pub use lodes_edition::LodesEdition;
 pub use lodes_job_type::LodesJobType;
 pub use od_job_segment::OdJobSegment;
 pub use od_part::OdPart;
+pub use wac_row::WacRow;
 pub use wac_segment::WacSegment;
 pub use wac_value::WacValue;
 pub use workplace_segment::WorkplaceSegment;

@@ -1,8 +1,13 @@
 pub mod fips;
-pub mod geoid;
-pub mod geoid_type;
-pub mod has_geoid_string;
-pub mod has_geoid_type;
+
+mod geoid;
+mod geoid_type;
+mod has_geoid_string;
+mod has_geoid_type;
+mod state_code;
 
 pub use geoid::Geoid;
 pub use geoid_type::GeoidType;
+pub use has_geoid_string::HasGeoidString;
+pub use has_geoid_type::HasGeoidType;
+pub use state_code::StateCode;

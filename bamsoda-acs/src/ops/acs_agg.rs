@@ -1,10 +1,10 @@
-use itertools::Itertools;
-use serde_json::json;
 use bamsoda_core::model::acs::AcsValue;
 use bamsoda_core::{
     model::identifier::{Geoid, GeoidType},
-    ops::agg::aggregation_function::NumericAggregation,
+    ops::agg::NumericAggregation,
 };
+use itertools::Itertools;
+use serde_json::json;
 
 /// groups rows to the target Geoid hierarchy level and then
 /// applies the provided aggregation function to the grouped WacValues.

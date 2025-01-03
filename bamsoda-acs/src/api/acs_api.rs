@@ -1,11 +1,11 @@
 use crate::model::{acs_api_query_params::AcsApiQueryParams, acs_geoid_query::DeserializeGeoidFn};
+use bamsoda_core::model::acs::AcsValue;
+use bamsoda_core::model::identifier::Geoid;
 use futures::future;
 use itertools::Itertools;
 use kdam::BarExt;
 use reqwest::{Client, StatusCode};
 use std::sync::{Arc, Mutex};
-use bamsoda_core::model::acs::acs_value::AcsValue;
-use bamsoda_core::model::identifier::geoid::Geoid;
 
 /// sets up a run of ACS queries.
 pub async fn batch_run<'a>(

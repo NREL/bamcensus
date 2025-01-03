@@ -1,7 +1,5 @@
 use super::tiger_resource::TigerResource;
-use bamsoda_core::model::identifier::{
-    geoid::Geoid, geoid_type::GeoidType, has_geoid_string::HasGeoidString,
-};
+use bamsoda_core::model::identifier::{Geoid, GeoidType, HasGeoidString};
 use std::{collections::HashSet, fmt::Display};
 
 /// builds URIs for TIGER/Lines Shapefile resources.

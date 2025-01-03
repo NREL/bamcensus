@@ -1,9 +1,8 @@
-use std::fmt::Display;
-
-use bamsoda_core::model::identifier::{geoid::Geoid, has_geoid_string::HasGeoidString};
+use bamsoda_core::model::identifier::{Geoid, HasGeoidString};
 use bamsoda_core::model::lodes::WacValue;
 use geo::Geometry;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 use wkt::ToWkt;
 
 #[derive(Deserialize, Serialize)]

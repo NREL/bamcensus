@@ -1,11 +1,11 @@
-use clap::Parser;
-use itertools::Itertools;
 use bamsoda_acs::model::{AcsApiQueryParams, AcsGeoidQuery};
 use bamsoda_app::app::acs_tiger;
 use bamsoda_app::model::acs_tiger_output_row::AcsTigerOutputRow;
 use bamsoda_core::model::acs::AcsType;
-use bamsoda_core::model::identifier::geoid::Geoid;
-use bamsoda_core::model::identifier::geoid_type::GeoidType;
+use bamsoda_core::model::identifier::Geoid;
+use bamsoda_core::model::identifier::GeoidType;
+use clap::Parser;
+use itertools::Itertools;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]

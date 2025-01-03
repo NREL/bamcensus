@@ -1,12 +1,12 @@
 use super::lodes_tiger;
 use crate::model::lodes_tiger_output_row::LodesTigerOutputRow;
-use clap::{Args, Parser, Subcommand};
-use itertools::Itertools;
-use bamsoda_core::model::identifier::geoid_type::GeoidType;
+use bamsoda_core::model::identifier::GeoidType;
+use bamsoda_core::model::identifier::{Geoid, StateCode};
 use bamsoda_core::model::lodes::{
     LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment,
 };
-use bamsoda_core::model::{fips::state_code::StateCode, identifier::geoid::Geoid};
+use clap::{Args, Parser, Subcommand};
+use itertools::Itertools;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]

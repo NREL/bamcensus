@@ -1,6 +1,6 @@
-use crate::model::tiger_resource::TigerResource;
-use crate::model::tiger_uri_builder::TigerUriBuilder;
-use bamsoda_core::model::identifier::geoid::Geoid;
+use crate::model::TigerResource;
+use crate::model::TigerUriBuilder;
+use bamsoda_core::model::identifier::Geoid;
 use bamsoda_core::model::identifier::GeoidType;
 use futures::StreamExt;
 use geo_types::Geometry;

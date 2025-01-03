@@ -1,8 +1,8 @@
 use crate::ops::lodes_agg;
-use bamsoda_core::model::lodes::{wac_row::WacRow, wac_value::WacValue, WacSegment};
+use bamsoda_core::model::lodes::{WacRow, WacSegment, WacValue};
 use bamsoda_core::{
     model::identifier::{Geoid, GeoidType},
-    ops::agg::aggregation_function::NumericAggregation,
+    ops::agg::NumericAggregation,
 };
 use csv::ReaderBuilder;
 use flate2::read::GzDecoder;
@@ -22,11 +22,13 @@ pub async fn run_wac(
     wac_segments: &[WacSegment],
     agg: Option<(GeoidType, NumericAggregation)>,
 ) -> Result<Vec<(Geoid, Vec<WacValue>)>, String> {
+    // setup progress bar
     let pb_builder = kdam::BarBuilder::default()
         .total(queries.len())
         .desc("LODES downloads");
     let pb = Arc::new(Mutex::new(pb_builder.build()?));
 
+    // run each query in parallel
     let responses = queries.iter().map(|url| {
         let client = &client;
         let wac_segments = &wac_segments;
@@ -66,6 +68,9 @@ pub async fn run_wac(
             Ok(result)
         }
     });
+    eprintln!(); // progress bar terminated
+
+    // join query result
     let response_rows = future::join_all(responses)
         .await
         .into_iter()
@@ -73,7 +78,8 @@ pub async fn run_wac(
         .into_iter()
         .flatten()
         .collect_vec();
-    eprintln!(); // progress bar terminated
+
+    // if requested, aggregate the result
     let aggregated_rows = match agg {
         Some((output_geoid_type, agg)) => {
             lodes_agg::aggregate_lodes_wac(&response_rows, output_geoid_type, agg)?

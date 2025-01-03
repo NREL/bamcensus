@@ -1,12 +1,12 @@
 use crate::model::acs_tiger_row::AcsTigerRow;
+use bamsoda_acs::api::acs_api;
+use bamsoda_acs::model::acs_api_query_params::AcsApiQueryParams;
+use bamsoda_core::model::identifier::Geoid;
+use bamsoda_tiger::model::TigerUriBuilder;
+use bamsoda_tiger::ops::tiger_api;
 use geo::Geometry;
 use itertools::Itertools;
 use reqwest::Client;
-use bamsoda_acs::api::acs_api;
-use bamsoda_acs::model::acs_api_query_params::AcsApiQueryParams;
-use bamsoda_core::model::identifier::geoid::Geoid;
-use bamsoda_tiger::model::tiger_uri_builder::TigerUriBuilder;
-use bamsoda_tiger::ops::tiger_api;
 
 pub struct AcsTigerResponse {
     pub join_dataset: Vec<AcsTigerRow>,

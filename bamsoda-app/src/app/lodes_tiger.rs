@@ -1,14 +1,14 @@
 use crate::model::lodes_wac_tiger_row::LodesWacTigerRow;
+use bamsoda_core::model::identifier::Geoid;
+use bamsoda_core::model::identifier::GeoidType;
+use bamsoda_core::model::lodes::{LodesDataset, WacSegment};
+use bamsoda_lehd::api::lodes_api;
+use bamsoda_tiger::model::TigerUriBuilder;
+use bamsoda_tiger::ops::tiger_api;
 use geo::Geometry;
 use itertools::Itertools;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use bamsoda_core::model::identifier::geoid::Geoid;
-use bamsoda_core::model::identifier::geoid_type::GeoidType;
-use bamsoda_core::model::lodes::{LodesDataset, WacSegment};
-use bamsoda_lehd::api::lodes_api;
-use bamsoda_tiger::model::tiger_uri_builder::TigerUriBuilder;
-use bamsoda_tiger::ops::tiger_api;
 
 #[derive(Serialize, Deserialize)]
 pub struct LodesTigerResponse {

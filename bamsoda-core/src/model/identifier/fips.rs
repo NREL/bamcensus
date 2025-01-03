@@ -1,10 +1,8 @@
-use serde::{Deserialize, Serialize};
-
+/// newtype structs to represent the sub-components of a GEOID.
 use super::{
     geoid_type::GeoidType, has_geoid_string::HasGeoidString, has_geoid_type::HasGeoidType,
 };
-
-/// structs to represent the components of a GEOID.
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct State(pub u64);

@@ -1,3 +1,3 @@
-pub mod aggregation_function;
+pub mod numeric_aggregation;
 
-pub use aggregation_function::NumericAggregation;
+pub use numeric_aggregation::NumericAggregation;

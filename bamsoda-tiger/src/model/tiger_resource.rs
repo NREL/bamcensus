@@ -1,4 +1,4 @@
-use bamsoda_core::model::identifier::geoid_type::GeoidType;
+use bamsoda_core::model::identifier::GeoidType;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]

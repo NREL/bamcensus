@@ -1,7 +1,7 @@
-use bamsoda_core::model::lodes::{wac_value::WacValue, WacSegment};
+use bamsoda_core::model::lodes::{WacSegment, WacValue};
 use bamsoda_core::{
     model::identifier::{Geoid, GeoidType},
-    ops::agg::aggregation_function::NumericAggregation,
+    ops::agg::NumericAggregation,
 };
 use itertools::Itertools;
 use kdam::BarExt;

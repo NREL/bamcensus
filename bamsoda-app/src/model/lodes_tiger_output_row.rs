@@ -1,6 +1,6 @@
 use super::lodes_wac_tiger_row::LodesWacTigerRow;
+use bamsoda_core::model::identifier::HasGeoidString;
 use serde::{Deserialize, Serialize};
-use bamsoda_core::model::identifier::has_geoid_string::HasGeoidString;
 use wkt::ToWkt;
 
 #[derive(Serialize, Deserialize)]

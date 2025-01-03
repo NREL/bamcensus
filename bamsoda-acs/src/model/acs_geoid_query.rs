@@ -1,7 +1,5 @@
+use bamsoda_core::model::identifier::{fips, Geoid, GeoidType, HasGeoidString};
 use std::rc::Rc;
-use bamsoda_core::model::identifier::{
-    fips, geoid::Geoid, geoid_type::GeoidType, has_geoid_string::HasGeoidString,
-};
 
 pub type DeserializeGeoidFn = Rc<dyn Fn(Vec<serde_json::Value>) -> Result<Geoid, String>>;
 

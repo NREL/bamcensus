@@ -1,4 +1,7 @@
-pub mod tiger_resource;
-pub mod tiger_uri_builder;
+pub mod constants;
 
-pub const LATEST_YEAR: u64 = 2023;
+mod tiger_resource;
+mod tiger_uri_builder;
+
+pub use tiger_resource::TigerResource;
+pub use tiger_uri_builder::TigerUriBuilder;

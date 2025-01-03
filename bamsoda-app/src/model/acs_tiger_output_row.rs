@@ -1,6 +1,6 @@
 use super::acs_tiger_row::AcsTigerRow;
+use bamsoda_core::model::identifier::HasGeoidString;
 use serde::{Deserialize, Serialize};
-use bamsoda_core::model::identifier::has_geoid_string::HasGeoidString;
 use wkt::ToWkt;
 
 #[derive(Serialize, Deserialize)]

@@ -1,6 +1,6 @@
 use crate::model::acs_geoid_query::AcsGeoidQuery;
+use bamsoda_core::model::acs::AcsType;
 use itertools::Itertools;
-use bamsoda_core::model::acs::acs_type::AcsType;
 
 pub struct AcsApiQueryParams {
     pub base_url: Option<String>,
