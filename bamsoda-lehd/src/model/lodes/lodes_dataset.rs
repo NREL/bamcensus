@@ -85,7 +85,7 @@ impl LodesDataset {
 
     /// creates a URI to a LODES datasets based on the directory and file
     /// naming conventions described in the LODESTechDoc8.1.pdf file.
-    /// see https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.1.pdf
+    /// see <https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.1.pdf>
     pub fn create_uri(&self, geoid: &Geoid) -> Result<String, String> {
         let sc: StateCode = geoid.to_state().try_into()?;
         let state_code = sc.to_state_abbreviation();

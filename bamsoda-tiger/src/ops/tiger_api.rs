@@ -1,5 +1,5 @@
 use crate::model::TigerResource;
-use crate::model::TigerUriBuilder;
+use crate::model::TigerResourceBuilder;
 use bamsoda_core::model::identifier::Geoid;
 use bamsoda_core::model::identifier::GeoidType;
 use futures::StreamExt;
@@ -26,10 +26,10 @@ use zip::ZipArchive;
 /// the archives, unpack, and then load from the extracted file paths.
 pub async fn run<'a>(
     client: &Client,
-    builder: &TigerUriBuilder,
+    builder: &TigerResourceBuilder,
     geoids: &[&Geoid],
 ) -> Result<Vec<Result<Vec<(Geoid, Geometry)>, String>>, String> {
-    let uris = builder.create_uris(geoids)?;
+    let uris = builder.create_resources(geoids)?;
     let lookup = geoids.iter().collect::<HashSet<_>>();
 
     let pb_builder = kdam::BarBuilder::default()

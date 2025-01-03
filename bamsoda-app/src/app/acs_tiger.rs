@@ -2,7 +2,7 @@ use crate::model::acs_tiger_row::AcsTigerRow;
 use bamsoda_acs::api::acs_api;
 use bamsoda_acs::model::AcsApiQueryParams;
 use bamsoda_core::model::identifier::Geoid;
-use bamsoda_tiger::model::TigerUriBuilder;
+use bamsoda_tiger::model::TigerResourceBuilder;
 use bamsoda_tiger::ops::tiger_api;
 use geo::Geometry;
 use itertools::Itertools;
@@ -76,7 +76,7 @@ pub async fn run_batch(queries: Vec<AcsApiQueryParams>) -> Result<AcsTigerRespon
     let acs_rows = acs_api::batch_run(&client, queries).await?;
 
     // execute TIGER/Lines downloads
-    let tiger_uri_builder = TigerUriBuilder::new(year)?;
+    let tiger_uri_builder = TigerResourceBuilder::new(year)?;
     let geoids = &acs_rows.iter().map(|(geoid, _)| geoid).collect_vec();
     let tiger_response = tiger_api::run(&client, &tiger_uri_builder, geoids).await?;
 

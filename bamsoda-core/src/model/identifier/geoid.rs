@@ -173,7 +173,7 @@ impl Geoid {
     /// # Note
     ///
     /// Geoid::Block.to_parent() produces a CensusTract, not a BlockGroup, based on
-    /// https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html,
+    /// <https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html>,
     /// which does not imply that all block groups are the first digit of all blocks.
     pub fn to_parent(&self) -> Option<Geoid> {
         match self {

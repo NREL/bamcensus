@@ -1,6 +1,8 @@
 use bamsoda_core::model::identifier::GeoidType;
 use serde::{Deserialize, Serialize};
 
+/// represents everything about a TIGER/Lines shapefile needed to
+/// download it and represent the result with bamsoda types.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct TigerResource {
     /// complete URI to a file location in the TIGER/LINES HTTP website

@@ -3,7 +3,7 @@ use bamsoda_core::model::identifier::Geoid;
 use bamsoda_core::model::identifier::GeoidType;
 use bamsoda_lehd::api::lodes_api;
 use bamsoda_lehd::model::lodes::{LodesDataset, WacSegment};
-use bamsoda_tiger::model::TigerUriBuilder;
+use bamsoda_tiger::model::TigerResourceBuilder;
 use bamsoda_tiger::ops::tiger_api;
 use geo::Geometry;
 use itertools::Itertools;
@@ -91,7 +91,7 @@ pub async fn run(
 
     // execute TIGER/Lines downloads selecting a data vintage based on the LODES edition chosen
     let tiger_year = dataset.tiger_year();
-    let tiger_uri_builder = TigerUriBuilder::new(tiger_year)?;
+    let tiger_uri_builder = TigerResourceBuilder::new(tiger_year)?;
     let lodes_geoids = &lodes_filtered.iter().map(|(geoid, _)| geoid).collect_vec();
     let tiger_response = tiger_api::run(&client, &tiger_uri_builder, lodes_geoids).await?;
 
