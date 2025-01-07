@@ -1,5 +1,11 @@
 name: Rust
 
+# rjf-2025-01-07: openssl expected in system but missing, attempting to sudo install it 
+# warning: openssl-sys@0.9.104: Could not find directory of OpenSSL installation, and this `-sys` crate cannot proceed without this knowledge. If OpenSSL is installed and this crate had trouble finding it,  you can set the `OPENSSL_DIR` environment variable for the compilation process. See stderr section below for further information.
+# error: failed to run custom build command for `openssl-sys v0.9.104`
+# note: To improve backtraces for build dependencies, set the CARGO_PROFILE_TEST_BUILD_OVERRIDE_DEBUG=true environment variable to enable debug information generation.
+
+
 on:
   push:
     branches: [ "main" ]
@@ -10,6 +16,27 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  test:
+    name: cargo test
+    runs-on: bam-runners
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Test
+        run: |
+          apt-get install libssl-dev
+          cargo test
+# jobs:
+#   build:
+#     runs-on: bam-runners
+#     steps:
+#     - uses: actions/checkout@v4
+#     - name: Setup
+#       run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+#     - name: Build
+#       run: cargo build --verbose
+#     - name: Run tests
+#       run: cargo test --verbose
   # setup:
   #   name: install openssl
   #   runs-on: bam-runners
@@ -28,24 +55,3 @@ jobs:
   #         override: true
   #     - name: test
   #       run: cargo test
-  test:
-    name: cargo test
-    runs-on: bam-runners
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Test
-        run: |
-          sudo apt-get install libssl-dev
-          cargo test
-# jobs:
-#   build:
-#     runs-on: bam-runners
-#     steps:
-#     - uses: actions/checkout@v4
-#     - name: Setup
-#       run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-#     - name: Build
-#       run: cargo build --verbose
-#     - name: Run tests
-#       run: cargo test --verbose
