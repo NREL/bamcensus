@@ -21,6 +21,7 @@ jobs:
           override: true
       - name: Rust unit tests
         run: |
+          ls -lh
           cargo test
   # test:
   #   name: cargo test
