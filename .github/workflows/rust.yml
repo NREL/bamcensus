@@ -16,15 +16,19 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  
   test:
     name: cargo test
     runs-on: bam-runners
     steps:
+      - name: setup
+        run: |
+          cat /etc/apt/sources.list
+          apt install pkg-config libssl-dev
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Test
         run: |
-          apt install pkg-config libssl-dev
           cargo test
 # jobs:
 #   build:
