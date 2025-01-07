@@ -19,10 +19,10 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - name: Rust unit tests
-        run: |
-          ls -lh
-          cargo test
+      - name: debug stub
+        run: ls -lh
+      - name: test
+        run: cargo test
   # test:
   #   name: cargo test
   #   runs-on: bam-runners
