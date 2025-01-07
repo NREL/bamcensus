@@ -10,29 +10,25 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
-    runs-on: bam-runners
-    steps:
-      - name: install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: debug stub
-        run: ls -lh
-      - name: test
-        run: cargo test
   # test:
-  #   name: cargo test
   #   runs-on: bam-runners
   #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions-rust-lang/setup-rust-toolchain@v1
-  #     - name: import pkgconfig
-  #     - run: 
-  #     - name: Test
-  #     - run: cargo test --all-features
+  #     - name: install rust
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
+  #     - name: test
+  #       run: cargo test
+  test:
+    name: cargo test
+    runs-on: bam-runners
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Test
+        run: cargo test
 # jobs:
 #   build:
 #     runs-on: bam-runners
