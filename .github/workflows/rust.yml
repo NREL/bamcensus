@@ -21,10 +21,10 @@ jobs:
     name: cargo test
     runs-on: bam-runners
     steps:
-      - name: setup
+      - name: setup libssl for Ubuntu 22.04
         run: |
-          cat /etc/apt/sources.list
-          apt install pkg-config libssl-dev
+          wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+          sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Test
