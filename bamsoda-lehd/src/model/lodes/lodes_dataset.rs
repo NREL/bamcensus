@@ -12,7 +12,12 @@ pub enum LodesDataset {
         od_part: OdPart,
         year: u64,
     },
-    RAC,
+    RAC {
+        edition: LodesEdition,
+        job_type: LodesJobType,
+        segment: WorkplaceSegment,
+        year: u64,
+    },
     WAC {
         edition: LodesEdition,
         job_type: LodesJobType,
@@ -50,7 +55,12 @@ impl LodesDataset {
             } => {
                 format!("{} {} {} Origin-Destination data, {} job totals are associated with both a home Census Block and a work Census Block", year, edition, od_part, job_type)
             }
-            LodesDataset::RAC => String::from(
+            LodesDataset::RAC {
+                edition: _,
+                job_type: _,
+                segment: _,
+                year: _,
+            } => String::from(
                 "Residence Area Characteristic data, jobs are totaled by home Census Block",
             ),
             LodesDataset::WAC {
@@ -72,8 +82,13 @@ impl LodesDataset {
                 job_type: _,
                 od_part: _,
                 year: _,
-            } => todo!(),
-            LodesDataset::RAC => todo!(),
+            } => String::from("od"),
+            LodesDataset::RAC {
+                edition: _,
+                job_type: _,
+                segment: _,
+                year: _,
+            } => String::from("rac"),
             LodesDataset::WAC {
                 edition: _,
                 job_type: _,
@@ -96,6 +111,7 @@ impl LodesDataset {
                 od_part,
                 year,
             } => {
+                validate_availability(*year, &sc)?;
                 let filename = format!(
                     "{}_od_{}_{}_{}.csv.gz",
                     state_code.to_lowercase(),
@@ -113,14 +129,36 @@ impl LodesDataset {
                 );
                 Ok(uri)
             }
-            LodesDataset::RAC => todo!(),
+            LodesDataset::RAC {
+                edition,
+                job_type,
+                segment,
+                year,
+            } => {
+                let filename = format!(
+                    "{}_rac_{}_{}_{}.csv.gz",
+                    state_code.to_lowercase(),
+                    segment,
+                    job_type,
+                    year
+                );
+                let uri = format!(
+                    "{}/{}/{}/{}/{}",
+                    BASE_URL,
+                    edition,
+                    state_code.to_lowercase(),
+                    self.dataset_directory(),
+                    filename
+                );
+                Ok(uri)
+            }
             LodesDataset::WAC {
                 edition,
                 job_type,
                 segment,
                 year,
             } => {
-                validate_wac_availability(*year, &sc)?;
+                validate_availability(*year, &sc)?;
                 let filename = format!(
                     "{}_wac_{}_{}_{}.csv.gz",
                     state_code.to_lowercase(),
@@ -155,7 +193,18 @@ impl LodesDataset {
                     edition, year, job_type, od_part, out_res
                 )
             }
-            LodesDataset::RAC => todo!(),
+            LodesDataset::RAC {
+                edition,
+                job_type,
+                segment,
+                year,
+            } => {
+                let out_res = wildcard.unwrap_or(GeoidType::Block);
+                format!(
+                    "{}_rac_{}_{}_{}_{}.csv",
+                    edition, year, job_type, segment, out_res
+                )
+            }
             LodesDataset::WAC {
                 edition,
                 job_type,
@@ -182,7 +231,12 @@ impl LodesDataset {
                 od_part: _,
                 year: _,
             } => edition.tiger_year(),
-            LodesDataset::RAC => todo!(),
+            LodesDataset::RAC {
+                edition,
+                job_type: _,
+                segment: _,
+                year: _,
+            } => edition.tiger_year(),
             LodesDataset::WAC {
                 edition,
                 job_type: _,
@@ -193,8 +247,9 @@ impl LodesDataset {
     }
 }
 
-/// as outlined in the tech doc, some states do not have WAC data for certain years
-fn validate_wac_availability(year: u64, state_code: &StateCode) -> Result<(), String> {
+/// as outlined in the tech doc, some states do not have WAC or OD data for certain years
+/// see <https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.1.pdf>
+fn validate_availability(year: u64, state_code: &StateCode) -> Result<(), String> {
     let err = || {
         Err(format!(
             "WAC is not available in {} for {} (code {})",
@@ -206,17 +261,17 @@ fn validate_wac_availability(year: u64, state_code: &StateCode) -> Result<(), St
     match (year, state_code) {
         (2002, StateCode::Arkansas) => err(),
         (2002, StateCode::NewHampshire) => err(),
-        (y, StateCode::Arizona) if in_range(y, 2002, 2003) => err(),
-        (y, StateCode::Mississippi) if in_range(y, 2002, 2003) => err(),
-        (y, StateCode::DistrictOfColumbia) if in_range(y, 2002, 2009) => err(),
-        (y, StateCode::Massachusetts) if in_range(y, 2002, 2010) => err(),
-        (y, StateCode::Alaska) if in_range(y, 2017, 2020) => err(),
-        (y, StateCode::Arkansas) if in_range(y, 2019, 2020) => err(),
-        (y, StateCode::Mississippi) if in_range(y, 2019, 2020) => err(),
+        (y, StateCode::Arizona) if in_range_exclusive(y, 2002, 2003) => err(),
+        (y, StateCode::Mississippi) if in_range_exclusive(y, 2002, 2003) => err(),
+        (y, StateCode::DistrictOfColumbia) if in_range_exclusive(y, 2002, 2009) => err(),
+        (y, StateCode::Massachusetts) if in_range_exclusive(y, 2002, 2010) => err(),
+        (y, StateCode::Alaska) if in_range_exclusive(y, 2017, 2020) => err(),
+        (y, StateCode::Arkansas) if in_range_exclusive(y, 2019, 2020) => err(),
+        (y, StateCode::Mississippi) if in_range_exclusive(y, 2019, 2020) => err(),
         _ => Ok(()),
     }
 }
 
-fn in_range(y: u64, min: u64, max: u64) -> bool {
+fn in_range_exclusive(y: u64, min: u64, max: u64) -> bool {
     min <= y && y <= max
 }
