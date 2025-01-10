@@ -25,9 +25,13 @@ jobs:
           apt-get update && apt-get install -y librust-openssl-sys-dev
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Formatting
+        run: |
+          rustup component add rustfmt
+          cargo fmt --all -- --check
       - name: Test
         run: |
-          cargo test
+          cargo test --workspace --verbose
 # jobs:
 #   build:
 #     runs-on: bam-runners
