@@ -4,12 +4,12 @@ mod lodes_edition;
 mod lodes_job_type;
 mod od_job_segment;
 mod od_part;
+pub mod od_row;
+pub mod rac_row;
 mod wac_row;
 mod wac_segment;
 mod wac_value;
 mod workplace_segment;
-pub mod od_row;
-pub mod rac_row;
 
 pub use lodes_dataset::LodesDataset;
 pub use lodes_edition::LodesEdition;
