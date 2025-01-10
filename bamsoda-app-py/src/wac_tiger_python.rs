@@ -1,8 +1,6 @@
 use bamsoda_app::app::lodes_tiger;
 use bamsoda_core::model::identifier::Geoid;
-use bamsoda_lehd::model::lodes::{
-    LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment,
-};
+use bamsoda_lehd::model::{LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment};
 use itertools::Itertools;
 use pyo3::types::IntoPyDict;
 use pyo3::types::PyDict;
