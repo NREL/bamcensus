@@ -22,12 +22,7 @@ jobs:
     steps:
       - name: setup libssl for Ubuntu 22.04
         run: |
-          echo "wget libssl package for ubuntu 22.04"
-          wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-          echo "install libssl via dpkg"
-          dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-          OPENSSL_DIR=$(dpkg -L libssl1.1:amd64)
-          echo "set OPENSSL_DIR=$OPENSSL_DIR"
+          apt-get install -y librust-openssl-sys-dev
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Test
