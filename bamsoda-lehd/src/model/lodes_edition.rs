@@ -1,5 +1,4 @@
 use super::LodesDataset;
-use crate::model::lodes as lodes_model;
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
@@ -51,7 +50,7 @@ impl LodesEdition {
     ) -> String {
         format!(
             "{}/{}/{}/{}/{}",
-            lodes_model::BASE_URL,
+            super::BASE_URL,
             self,
             state_code,
             lodes_dataset.to_string().to_lowercase(),

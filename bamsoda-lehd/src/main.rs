@@ -1,7 +1,7 @@
 use bamsoda_core::model::identifier::{Geoid, GeoidType};
 use bamsoda_core::ops::agg::NumericAggregation;
 use bamsoda_lehd::api::lodes_api;
-use bamsoda_lehd::model::lodes::{self as lodes_model, LodesDataset, WacSegment};
+use bamsoda_lehd::model::{LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment};
 use clap::Parser;
 
 // todo: top level here should be a LEHD command
@@ -16,13 +16,13 @@ pub struct LodesCliArgs {
     geoids: Option<String>,
     /// LODES are created in editions, see website for details. LODES8 by default if not provided.
     #[arg(long)]
-    edition: Option<lodes_model::LodesEdition>,
+    edition: Option<LodesEdition>,
     /// LODES workforce segment defined in LODES schema documentation
     #[arg(long)]
-    segment: Option<lodes_model::WorkplaceSegment>,
+    segment: Option<WorkplaceSegment>,
     /// WAC job type defined in LODES schema documentation
     #[arg(long)]
-    jobtype: Option<lodes_model::LodesJobType>,
+    jobtype: Option<LodesJobType>,
     /// level to aggregate result value
     #[arg(long)]
     agg_geoid_type: Option<GeoidType>,

@@ -1,4 +1,4 @@
-use crate::model::lodes::{WacRow, WacSegment, WacValue};
+use crate::model::{WacRow, WacSegment, WacValue};
 use crate::ops::lodes_agg;
 use bamsoda_core::{
     model::identifier::{Geoid, GeoidType},
