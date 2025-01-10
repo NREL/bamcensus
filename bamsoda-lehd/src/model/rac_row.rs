@@ -1,1 +1,1 @@
-pub struct RacRow {}
+pub struct RacRow {asdf}
