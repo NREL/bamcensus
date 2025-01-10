@@ -15,7 +15,7 @@ use std::collections::HashMap;
 /// ```rust
 /// use bamsoda_core::model::identifier::{Geoid, GeoidType, fips};
 /// use bamsoda_core::ops::agg::NumericAggregation;
-/// use bamsoda_lehd::model::lodes::{WacSegment, WacValue};
+/// use bamsoda_lehd::model::{WacSegment, WacValue};
 /// use bamsoda_lehd::ops::lodes_agg;
 ///
 /// // 2020 populations by county (WAC Segment C000) for two counties in Colorado.
