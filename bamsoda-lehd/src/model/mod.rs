@@ -8,6 +8,8 @@ mod wac_row;
 mod wac_segment;
 mod wac_value;
 mod workplace_segment;
+pub mod od_row;
+pub mod rac_row;
 
 pub use lodes_dataset::LodesDataset;
 pub use lodes_edition::LodesEdition;
