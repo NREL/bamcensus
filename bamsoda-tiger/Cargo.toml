@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 # readme = "README.md"
 description = "Work with geospatial data in the TIGER/Lines datasets"
+documentation = "pages.github.nrel.gov/BAM/bamsoda-tiger"
 
 [dependencies]
 bamsoda-core = { path = "../bamsoda-core" }

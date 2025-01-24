@@ -7,6 +7,7 @@ edition = "2021"
 [lib]
 name = "bamsoda_app_py"
 crate-type = ["cdylib"]
+documentation = "pages.github.nrel.gov/BAM/bamsoda-app-py"
 
 [dependencies]
 itertools = { workspace = true }

@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 readme = "README.md"
 description = "application integrating all bamsoda capabilities with a CLI and Rust API"
+documentation = "pages.github.nrel.gov/BAM/bamsoda-app"
 
 # [[bin]]
 # name = "bamsoda-acs"

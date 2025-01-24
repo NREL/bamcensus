@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 readme = "README.md"
 description = "Work with Longitudinal Employer-Household Dynamics (LEHD) datasets"
+documentation = "pages.github.nrel.gov/BAM/bamsoda-lehd"
 
 [dependencies]
 bamsoda-core = { path = "../bamsoda-core" }

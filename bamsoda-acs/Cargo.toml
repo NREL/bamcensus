@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 readme = "README.md"
 description = "Interaction with the American Community Survey API"
+documentation = "pages.github.nrel.gov/BAM/bamsoda-acs"
 
 [dependencies]
 bamsoda-core = { path = "../bamsoda-core" }
