@@ -16,7 +16,7 @@ pub async fn batch_run<'a>(
         .desc("ACS API calls");
     let pb = Arc::new(Mutex::new(pb_builder.build()?));
 
-    let response = queries.into_iter().map(|params| {
+    let response = queries.iter().map(|params| {
         let pb = pb.clone();
         async move {
             let desc = params.build_url()?;
@@ -78,7 +78,7 @@ pub async fn run(
                 .map_err(|e| format!("failure parsing JSON for response from {}: {}", url, e))?;
 
             // confirm the correct column names in the response arrays before deserializing
-            validate_header(&query, &json)?;
+            validate_header(query, &json)?;
 
             let deserialize_fn = query.for_query.build_deserialize_geoid_fn();
             let n_for_cols = query.for_query.response_column_count();

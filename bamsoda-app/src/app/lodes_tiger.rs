@@ -64,7 +64,7 @@ pub async fn run(
     let geoids = match geoids.len() {
         0 => Geoid::all_states(),
         _ => geoids
-            .into_iter()
+            .iter()
             .map(|g| g.to_state())
             .unique()
             .collect_vec(),

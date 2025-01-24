@@ -73,7 +73,7 @@ pub async fn run_batch(queries: &Vec<AcsApiQueryParams>) -> Result<AcsTigerRespo
         )),
     }?;
 
-    let acs_rows = acs_api::batch_run(&client, &queries).await?;
+    let acs_rows = acs_api::batch_run(&client, queries).await?;
 
     // execute TIGER/Lines downloads
     let tiger_uri_builder = TigerResourceBuilder::new(year)?;
