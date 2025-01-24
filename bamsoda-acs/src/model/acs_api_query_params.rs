@@ -1,6 +1,7 @@
 use crate::model::{AcsGeoidQuery, AcsType};
 use itertools::Itertools;
 
+#[derive(Debug, Clone)]
 pub struct AcsApiQueryParams {
     pub base_url: Option<String>,
     pub year: u64,

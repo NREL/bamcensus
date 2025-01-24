@@ -57,7 +57,7 @@ pub fn run_wac_tiger_python<'a>(
         }
     })?;
 
-    let future = lodes_tiger::run(geoids, &wildcard, &wac_segments, dataset);
+    let future = lodes_tiger::run(&geoids, &wildcard, &wac_segments, &dataset);
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()

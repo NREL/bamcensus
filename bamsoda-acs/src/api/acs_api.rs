@@ -9,7 +9,7 @@ use std::sync::{Arc, Mutex};
 /// sets up a run of ACS queries.
 pub async fn batch_run<'a>(
     client: &Client,
-    queries: Vec<AcsApiQueryParams>,
+    queries: &Vec<AcsApiQueryParams>,
 ) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     let pb_builder = kdam::BarBuilder::default()
         .total(queries.len())
@@ -53,7 +53,7 @@ pub async fn batch_run<'a>(
 /// remove the awaits and let the coroutines do the work.
 pub async fn run(
     client: &Client,
-    query: AcsApiQueryParams,
+    query: &AcsApiQueryParams,
 ) -> Result<Vec<(Geoid, Vec<AcsValue>)>, String> {
     let url = query.build_url()?;
 

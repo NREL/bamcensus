@@ -85,7 +85,7 @@ pub fn run_acs_tiger_python<'a>(
                 q,
                 acs_api_token.clone(),
             );
-            let future = acs_tiger::run(query_params);
+            let future = acs_tiger::run(&query_params);
             let result = runtime.block_on(future).map_err(|e| {
                 PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
             })?;

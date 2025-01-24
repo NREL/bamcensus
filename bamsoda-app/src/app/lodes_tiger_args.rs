@@ -79,7 +79,7 @@ async fn run_wac(args: &LodesWacTigerAppCli) {
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
 
-    let res = lodes_tiger::run(geoids, &wildcard, &wac_segments, dataset)
+    let res = lodes_tiger::run(&geoids, &wildcard, &wac_segments, &dataset)
         .await
         .unwrap();
     println!(

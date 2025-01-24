@@ -39,7 +39,7 @@ async fn main() {
     );
 
     let filename = &query_params.output_filename();
-    let res = acs_tiger::run(query_params).await.unwrap();
+    let res = acs_tiger::run(&query_params).await.unwrap();
     println!(
         "found {} responses, {}/{} errors",
         res.join_dataset.len(),

@@ -52,10 +52,10 @@ pub struct LodesTigerResponse {
 ///
 /// ```
 pub async fn run(
-    geoids: Vec<Geoid>,
+    geoids: &Vec<Geoid>,
     agg_geoid_type: &Option<GeoidType>,
     wac_segments: &[WacSegment],
-    dataset: LodesDataset,
+    dataset: &LodesDataset,
 ) -> Result<LodesTigerResponse, String> {
     // input: i have a set of geoids that describe a region. i want to download
     // lodes data and aggregate it to some GeoidType.
