@@ -1,14 +1,32 @@
+use bamsoda::app::acs_tiger;
+use bamsoda::app::lodes_tiger_args::LodesTigerArgs;
+use bamsoda::model::acs_tiger_output_row::AcsTigerOutputRow;
 use bamsoda_acs::model::{AcsApiQueryParams, AcsGeoidQuery, AcsType};
-use bamsoda_app::app::acs_tiger;
-use bamsoda_app::model::acs_tiger_output_row::AcsTigerOutputRow;
 use bamsoda_core::model::identifier::Geoid;
 use bamsoda_core::model::identifier::GeoidType;
+use clap::command;
 use clap::Parser;
+use clap::Subcommand;
 use itertools::Itertools;
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+#[command(propagate_version = true)]
+pub struct BamsodaCli {
+    #[command(subcommand)]
+    pub command: BamsodaApp,
+}
+
+#[derive(Subcommand)]
+pub enum BamsodaApp {
+    AcsApp(AcsAppCli),
+    #[command(subcommand)]
+    LehdApp(LehdAppCli),
+}
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-pub struct AcsTigerAppCli {
+pub struct AcsAppCli {
     #[arg(short, long)]
     pub geoid: String,
     #[arg(short, long)]
@@ -23,9 +41,21 @@ pub struct AcsTigerAppCli {
     pub acs_token: Option<String>,
 }
 
+#[derive(Subcommand)]
+pub enum LehdAppCli {
+    Lodes(LodesTigerArgs),
+}
+
 #[tokio::main]
 async fn main() {
-    let args = AcsTigerAppCli::parse();
+    let args = BamsodaCli::parse();
+    match args.command {
+        BamsodaApp::AcsApp(acs_args) => acs(&acs_args).await,
+        BamsodaApp::LehdApp(LehdAppCli::Lodes(lodes_args)) => lodes_args.run().await,
+    }
+}
+
+async fn acs(args: &AcsAppCli) {
     let acs_get_query = args.acs_query.split(',').map(String::from).collect_vec();
     let geoid = Geoid::try_from(args.geoid.as_str()).unwrap();
     let query: AcsGeoidQuery = AcsGeoidQuery::new(Some(geoid), args.wildcard).unwrap();
@@ -35,7 +65,7 @@ async fn main() {
         args.acs_type,
         acs_get_query,
         query,
-        args.acs_token,
+        args.acs_token.clone(),
     );
 
     let filename = &query_params.output_filename();

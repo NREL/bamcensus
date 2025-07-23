@@ -1,7 +1,7 @@
+use bamsoda::app::acs_tiger;
 use bamsoda_acs::model::AcsApiQueryParams;
 use bamsoda_acs::model::AcsGeoidQuery;
 use bamsoda_acs::model::AcsType;
-use bamsoda_app::app::acs_tiger;
 use bamsoda_core::model::identifier::Geoid;
 use itertools::Itertools;
 use pyo3::types::IntoPyDict;

@@ -1,4 +1,4 @@
-use bamsoda_app::app::lodes_tiger_args::LodesTigerArgs;
+use bamsoda::app::lodes_tiger_args::LodesTigerArgs;
 use clap::Parser;
 
 #[tokio::main]

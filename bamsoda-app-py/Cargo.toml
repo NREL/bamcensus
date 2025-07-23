@@ -14,7 +14,7 @@ itertools = { workspace = true }
 bamsoda-core = { path = "../bamsoda-core" }
 bamsoda-lehd = { path = "../bamsoda-lehd" }
 bamsoda-acs = { path = "../bamsoda-acs" }
-bamsoda-app = { path = "../bamsoda-app" }
+bamsoda = { path = "../bamsoda" }
 pyo3 = { version = "0.22.2", features = [
   "extension-module",
   "serde",

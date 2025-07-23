@@ -1,18 +1,10 @@
 [package]
-name = "bamsoda-app"
+name = "bamsoda"
 version = "0.1.0"
 edition = "2021"
 readme = "README.md"
 description = "application integrating all bamsoda capabilities with a CLI and Rust API"
 documentation = "pages.github.nrel.gov/BAM/bamsoda-app"
-
-# [[bin]]
-# name = "bamsoda-acs"
-# path = "src/bin/acs_tiger_app.rs"
-
-# [[bin]]
-# name = "bamsoda-lehd"
-# path = "src/bin/lodes_tiger_app.rs"
 
 [dependencies]
 env_logger = { workspace = true }
