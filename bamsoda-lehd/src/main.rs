@@ -82,12 +82,12 @@ async fn main() {
     .unwrap();
 
     let n_res = agg_rows.len();
-    println!("{} agg rows", n_res);
+    println!("{n_res} agg rows");
     println!("queries:");
     for (geoid, values) in agg_rows.iter() {
-        println!("{}", geoid);
+        println!("{geoid}");
         for value in values.iter() {
-            println!("  {}", value);
+            println!("  {value}");
         }
     }
 }

@@ -428,7 +428,7 @@ fn as_strings(arr: &[serde_json::Value]) -> Result<Vec<String>, String> {
     arr.iter()
         .map(|v| {
             v.as_str()
-                .ok_or_else(|| format!("raw geoid value should be string, found {}", v))
+                .ok_or_else(|| format!("raw geoid value should be string, found {v}"))
                 .map(String::from)
         })
         .collect::<Result<Vec<_>, String>>()

@@ -36,8 +36,8 @@ impl Display for TigerResourceBuilder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             TigerResourceBuilder::Tiger2010 => write!(f, "TIGER2010"),
-            TigerResourceBuilder::Tiger2010Format { year } => write!(f, "TIGER{}", year),
-            TigerResourceBuilder::Tiger2020Format { year } => write!(f, "TIGER{}", year),
+            TigerResourceBuilder::Tiger2010Format { year } => write!(f, "TIGER{year}"),
+            TigerResourceBuilder::Tiger2020Format { year } => write!(f, "TIGER{year}"),
         }
     }
 }
@@ -50,7 +50,7 @@ impl TigerResourceBuilder {
             2010 => Ok(TigerResourceBuilder::Tiger2010),
             y if 2010 < y && y < 2020 => Ok(TigerResourceBuilder::Tiger2010Format { year }),
             y if 2020 <= y => Ok(TigerResourceBuilder::Tiger2020Format { year }),
-            _ => Err(format!("unsupported TIGER year {}", year)),
+            _ => Err(format!("unsupported TIGER year {year}")),
         }
     }
 
@@ -138,10 +138,10 @@ impl TigerResourceBuilder {
             ),
             //// ~~~~ 2011-2019 ~~~~ ////
             (TigerResourceBuilder::Tiger2010Format { year }, Geoid::State(_)) => {
-                format!("STATE/tl_{}_us_state.zip", year,)
+                format!("STATE/tl_{year}_us_state.zip",)
             }
             (TigerResourceBuilder::Tiger2010Format { year }, Geoid::County(_, _)) => {
-                format!("COUNTY/tl_{}_us_county.zip", year)
+                format!("COUNTY/tl_{year}_us_county.zip")
             }
             (
                 TigerResourceBuilder::Tiger2010Format { year },
@@ -168,10 +168,10 @@ impl TigerResourceBuilder {
             }
             //// ~~~~ 2020-2029 ~~~~ ////
             (TigerResourceBuilder::Tiger2020Format { year }, Geoid::State(_)) => {
-                format!("STATE/tl_{}_us_state.zip", year,)
+                format!("STATE/tl_{year}_us_state.zip",)
             }
             (TigerResourceBuilder::Tiger2020Format { year }, Geoid::County(_, _)) => {
-                format!("COUNTY/tl_{}_us_county.zip", year)
+                format!("COUNTY/tl_{year}_us_county.zip")
             }
             (
                 TigerResourceBuilder::Tiger2020Format { year },
@@ -250,7 +250,7 @@ impl TigerResourceBuilder {
         };
 
         let prefix = self.base_url();
-        let uri = format!("{}/{}", prefix, suffix);
+        let uri = format!("{prefix}/{suffix}");
         let geoid_type = geoid.geoid_type();
         // let geoid_column_name = self.geoid_shapefile_colname(&suffix);
         let tiger_uri = TigerResource::new(uri, geoid_type, file_scope); //, geoid_column_name);

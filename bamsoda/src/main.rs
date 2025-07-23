@@ -78,11 +78,11 @@ async fn acs(args: &AcsAppCli) {
     );
     println!("TIGER ERRORS");
     for row in res.tiger_errors.into_iter() {
-        println!("{}", row)
+        println!("{row}")
     }
     println!("JOIN ERRORS");
     for row in res.join_errors.into_iter() {
-        println!("{}", row)
+        println!("{row}")
     }
 
     let mut writer = csv::WriterBuilder::new().from_path(filename).unwrap();

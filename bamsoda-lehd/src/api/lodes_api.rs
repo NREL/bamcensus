@@ -38,16 +38,16 @@ pub async fn run_wac(
                 .get(url)
                 .send()
                 .await
-                .map_err(|e| format!("failure sending LODES HTTP request: {}", e))?;
+                .map_err(|e| format!("failure sending LODES HTTP request: {e}"))?;
             let gzip_bytes = res
                 .bytes()
                 .await
-                .map_err(|e| format!("failure reading response body: {}", e))?;
+                .map_err(|e| format!("failure reading response body: {e}"))?;
             let mut reader = ReaderBuilder::new().from_reader(GzDecoder::new(&gzip_bytes[..]));
             let mut result = vec![];
             for r in reader.deserialize() {
                 let row: WacRow =
-                    r.map_err(|e| format!("failure reading LODES response row: {}", e))?;
+                    r.map_err(|e| format!("failure reading LODES response row: {e}"))?;
                 let geoid = row.geoid()?;
                 let mut row_result = vec![];
                 for segment in wac_segments.iter() {
@@ -59,11 +59,11 @@ pub async fn run_wac(
             // update progress bar
             let mut pb_update = pb
                 .lock()
-                .map_err(|e| format!("failure aquiring progress bar mutex lock: {}", e))?;
+                .map_err(|e| format!("failure aquiring progress bar mutex lock: {e}"))?;
             pb_update
                 .update(1)
-                .map_err(|e| format!("failure on pb update: {}", e))?;
-            pb_update.set_description(url.split('/').last().unwrap_or_default());
+                .map_err(|e| format!("failure on pb update: {e}"))?;
+            pb_update.set_description(url.split('/').next_back().unwrap_or_default());
 
             Ok(result)
         }

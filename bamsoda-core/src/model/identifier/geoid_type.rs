@@ -28,7 +28,7 @@ impl Display for GeoidType {
             GeoidType::BlockGroup => String::from("block_group"),
             GeoidType::Block => String::from("block"),
         };
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
@@ -39,8 +39,7 @@ impl GeoidType {
             GeoidType::State => {
                 if value_len != 2 {
                     Err(format!(
-                        "for state geoid, expected 2-digit value, found: {}",
-                        value
+                        "for state geoid, expected 2-digit value, found: {value}"
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[value.to_string()])
@@ -49,8 +48,7 @@ impl GeoidType {
             GeoidType::County => {
                 if value_len != 5 {
                     Err(format!(
-                        "for county geoid, expected 5-digit value, found: {}",
-                        value
+                        "for county geoid, expected 5-digit value, found: {value}"
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[
@@ -62,8 +60,7 @@ impl GeoidType {
             GeoidType::CountySubdivision => {
                 if value_len != 10 {
                     Err(format!(
-                        "for county subdivision geoid, expected 10-digit value, found: {}",
-                        value
+                        "for county subdivision geoid, expected 10-digit value, found: {value}"
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[
@@ -76,8 +73,7 @@ impl GeoidType {
             GeoidType::Place => {
                 if value_len != 7 {
                     Err(format!(
-                        "for place geoid, expected 7-digit value, found: {}",
-                        value
+                        "for place geoid, expected 7-digit value, found: {value}"
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[
@@ -89,8 +85,7 @@ impl GeoidType {
             GeoidType::CensusTract => {
                 if value_len != 11 {
                     Err(format!(
-                        "for census tract geoid, expected 11-digit value, found: {}",
-                        value
+                        "for census tract geoid, expected 11-digit value, found: {value}"
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[
@@ -103,8 +98,7 @@ impl GeoidType {
             GeoidType::BlockGroup => {
                 if value_len != 12 {
                     Err(format!(
-                        "for block group geoid, expected 12-digit value, found: {}",
-                        value
+                        "for block group geoid, expected 12-digit value, found: {value}"
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[
@@ -118,8 +112,7 @@ impl GeoidType {
             GeoidType::Block => {
                 if value_len != 15 && value_len != 16 {
                     Err(format!(
-                        "for block geoid, expected 15 or 16-digit value, found: {} with length {}",
-                        value, value_len
+                        "for block geoid, expected 15 or 16-digit value, found: {value} with length {value_len}"
                     ))
                 } else {
                     self.geoid_from_slice_of_strings(&[
@@ -241,8 +234,7 @@ fn as_usizes(arr: &[String]) -> Result<Vec<u64>, String> {
         .map(|v| {
             let v_u64 = v.parse::<u64>().map_err(|e| {
                 format!(
-                    "raw geoid value should be a string wrapping an integer, found '{}'. error: {}",
-                    v, e
+                    "raw geoid value should be a string wrapping an integer, found '{v}'. error: {e}"
                 )
             })?;
             Ok(v_u64)

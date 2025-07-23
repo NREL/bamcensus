@@ -32,8 +32,7 @@ impl TryFrom<&str> for Geoid {
             12 => GeoidType::BlockGroup.geoid_from_str(value),
             x if x == 15 || x == 16 => GeoidType::Block.geoid_from_str(value),
             x => Err(format!(
-                "unsupported GEOID type with length {}: {}",
-                x, value
+                "unsupported GEOID type with length {x}: {value}"
             )),
         }
     }
@@ -94,8 +93,7 @@ impl Geoid {
     pub fn truncate_geoid_to_type(&self, target: &GeoidType) -> Result<Geoid, String> {
         fn _err(src: &GeoidType, dst: &GeoidType) -> String {
             format!(
-                "{} not a parent type of {}, cannot truncate geoid.",
-                dst, src
+                "{dst} not a parent type of {src}, cannot truncate geoid."
             )
         }
         match (self, target) {
@@ -132,7 +130,7 @@ impl Geoid {
                 let block_str = &b.0[0..1];
                 let bg = block_str
                     .parse::<u64>()
-                    .map_err(|e| format!("cannot read first digit of block as integer: {}", e))?;
+                    .map_err(|e| format!("cannot read first digit of block as integer: {e}"))?;
                 let geoid = Geoid::BlockGroup(*s, *c, *t, fips::BlockGroup(bg));
                 Ok(geoid)
             }

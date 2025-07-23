@@ -41,7 +41,7 @@ impl TryFrom<u64> for AcsType {
         match value {
             1 => Ok(AcsType::OneYear),
             5 => Ok(AcsType::FiveYear),
-            _ => Err(format!("unknown acs type {}", value)),
+            _ => Err(format!("unknown acs type {value}")),
         }
     }
 }

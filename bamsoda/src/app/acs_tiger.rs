@@ -69,7 +69,7 @@ pub async fn run_batch(queries: &Vec<AcsApiQueryParams>) -> Result<AcsTigerRespo
         [one_year] => Ok(*one_year),
         years => Err(format!(
             "acs.run_batch with queries should be run with one matching year for optimal geometry downloads, but found the following years: [{}]",
-            years.iter().map(|y| format!("{}", y)).join(",")
+            years.iter().map(|y| format!("{y}")).join(",")
         )),
     }?;
 

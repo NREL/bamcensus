@@ -31,7 +31,7 @@ impl AcsValue {
         value_str
             .trim()
             .parse::<f64>()
-            .map_err(|e| format!("failed to decode value as f64: {}", e))
+            .map_err(|e| format!("failed to decode value as f64: {e}"))
     }
 }
 

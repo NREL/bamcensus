@@ -91,13 +91,13 @@ async fn run_wac(args: &LodesWacTigerAppCli) {
     if !res.tiger_errors.is_empty() {
         println!("TIGER ERRORS");
         for row in res.tiger_errors.into_iter() {
-            println!("{}", row)
+            println!("{row}")
         }
     }
     if !res.join_errors.is_empty() {
         println!("DATASET JOIN ERRORS");
         for row in res.join_errors.into_iter() {
-            println!("{}", row)
+            println!("{row}")
         }
     }
     let mut writer = csv::WriterBuilder::new()

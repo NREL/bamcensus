@@ -40,7 +40,7 @@ impl Default for LodesDataset {
 
 impl Display for LodesDataset {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 
@@ -53,7 +53,7 @@ impl LodesDataset {
                 od_part,
                 year,
             } => {
-                format!("{} {} {} Origin-Destination data, {} job totals are associated with both a home Census Block and a work Census Block", year, edition, od_part, job_type)
+                format!("{year} {edition} {od_part} Origin-Destination data, {job_type} job totals are associated with both a home Census Block and a work Census Block")
             }
             LodesDataset::RAC {
                 edition: _,
@@ -69,8 +69,7 @@ impl LodesDataset {
                 segment,
                 year,
             } => format!(
-                "{} {} {} Workplace Area Characteristic data, {} jobs are totaled by work Census Block",
-                year, edition, segment, job_type
+                "{year} {edition} {segment} Workplace Area Characteristic data, {job_type} jobs are totaled by work Census Block"
             ),
         }
     }
@@ -189,8 +188,7 @@ impl LodesDataset {
             } => {
                 let out_res = wildcard.unwrap_or(GeoidType::Block);
                 format!(
-                    "{}_od_{}_{}_{}_{}.csv",
-                    edition, year, job_type, od_part, out_res
+                    "{edition}_od_{year}_{job_type}_{od_part}_{out_res}.csv"
                 )
             }
             LodesDataset::RAC {
@@ -201,8 +199,7 @@ impl LodesDataset {
             } => {
                 let out_res = wildcard.unwrap_or(GeoidType::Block);
                 format!(
-                    "{}_rac_{}_{}_{}_{}.csv",
-                    edition, year, job_type, segment, out_res
+                    "{edition}_rac_{year}_{job_type}_{segment}_{out_res}.csv"
                 )
             }
             LodesDataset::WAC {
@@ -213,8 +210,7 @@ impl LodesDataset {
             } => {
                 let out_res = wildcard.unwrap_or(GeoidType::Block);
                 format!(
-                    "{}_wac_{}_{}_{}_{}.csv",
-                    edition, year, job_type, segment, out_res
+                    "{edition}_wac_{year}_{job_type}_{segment}_{out_res}.csv"
                 )
             }
         }

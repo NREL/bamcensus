@@ -88,12 +88,11 @@ impl AcsApiQueryParams {
         let get_query = self.get_query.iter().join(",");
         let for_query = self.for_query.to_query_key();
         let token_query = match &self.api_token {
-            Some(k) => format!("&key={}", k),
+            Some(k) => format!("&key={k}"),
             None => String::from(""),
         };
         let query = format!(
-            "{}?get={}{}{}",
-            dataset_url, get_query, for_query, token_query,
+            "{dataset_url}?get={get_query}{for_query}{token_query}",
         );
         Ok(query)
     }

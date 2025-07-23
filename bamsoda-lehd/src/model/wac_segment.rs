@@ -95,14 +95,14 @@ impl TryFrom<&str> for WacSegment {
             "CD04" => Ok(Self::CD04),
             "CS01" => Ok(Self::CS01),
             "CS02" => Ok(Self::CS02),
-            _ => Err(format!("unknown WAC Segment {}", value)),
+            _ => Err(format!("unknown WAC Segment {value}")),
         }
     }
 }
 
 impl Display for WacSegment {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 

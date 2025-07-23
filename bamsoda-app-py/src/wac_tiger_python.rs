@@ -41,7 +41,7 @@ pub fn run_wac_tiger_python<'a>(
         .split(',')
         .map(Geoid::try_from)
         .collect::<Result<Vec<_>, String>>()
-        .map_err(|e| PyException::new_err(format!("failure decoding geoids argument: {}", e)))?;
+        .map_err(|e| PyException::new_err(format!("failure decoding geoids argument: {e}")))?;
     let wac_segments = kwds.map_or(Ok(vec![WacSegment::C000]), |m| {
         if m.contains("wac_segments")? {
             get_comma_separated("wac_segments", m)
@@ -62,19 +62,19 @@ pub fn run_wac_tiger_python<'a>(
         .enable_all()
         .build()
         .map_err(|e| {
-            PyException::new_err(format!("failure creating async rust tokio runtime: {}", e))
+            PyException::new_err(format!("failure creating async rust tokio runtime: {e}"))
         })?;
     let result = runtime.block_on(future).map_err(|e| {
-        PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {}", e))
+        PyException::new_err(format!("failure running LODES WAC + TIGER workflow: {e}"))
     })?;
 
     if !result.tiger_errors.is_empty() {
         let msg = result.tiger_errors.iter().join(",");
-        return Err(PyException::new_err(format!("tiger errors: {}", msg)));
+        return Err(PyException::new_err(format!("tiger errors: {msg}")));
     }
     if !result.join_errors.is_empty() {
         let msg = result.join_errors.iter().join(",");
-        return Err(PyException::new_err(format!("join errors: {}", msg)));
+        return Err(PyException::new_err(format!("join errors: {msg}")));
     }
 
     let vals = result
@@ -102,16 +102,14 @@ where
         .map(|s| {
             serde_json::from_str(s).map_err(|e| {
                 format!(
-                    "failure decoding comma-separated arguments in '{}': {}",
-                    key, e
+                    "failure decoding comma-separated arguments in '{key}': {e}"
                 )
             })
         })
         .collect::<Result<Vec<T>, String>>();
     result.map_err(|e| {
         PyException::new_err(format!(
-            "failure decoding '{}' argument as comma-separated list: {}",
-            key, e
+            "failure decoding '{key}' argument as comma-separated list: {e}"
         ))
     })
 }
@@ -119,13 +117,13 @@ where
 fn get_string(key: &str, map: &Bound<'_, PyDict>) -> PyResult<String> {
     let item_opt = map
         .get_item(key)
-        .map_err(|e| PyException::new_err(format!("failure retreiving key {}: {}", key, e)))?;
+        .map_err(|e| PyException::new_err(format!("failure retreiving key {key}: {e}")))?;
     let item = match item_opt {
-        None => Err(PyException::new_err(format!("key {} not present", key))),
+        None => Err(PyException::new_err(format!("key {key} not present"))),
         Some(item) => Ok(item),
     }?;
     let string: String = item.extract().map_err(|e| {
-        PyException::new_err(format!("value at {} is not string. error: {}", key, e))
+        PyException::new_err(format!("value at {key} is not string. error: {e}"))
     })?;
     Ok(string)
 }
@@ -136,18 +134,17 @@ where
 {
     let item_opt = map
         .get_item(key)
-        .map_err(|e| PyException::new_err(format!("failure retreiving key {}: {}", key, e)))?;
+        .map_err(|e| PyException::new_err(format!("failure retreiving key {key}: {e}")))?;
     let item = match item_opt {
-        None => Err(PyException::new_err(format!("key {} not present", key))),
+        None => Err(PyException::new_err(format!("key {key} not present"))),
         Some(item) => Ok(item),
     }?;
     let string: String = item.extract().map_err(|e| {
-        PyException::new_err(format!("value at {} is not string. error: {}", key, e))
+        PyException::new_err(format!("value at {key} is not string. error: {e}"))
     })?;
     let t: T = serde_json::from_str(string.as_str()).map_err(|e| {
         PyException::new_err(format!(
-            "failure decoding '{}' argument from string '{}': {}",
-            key, string, e
+            "failure decoding '{key}' argument from string '{string}': {e}"
         ))
     })?;
     Ok(t)

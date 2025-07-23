@@ -25,10 +25,10 @@ pub async fn batch_run<'a>(
             // update progress bar
             let mut pb_update = pb
                 .lock()
-                .map_err(|e| format!("failure aquiring progress bar mutex lock: {}", e))?;
+                .map_err(|e| format!("failure aquiring progress bar mutex lock: {e}"))?;
             pb_update
                 .update(1)
-                .map_err(|e| format!("failure on pb update: {}", e))?;
+                .map_err(|e| format!("failure on pb update: {e}"))?;
 
             pb_update.set_description(&desc);
 
@@ -61,21 +61,20 @@ pub async fn run(
         .get(&url)
         .send()
         .await
-        .map_err(|e| format!("failure calling {}: {}", url, e))?;
+        .map_err(|e| format!("failure calling {url}: {e}"))?;
     let status_code = response.status();
     match response.error_for_status() {
         Err(e) => Err(format!(
-            "API request failed with error code {}. error: {}",
-            status_code, e
+            "API request failed with error code {status_code}. error: {e}"
         )),
         Ok(r) if r.status() == StatusCode::NO_CONTENT => {
-            Err(format!("requested URL {} has no content", url))
+            Err(format!("requested URL {url} has no content"))
         }
         Ok(res) => {
             let json = res
                 .json::<serde_json::Value>()
                 .await
-                .map_err(|e| format!("failure parsing JSON for response from {}: {}", url, e))?;
+                .map_err(|e| format!("failure parsing JSON for response from {url}: {e}"))?;
 
             // confirm the correct column names in the response arrays before deserializing
             validate_header(query, &json)?;
@@ -111,7 +110,7 @@ fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> R
             .iter()
             .map(|v| {
                 v.as_str()
-                    .ok_or(format!("contents of header not a string: {}", v))
+                    .ok_or(format!("contents of header not a string: {v}"))
             })
             .collect::<Result<Vec<_>, String>>(),
     }?;
@@ -121,8 +120,7 @@ fn validate_header(query: &AcsApiQueryParams, response: &serde_json::Value) -> R
             let exp_str = expected.iter().join(",");
             let fnd_str = header.iter().join(",");
             return Err(format!(
-                "expected headers did not match found\nexpected: {}\nfound: {}",
-                exp_str, fnd_str
+                "expected headers did not match found\nexpected: {exp_str}\nfound: {fnd_str}"
             ));
         }
     }
@@ -188,7 +186,7 @@ pub fn deserialize(
     let n_get_cols = get_cols.len();
     let values = row
         .as_array()
-        .ok_or_else(|| format!("row should be an array, found: {}", row))?;
+        .ok_or_else(|| format!("row should be an array, found: {row}"))?;
     let expected_len = n_get_cols + n_for_cols;
     if values.len() < expected_len {
         return Err(format!(

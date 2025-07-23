@@ -69,21 +69,20 @@ pub fn aggregate_lodes_wac(
     if !geoid_errs.is_empty() {
         let msg = geoid_errs.into_iter().unique().take(5).join("\n");
         return Err(format!(
-            "errors during aggregation. first 5 unique errors: \n{}",
-            msg
+            "errors during aggregation. first 5 unique errors: \n{msg}"
         ));
     }
 
     // nested groupby operation collected into a hashmap
     let mut grouped: HashMap<Geoid, HashMap<WacSegment, Vec<f64>>> = HashMap::new();
     let n_geoid_oks = geoid_oks.len();
-    let group_iter_desc = format!("LODES - geoids to {}", target);
+    let group_iter_desc = format!("LODES - geoids to {target}");
     let pb1_builder = kdam::BarBuilder::default()
         .total(n_geoid_oks)
         .desc(group_iter_desc);
     let mut pb1 = pb1_builder
         .build()
-        .map_err(|e| format!("error building progress bar: {}", e))?;
+        .map_err(|e| format!("error building progress bar: {e}"))?;
 
     for (geoid, values) in geoid_oks.into_iter() {
         for wac in values.iter() {
@@ -104,19 +103,19 @@ pub fn aggregate_lodes_wac(
             }
         }
         pb1.update(1)
-            .map_err(|e| format!("error updating progress bar: {}", e))?;
+            .map_err(|e| format!("error updating progress bar: {e}"))?;
     }
     eprintln!();
 
     // flattended into vector collection
     let n_grouped = grouped.len();
-    let reduce_desc = format!("LODES - aggregate by {}", agg);
+    let reduce_desc = format!("LODES - aggregate by {agg}");
     let pb2_builder = kdam::BarBuilder::default()
         .total(n_grouped)
         .desc(reduce_desc);
     let mut pb2 = pb2_builder
         .build()
-        .map_err(|e| format!("error building progress bar: {}", e))?;
+        .map_err(|e| format!("error building progress bar: {e}"))?;
     let output: Result<Vec<(Geoid, Vec<WacValue>)>, String> = grouped
         .into_iter()
         .map(|(geoid, map)| {
@@ -129,7 +128,7 @@ pub fn aggregate_lodes_wac(
                 })
                 .collect_vec();
             pb2.update(1)
-                .map_err(|e| format!("error updating progress bar: {}", e))?;
+                .map_err(|e| format!("error updating progress bar: {e}"))?;
             Ok((geoid, values))
         })
         .collect::<Result<Vec<_>, _>>();

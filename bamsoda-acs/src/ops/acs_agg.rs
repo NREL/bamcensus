@@ -64,8 +64,7 @@ pub fn aggregate_acs(
     if !geoid_errs.is_empty() {
         let msg = geoid_errs.into_iter().unique().take(5).join("\n");
         return Err(format!(
-            "errors during aggregation. first 5 unique errors: \n{}",
-            msg
+            "errors during aggregation. first 5 unique errors: \n{msg}"
         ));
     }
 
