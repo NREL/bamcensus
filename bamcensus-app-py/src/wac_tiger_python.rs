@@ -1,6 +1,8 @@
 use bamcensus::app::lodes_tiger;
 use bamcensus_core::model::identifier::Geoid;
-use bamcensus_lehd::model::{LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment};
+use bamcensus_lehd::model::{
+    LodesDataset, LodesEdition, LodesJobType, WacSegment, WorkplaceSegment,
+};
 use itertools::Itertools;
 use pyo3::types::IntoPyDict;
 use pyo3::types::PyDict;
@@ -100,11 +102,8 @@ where
     let result = ss
         .split(',')
         .map(|s| {
-            serde_json::from_str(s).map_err(|e| {
-                format!(
-                    "failure decoding comma-separated arguments in '{key}': {e}"
-                )
-            })
+            serde_json::from_str(s)
+                .map_err(|e| format!("failure decoding comma-separated arguments in '{key}': {e}"))
         })
         .collect::<Result<Vec<T>, String>>();
     result.map_err(|e| {
@@ -122,9 +121,9 @@ fn get_string(key: &str, map: &Bound<'_, PyDict>) -> PyResult<String> {
         None => Err(PyException::new_err(format!("key {key} not present"))),
         Some(item) => Ok(item),
     }?;
-    let string: String = item.extract().map_err(|e| {
-        PyException::new_err(format!("value at {key} is not string. error: {e}"))
-    })?;
+    let string: String = item
+        .extract()
+        .map_err(|e| PyException::new_err(format!("value at {key} is not string. error: {e}")))?;
     Ok(string)
 }
 
@@ -139,9 +138,9 @@ where
         None => Err(PyException::new_err(format!("key {key} not present"))),
         Some(item) => Ok(item),
     }?;
-    let string: String = item.extract().map_err(|e| {
-        PyException::new_err(format!("value at {key} is not string. error: {e}"))
-    })?;
+    let string: String = item
+        .extract()
+        .map_err(|e| PyException::new_err(format!("value at {key} is not string. error: {e}")))?;
     let t: T = serde_json::from_str(string.as_str()).map_err(|e| {
         PyException::new_err(format!(
             "failure decoding '{key}' argument from string '{string}': {e}"

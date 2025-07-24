@@ -91,9 +91,7 @@ impl AcsApiQueryParams {
             Some(k) => format!("&key={k}"),
             None => String::from(""),
         };
-        let query = format!(
-            "{dataset_url}?get={get_query}{for_query}{token_query}",
-        );
+        let query = format!("{dataset_url}?get={get_query}{for_query}{token_query}",);
         Ok(query)
     }
 

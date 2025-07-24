@@ -46,9 +46,8 @@ pub async fn run<'a>(
             let pb = pb.clone();
             async move {
                 // create temporary file for writing .zip download
-                let named_tmp = tempfile::NamedTempFile::new().map_err(|e| {
-                    format!("failure creating temporary zip archive filepath: {e}")
-                })?;
+                let named_tmp = tempfile::NamedTempFile::new()
+                    .map_err(|e| format!("failure creating temporary zip archive filepath: {e}"))?;
                 let read_path = named_tmp.path().to_path_buf().clone();
 
                 // download archive
@@ -72,9 +71,8 @@ pub async fn run<'a>(
                 let read_result = reader
                     .iter_shapes_and_records()
                     .map(|row| {
-                        let (shape, record) = row.map_err(|e| {
-                            format!("failure reading shapefile shape/record: {e}")
-                        })?;
+                        let (shape, record) = row
+                            .map_err(|e| format!("failure reading shapefile shape/record: {e}"))?;
                         into_geoid_and_geometry(shape, record, lookup, &tiger)
                     })
                     .collect::<Result<Vec<_>, String>>()?;
@@ -168,11 +166,10 @@ async fn download(client: &Client, uri: &str, write_file: File) -> Result<(), St
             .map_err(|e| format!("failed to write response buffer: {e}"))?;
     }
 
-    async_file.flush().await.map_err(|e| {
-        format!(
-            "error closing async write connection to temp zip file: {e}"
-        )
-    })?;
+    async_file
+        .flush()
+        .await
+        .map_err(|e| format!("error closing async write connection to temp zip file: {e}"))?;
     Ok(())
 }
 
@@ -187,9 +184,7 @@ fn get_zip_filename(archive: &ZipArchive<File>, suffix: &str) -> Result<String, 
 fn zip_file_into_string(archive: &mut ZipArchive<File>, filename: &str) -> Result<Vec<u8>, String> {
     let mut contents = Vec::new();
     let mut zipfile = archive.by_name(filename).map_err(|e| {
-        format!(
-            "expected file {filename} cannot be retrieved by name from zip archive: {e}"
-        )
+        format!("expected file {filename} cannot be retrieved by name from zip archive: {e}")
     })?;
     zipfile
         .read_to_end(&mut contents)
@@ -207,10 +202,10 @@ fn create_shapefile_reader<'a>(
 ) -> TigerShapefileReader<'a> {
     let shp_cursor = Cursor::new(shp_contents);
     let dbf_cursor = Cursor::new(dbf_contents);
-    let shape_reader = ShapeReader::new(shp_cursor)
-        .map_err(|e| format!("failure building shape reader: {e}"))?;
-    let database_reader = dbase::Reader::new(dbf_cursor)
-        .map_err(|e| format!("failure building dbf reader: {e}"))?;
+    let shape_reader =
+        ShapeReader::new(shp_cursor).map_err(|e| format!("failure building shape reader: {e}"))?;
+    let database_reader =
+        dbase::Reader::new(dbf_cursor).map_err(|e| format!("failure building dbf reader: {e}"))?;
     let reader: shapefile::Reader<Cursor<&Vec<u8>>, Cursor<&Vec<u8>>> =
         shapefile::Reader::new(shape_reader, database_reader);
     Ok(reader)

@@ -187,9 +187,7 @@ impl LodesDataset {
                 year,
             } => {
                 let out_res = wildcard.unwrap_or(GeoidType::Block);
-                format!(
-                    "{edition}_od_{year}_{job_type}_{od_part}_{out_res}.csv"
-                )
+                format!("{edition}_od_{year}_{job_type}_{od_part}_{out_res}.csv")
             }
             LodesDataset::RAC {
                 edition,
@@ -198,9 +196,7 @@ impl LodesDataset {
                 year,
             } => {
                 let out_res = wildcard.unwrap_or(GeoidType::Block);
-                format!(
-                    "{edition}_rac_{year}_{job_type}_{segment}_{out_res}.csv"
-                )
+                format!("{edition}_rac_{year}_{job_type}_{segment}_{out_res}.csv")
             }
             LodesDataset::WAC {
                 edition,
@@ -209,9 +205,7 @@ impl LodesDataset {
                 year,
             } => {
                 let out_res = wildcard.unwrap_or(GeoidType::Block);
-                format!(
-                    "{edition}_wac_{year}_{job_type}_{segment}_{out_res}.csv"
-                )
+                format!("{edition}_wac_{year}_{job_type}_{segment}_{out_res}.csv")
             }
         }
     }

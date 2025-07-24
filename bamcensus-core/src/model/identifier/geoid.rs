@@ -31,9 +31,7 @@ impl TryFrom<&str> for Geoid {
             11 => GeoidType::CensusTract.geoid_from_str(value),
             12 => GeoidType::BlockGroup.geoid_from_str(value),
             x if x == 15 || x == 16 => GeoidType::Block.geoid_from_str(value),
-            x => Err(format!(
-                "unsupported GEOID type with length {x}: {value}"
-            )),
+            x => Err(format!("unsupported GEOID type with length {x}: {value}")),
         }
     }
 }
@@ -92,9 +90,7 @@ impl Geoid {
     /// ```
     pub fn truncate_geoid_to_type(&self, target: &GeoidType) -> Result<Geoid, String> {
         fn _err(src: &GeoidType, dst: &GeoidType) -> String {
-            format!(
-                "{dst} not a parent type of {src}, cannot truncate geoid."
-            )
+            format!("{dst} not a parent type of {src}, cannot truncate geoid.")
         }
         match (self, target) {
             (Geoid::State(_), GeoidType::State) => Ok(self.clone()),
