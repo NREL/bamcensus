@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 readme = "README.md"
 description = "A tool for downloading US Census datasets written in Rust"
-documentation = "pages.github.nrel.gov/BAM/bamcensus-core"
 
 [dependencies]
 serde = { workspace = true }

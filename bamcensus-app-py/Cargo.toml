@@ -7,7 +7,6 @@ edition = "2021"
 [lib]
 name = "bamcensus_app_py"
 crate-type = ["cdylib"]
-documentation = "pages.github.nrel.gov/BAM/bamcensus-app-py"
 
 [dependencies]
 itertools = { workspace = true }
