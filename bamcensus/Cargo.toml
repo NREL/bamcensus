@@ -2,9 +2,10 @@
 name = "bamcensus"
 version = "0.1.0"
 edition = "2021"
+license = "BSD-3-Clause"
+exclude = ["test", "**/.DS_Store", "target/"]
 readme = "README.md"
-description = "application integrating all bamcensus capabilities with a CLI and Rust API"
-documentation = "pages.github.nrel.gov/BAM/bamcensus-app"
+description = "The Behavior and Advanced Mobility Census Dataset Aggregator"
 
 [dependencies]
 env_logger = { workspace = true }
