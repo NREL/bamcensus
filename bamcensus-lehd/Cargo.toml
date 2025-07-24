@@ -1,0 +1,21 @@
+[package]
+name = "bamcensus-lehd"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "Work with Longitudinal Employer-Household Dynamics (LEHD) datasets"
+documentation = "pages.github.nrel.gov/BAM/bamcensus-lehd"
+
+[dependencies]
+bamcensus-core = { path = "../bamcensus-core" }
+tokio = { workspace = true }
+rayon = { workspace = true }
+clap = { workspace = true }
+env_logger = { workspace = true }
+itertools = { workspace = true }
+serde = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+csv = { workspace = true }
+flate2 = { workspace = true }
+kdam = { workspace = true }
