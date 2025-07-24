@@ -1,4 +1,4 @@
-# BAMSODA - The Behavior and Advanced Mobility Scalable Open Dataset Aggregator
+# BAMCensus - The Behavior and Advanced Mobility Census Dataset Aggregator
 A tool for downloading large scale geospatial datasets written in Rust. 
 
 This software is a high-performance tool developed in Rust for downloading and processing large-scale geospatial datasets, specifically focusing on US Census data. It is designed to address limitations found in existing tools, such as R's [tidycensus](https://walker-data.com/tidycensus/), by providing performant streaming dataset JOIN operations between various US Census datasets (like ACS and LEHD) and their corresponding geometries stored on the TIGER/Lines web server.
@@ -14,7 +14,7 @@ Key features and design considerations include:
 
 ## Usage
 
-See the [bamsoda-app](/bamsoda-app/) crate for command line usage.
+See the [bamcensus-app](/bamcensus-app/) crate for command line usage.
 
 ## Roadmap
 

@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-  "bamsoda-core",
-  "bamsoda-acs",
-  "bamsoda-tiger",
-  "bamsoda",
-  "bamsoda-lehd",
-  "bamsoda-app-py",
+  "bamcensus-core",
+  "bamcensus-acs",
+  "bamcensus-tiger",
+  "bamcensus",
+  "bamcensus-lehd",
+  "bamcensus-app-py",
 ]
 
 [workspace.dependencies]

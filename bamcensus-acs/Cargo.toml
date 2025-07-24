@@ -1,0 +1,19 @@
+[package]
+name = "bamcensus-acs"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "Interaction with the American Community Survey API"
+documentation = "pages.github.nrel.gov/BAM/bamcensus-acs"
+
+[dependencies]
+bamcensus-core = { path = "../bamcensus-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+rayon = { workspace = true }
+reqwest = { workspace = true }
+tokio = { workspace = true }
+itertools = { workspace = true }
+futures = { workspace = true }
+clap = { workspace = true }
+kdam = { workspace = true }

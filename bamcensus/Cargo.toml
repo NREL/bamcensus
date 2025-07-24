@@ -1,0 +1,27 @@
+[package]
+name = "bamcensus"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+description = "application integrating all bamcensus capabilities with a CLI and Rust API"
+documentation = "pages.github.nrel.gov/BAM/bamcensus-app"
+
+[dependencies]
+env_logger = { workspace = true }
+clap = { workspace = true }
+bamcensus-core = { path = "../bamcensus-core" }
+bamcensus-acs = { path = "../bamcensus-acs" }
+bamcensus-lehd = { path = "../bamcensus-lehd" }
+bamcensus-tiger = { path = "../bamcensus-tiger" }
+itertools = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+futures = { workspace = true }
+geo = { workspace = true }
+wkt = { workspace = true }
+tokio-test = { workspace = true }
+tokio = { workspace = true }
+csv = { workspace = true }
+log = { workspace = true }
+kdam = { workspace = true }
