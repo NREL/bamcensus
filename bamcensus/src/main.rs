@@ -12,13 +12,13 @@ use itertools::Itertools;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 #[command(propagate_version = true)]
-pub struct bamcensusCli {
+pub struct BamCensusCli {
     #[command(subcommand)]
-    pub command: bamcensusApp,
+    pub command: BamCensusApp,
 }
 
 #[derive(Subcommand)]
-pub enum bamcensusApp {
+pub enum BamCensusApp {
     AcsApp(AcsAppCli),
     #[command(subcommand)]
     LehdApp(LehdAppCli),
@@ -48,10 +48,10 @@ pub enum LehdAppCli {
 
 #[tokio::main]
 async fn main() {
-    let args = bamcensusCli::parse();
+    let args = BamCensusCli::parse();
     match args.command {
-        bamcensusApp::AcsApp(acs_args) => acs(&acs_args).await,
-        bamcensusApp::LehdApp(LehdAppCli::Lodes(lodes_args)) => lodes_args.run().await,
+        BamCensusApp::AcsApp(acs_args) => acs(&acs_args).await,
+        BamCensusApp::LehdApp(LehdAppCli::Lodes(lodes_args)) => lodes_args.run().await,
     }
 }
 
