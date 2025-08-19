@@ -1,3 +1,4 @@
+//! input and output types for working with [`crate::app`] functions.
 pub mod acs_tiger_output_row;
 pub mod acs_tiger_row;
 pub mod lodes_tiger_output_row;

@@ -11,49 +11,56 @@ use itertools::Itertools;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 #[command(propagate_version = true)]
-pub struct LodesTigerArgs {
+pub struct LodesTigerCli {
+    /// declare the LODES dataset to retrieve
     #[command(subcommand)]
-    dataset: LodesDatasetCli,
+    dataset: LodesTigerDatasetCli,
 }
 
 #[derive(Subcommand)]
-pub enum LodesDatasetCli {
-    Wac(LodesWacTigerAppCli),
+pub enum LodesTigerDatasetCli {
+    /// Workplace-Area characteristics (WAC) LODES data downloader
+    Wac(LodesTigerWacApi),
     Od,
     Rac,
 }
 
 #[derive(Args)]
-pub struct LodesWacTigerAppCli {
+pub struct LodesTigerWacApi {
+    /// comma-delimited list of geoids representing the geographic area for download
     #[arg(short, long)]
     pub geoids: Option<String>,
+    /// produce output rows at the given geospatial resolution. original resolution if not specified.
     #[arg(short, long)]
-    pub wildcard: Option<GeoidType>,
+    pub output_resolution: Option<GeoidType>,
+    /// dataset year
     #[arg(long)]
     pub year: u64,
-    #[arg(long)]
+    /// workplace area characteristic segments, see LODES documentation
+    #[arg(long, default_value_t = String::from("C000"))]
     wac_segments: String,
-    #[arg(long)]
-    edition: Option<LodesEdition>,
+    /// LODES definition, see LODES documentation, default latest
+    #[arg(long, default_value = "lodes8")]
+    edition: LodesEdition,
     /// LODES workforce segment defined in LODES schema documentation
-    #[arg(long)]
-    segment: Option<WorkplaceSegment>,
+    #[arg(long, default_value = "s000")]
+    segment: WorkplaceSegment,
     /// WAC job type defined in LODES schema documentation
-    #[arg(long)]
-    jobtype: Option<LodesJobType>,
+    #[arg(long, default_value = "jt00")]
+    jobtype: LodesJobType,
 }
 
-impl LodesTigerArgs {
+impl LodesTigerCli {
     pub async fn run(&self) {
         match &self.dataset {
-            LodesDatasetCli::Wac(wac) => run_wac(wac).await,
-            LodesDatasetCli::Od => todo!(),
-            LodesDatasetCli::Rac => todo!(),
+            LodesTigerDatasetCli::Wac(wac) => run_wac(wac).await,
+            LodesTigerDatasetCli::Od => todo!(),
+            LodesTigerDatasetCli::Rac => todo!(),
         }
     }
 }
 
-async fn run_wac(args: &LodesWacTigerAppCli) {
+async fn run_wac(args: &LodesTigerWacApi) {
     let geoids = match &args.geoids {
         Some(s) => s
             .split(',')
@@ -68,12 +75,12 @@ async fn run_wac(args: &LodesWacTigerAppCli) {
             .collect_vec(),
     };
     let dataset = LodesDataset::WAC {
-        edition: args.edition.unwrap_or_default(),
-        job_type: args.jobtype.unwrap_or_default(),
-        segment: args.segment.unwrap_or_default(),
+        edition: args.edition,
+        job_type: args.jobtype,
+        segment: args.segment,
         year: args.year,
     };
-    let wildcard = args.wildcard;
+    let wildcard = args.output_resolution;
     let wac_segments = args
         .wac_segments
         .split(',')

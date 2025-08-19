@@ -1,5 +1,6 @@
+//! Command line tool for running BAMCENSUS Apps.
 use bamcensus::app::acs_tiger;
-use bamcensus::app::lodes_tiger_args::LodesTigerArgs;
+use bamcensus::app::lodes_tiger_args::LodesTigerCli;
 use bamcensus::model::acs_tiger_output_row::AcsTigerOutputRow;
 use bamcensus_acs::model::{AcsApiQueryParams, AcsGeoidQuery, AcsType};
 use bamcensus_core::model::identifier::Geoid;
@@ -19,7 +20,9 @@ pub struct BamCensusCli {
 
 #[derive(Subcommand)]
 pub enum BamCensusApp {
+    /// American Community Survey (ACS) Download Tools
     AcsApp(AcsAppCli),
+    /// Longitudinal Employer-Household Dynamics (LEHD) Download Tools
     #[command(subcommand)]
     LehdApp(LehdAppCli),
 }
@@ -27,23 +30,29 @@ pub enum BamCensusApp {
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct AcsAppCli {
+    /// geoid describing the download region
     #[arg(short, long)]
     pub geoid: String,
+    /// level to aggregate results. no aggregation if not provided.
     #[arg(short, long)]
-    pub wildcard: Option<GeoidType>,
+    pub aggregation: Option<GeoidType>,
+    /// dataset year. must match known ACS releases.
     #[arg(long)]
     pub year: u64,
+    /// comma-delimited list of ACS fields to retrieve
     #[arg(long)]
     pub acs_query: String,
+    /// one or five-year ACS dataset
     #[arg(short, long)]
     pub acs_type: AcsType,
+    /// optional API token, may be required depending on server limits.
     #[arg(short, long)]
     pub acs_token: Option<String>,
 }
 
 #[derive(Subcommand)]
 pub enum LehdAppCli {
-    Lodes(LodesTigerArgs),
+    Lodes(LodesTigerCli),
 }
 
 #[tokio::main]
@@ -58,7 +67,7 @@ async fn main() {
 async fn acs(args: &AcsAppCli) {
     let acs_get_query = args.acs_query.split(',').map(String::from).collect_vec();
     let geoid = Geoid::try_from(args.geoid.as_str()).unwrap();
-    let query: AcsGeoidQuery = AcsGeoidQuery::new(Some(geoid), args.wildcard).unwrap();
+    let query: AcsGeoidQuery = AcsGeoidQuery::new(Some(geoid), args.aggregation).unwrap();
     let query_params = AcsApiQueryParams::new(
         None,
         args.year,

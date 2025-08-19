@@ -12,7 +12,7 @@ pub struct AcsTigerAppCli {
     /// geoid or comma-delimited list of geoids
     #[arg(short, long)]
     pub geoids: String,
-    /// produce output rows at the given geospatial resolution
+    /// produce output rows at the given geospatial resolution. original resolution if not specified.
     #[arg(short, long)]
     pub output_resolution: Option<GeoidType>,
     /// year of ACS data / tiger lines data to retrieve

@@ -1,13 +1,20 @@
 use crate::model::{AcsGeoidQuery, AcsType};
 use itertools::Itertools;
 
+/// parameters for running an ACS call.
 #[derive(Debug, Clone)]
 pub struct AcsApiQueryParams {
+    /// optional override URL for ACS query. otherwise defaults to [`super::constants::BASE_URL`]
     pub base_url: Option<String>,
+    /// ACS dataset yera
     pub year: u64,
+    /// one or five-year ACS cadence
     pub acs_type: AcsType,
+    /// list of fields to retrieve
     pub get_query: Vec<String>,
+    /// geographic scope of request
     pub for_query: AcsGeoidQuery,
+    /// optional API token in case of rate limiting issues
     pub api_token: Option<String>,
 }
 

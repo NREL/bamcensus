@@ -14,7 +14,7 @@ Key features and design considerations include:
 
 ## Usage
 
-See the [bamcensus-app](/bamcensus-app/) crate for command line usage.
+See the [bamcensus](/bamcensus/) crate for command line usage.
 
 ## Roadmap
 
