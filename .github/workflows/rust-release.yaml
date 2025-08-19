@@ -27,6 +27,8 @@ jobs:
         run: cargo publish -p bamcensus-lehd --manifest-path=bamcensus-lehd/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
       - name: Publish bamcensus-acs
         run: cargo publish -p bamcensus-acs --manifest-path=bamcensus-acs/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
+      - name: Publish bamcensus-tiger
+        run: cargo publish -p bamcensus-tiger --manifest-path=bamcensus-tiger/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
       - name: Publish bamcensus
         run: cargo publish -p bamcensus --manifest-path=bamcensus/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
       - name: Publish bamcensus-py
