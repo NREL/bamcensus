@@ -1,5 +1,5 @@
 //! End-to-end download workflows for US Census datasets.
-//! 
+//!
 //! An API for programmatically executing bamcensus from Rust code. see
 //! the following functions for an entry point:
 //!   - American Community Survey (ACS) with Tiger/LINES geometries: [`crate::app::acs_tiger::run`]
