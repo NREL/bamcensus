@@ -1,0 +1,25 @@
+name: Publish - crates.io
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    name: Publish to Crates.io
+    environment: crates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Run tests
+        run: cargo test --all
+
+      - name: Publish bamcensus
+        run: cargo publish -p bamcensus --manifest-path=bamcensus/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"

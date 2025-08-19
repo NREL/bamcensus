@@ -1,8 +1,6 @@
-name: Rust
+name: Test (Rust)
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
