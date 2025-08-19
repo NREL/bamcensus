@@ -6,7 +6,7 @@ edition = "2021"
 description = "Work with geospatial data in the TIGER/Lines datasets"
 
 [dependencies]
-bamcensus-core = { path = "../bamcensus-core" }
+bamcensus-core = { path = "../bamcensus-core", version = "0.1.0" }
 itertools = { workspace = true }
 serde = { workspace = true }
 rayon = { workspace = true }

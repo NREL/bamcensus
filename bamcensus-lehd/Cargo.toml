@@ -6,7 +6,7 @@ readme = "README.md"
 description = "Work with Longitudinal Employer-Household Dynamics (LEHD) datasets"
 
 [dependencies]
-bamcensus-core = { path = "../bamcensus-core" }
+bamcensus-core = { path = "../bamcensus-core", version = "0.1.0" }
 tokio = { workspace = true }
 rayon = { workspace = true }
 clap = { workspace = true }

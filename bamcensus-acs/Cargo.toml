@@ -6,7 +6,7 @@ readme = "README.md"
 description = "Interaction with the American Community Survey API"
 
 [dependencies]
-bamcensus-core = { path = "../bamcensus-core" }
+bamcensus-core = { path = "../bamcensus-core", version = "0.1.0" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 rayon = { workspace = true }

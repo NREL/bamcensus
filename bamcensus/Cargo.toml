@@ -10,10 +10,10 @@ description = "The Behavior and Advanced Mobility Census Dataset Aggregator"
 [dependencies]
 env_logger = { workspace = true }
 clap = { workspace = true }
-bamcensus-core = { path = "../bamcensus-core" }
-bamcensus-acs = { path = "../bamcensus-acs" }
-bamcensus-lehd = { path = "../bamcensus-lehd" }
-bamcensus-tiger = { path = "../bamcensus-tiger" }
+bamcensus-core = { path = "../bamcensus-core", version = "0.1.0" }
+bamcensus-acs = { path = "../bamcensus-acs", version = "0.1.0" }
+bamcensus-lehd = { path = "../bamcensus-lehd", version = "0.1.0" }
+bamcensus-tiger = { path = "../bamcensus-tiger", version = "0.1.0" }
 itertools = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

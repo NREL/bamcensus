@@ -10,10 +10,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 itertools = { workspace = true }
-bamcensus-core = { path = "../bamcensus-core" }
-bamcensus-lehd = { path = "../bamcensus-lehd" }
-bamcensus-acs = { path = "../bamcensus-acs" }
-bamcensus = { path = "../bamcensus" }
+bamcensus-core = { path = "../bamcensus-core", version = "0.1.0" }
+bamcensus-lehd = { path = "../bamcensus-lehd", version = "0.1.0" }
+bamcensus-acs = { path = "../bamcensus-acs", version = "0.1.0" }
+bamcensus = { path = "../bamcensus", version = "0.1.0" }
 pyo3 = { version = "0.22.2", features = [
   "extension-module",
   "serde",
