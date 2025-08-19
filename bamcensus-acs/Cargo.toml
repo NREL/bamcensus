@@ -1,6 +1,7 @@
 [package]
 name = "bamcensus-acs"
 version = "0.1.0"
+license = "BSD-3-Clause"
 edition = "2021"
 readme = "README.md"
 description = "Interaction with the American Community Survey API"

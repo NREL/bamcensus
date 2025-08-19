@@ -2,6 +2,7 @@
 name = "bamcensus-core"
 version = "0.1.0"
 edition = "2021"
+license = "BSD-3-Clause"
 readme = "README.md"
 description = "A tool for downloading US Census datasets written in Rust"
 
