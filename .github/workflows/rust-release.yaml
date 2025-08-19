@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     name: Publish to Crates.io
@@ -31,6 +34,6 @@ jobs:
         run: cargo publish -p bamcensus-tiger --manifest-path=bamcensus-tiger/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
       - name: Publish bamcensus
         run: cargo publish -p bamcensus --manifest-path=bamcensus/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
-      - name: Publish bamcensus-py
-        run: cargo publish -p bamcensus-py --manifest-path=bamcensus-py/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
+      # - name: Publish bamcensus-py
+      #   run: cargo publish -p bamcensus-py --manifest-path=bamcensus-py/Cargo.toml --token "${{ secrets.CRATES_IO_TOKEN }}"
 
