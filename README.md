@@ -1,3 +1,9 @@
+<div align="left">
+  <a href="https://crates.io/crates/bamcensus">
+    <img src="https://img.shields.io/crates/v/bamcensus" alt="Crates.io Latest Release"/>
+  </a>
+</div>
+
 # BAMCensus - The Behavior and Advanced Mobility Census dataset aggregator
 A tool for downloading large scale geospatial datasets written in Rust. 
 
