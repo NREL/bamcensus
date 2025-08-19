@@ -3,7 +3,7 @@ requires = ["maturin>=1.7,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "bamcensus-app-py"
+name = "bamcensus-py"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",
@@ -14,9 +14,9 @@ dynamic = ["version"]
 [project.optional-dependencies]
 tests = ["pytest"]
 plot = ["matplotlib", "contextily"]
-all = ["bamcensus-app-py[tests]", "bamcensus-app-py[plot]"]
+all = ["bamcensus-py[tests]", "bamcensus-py[plot]"]
 
 [tool.maturin]
 python-source = "python"
-module-name = "uscensus"
+module-name = "bamcensus"
 features = ["pyo3/extension-module"]

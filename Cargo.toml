@@ -6,7 +6,7 @@ members = [
   "bamcensus-tiger",
   "bamcensus",
   "bamcensus-lehd",
-  "bamcensus-app-py",
+  "bamcensus-py",
 ]
 
 [workspace.dependencies]

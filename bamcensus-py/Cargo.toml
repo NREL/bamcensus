@@ -1,11 +1,11 @@
 [package]
-name = "bamcensus-app-py"
+name = "bamcensus-py"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "bamcensus_app_py"
+name = "bamcensus_py"
 crate-type = ["cdylib"]
 
 [dependencies]

@@ -1,4 +1,4 @@
-import bamcensus_app_py as api
+import bamcensus_py as api
 import pandas as pd
 import geopandas as gpd
 from shapely import wkt
