@@ -3,20 +3,29 @@ requires = ["maturin>=1.7,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "bamcensus-py"
-requires-python = ">=3.10"
+name = "bamcensus"
+requires-python = ">=3.10,<3.14"
+authors = [{ name = "National Renewable Energy Laboratory" }]
+license = { text = "BSD 3-Clause License Copyright (c) 2025, Alliance for Sustainable Energy, LLC" }
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "Development Status :: 4 - Beta",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: GIS"
 ]
 dynamic = ["version"]
 [project.optional-dependencies]
 tests = ["pytest"]
 plot = ["matplotlib", "contextily"]
-all = ["bamcensus-py[tests]", "bamcensus-py[plot]"]
+all = ["bamcensus[tests]", "bamcensus[plot]"]
+
+[project.urls]
+Homepage = "https://github.com/NREL/bamcensus"
 
 [tool.maturin]
 python-source = "python"
-module-name = "bamcensus"
 features = ["pyo3/extension-module"]
+module-name = "bamcensus"
+manifest-path = "Cargo.toml"
