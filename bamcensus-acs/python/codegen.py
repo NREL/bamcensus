@@ -1,7 +1,6 @@
 import os
 import re
 import argparse
-from typing import Optional
 
 parser = argparse.ArgumentParser(
     "extracts acs variables from scraped HTML and generates code",
@@ -42,7 +41,6 @@ def write_csv(matches, csv_filename):
 
 
 def write_rust(matches, rust_filename):
-
     class_name = "ClassName"
 
     def to_string_gen(group, name):
@@ -82,9 +80,7 @@ impl {classname} {{
         }}
     }}
 }}
-    """.format(
-        classname=class_name, enums=enums, tostr=tostr, topath=topath
-    )
+    """.format(classname=class_name, enums=enums, tostr=tostr, topath=topath)
     with open(rust_filename, "w") as f:
         f.write(codegen)
 
